@@ -1,0 +1,69 @@
+Metadata-Version: 2.1
+Name: bia-bob
+Version: 0.0.1
+Summary: A Jupyter-based assistant for working on bio-image analysis tasks
+Home-page: https://github.com/haesleinhuepf/bia-bob
+Author: Robert Haase
+Author-email: robert.haase@tu-dresden.de
+License: BSD-3-Clause
+Project-URL: Bug Tracker, https://github.com/haesleinhuepf/bia-bob/issues
+Project-URL: Documentation, https://github.com/haesleinhuepf/bia-bob#README.md
+Project-URL: Source Code, https://github.com/haesleinhuepf/bia-bob
+Project-URL: User Support, https://github.com/haesleinhuepf/bia-bob/issues
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Framework :: napari
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Topic :: Scientific/Engineering :: Image Processing
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Provides-Extra: testing
+License-File: LICENSE
+
+# bia-bob
+
+BIA Bob is a Jupyter-based assistant for working on Bio-image Analysis tasks.
+It is based on [LangChain](https://python.langchain.com/docs/get_started/introduction.html) and [OpenAI's API](https://openai.com/blog/openai-api). You need an openai API account to use it.
+
+## Usage
+
+```
+from bia_bob import bob
+```
+
+```
+%%bob
+Load blobs.tif and tell me its size.
+```
+
+
+## Known issues
+
+If you want to ask Bob a question, you need to put a space before the `?`.
+
+```
+What do you know about blobs.gif?
+```
+
+## Installation
+
+```
+pip install bia-bob
+```
+
+
+## Issues
+
+If you encounter any problems, please create a thread on [image.sc](https://image.sc) along with a detailed description and tag [@haesleinhuepf].
+
+
+
+
+

@@ -1,0 +1,15 @@
+LICENSE
+MANIFEST.in
+README.md
+pyproject.toml
+setup.cfg
+src/bia_bob/__init__.py
+src/bia_bob/_machinery.py
+src/bia_bob/_tools.py
+src/bia_bob/_utilities.py
+src/bia_bob.egg-info/PKG-INFO
+src/bia_bob.egg-info/SOURCES.txt
+src/bia_bob.egg-info/dependency_links.txt
+src/bia_bob.egg-info/requires.txt
+src/bia_bob.egg-info/top_level.txt
+src/bia_bob/_tests/__init__.py
