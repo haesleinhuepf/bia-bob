@@ -28,22 +28,6 @@ def image_size(filename: str):
     return f"The image is {image.shape} pixels large."
 
 
-@_context.tools.append
-@tool
-def segment_bright_objects(image_name):
-    """Useful for segmenting bright objects in an image that has been loaded and stored before."""
-    from napari_segment_blobs_and_things_with_membranes import voronoi_otsu_labeling
-
-    if _context.verbose:
-        print("segmenting", image_name)
-
-    image = find_image(_context.variables, image_name)
-    label_image = voronoi_otsu_labeling(image, spot_sigma=4)
-
-    label_image_name = "segmented_" + image_name
-    _context.variables[make_variable_name(label_image_name)] = label_image
-
-    return "The segmented image has been stored as " + label_image_name
 
 
 @_context.tools.append
@@ -107,3 +91,27 @@ def list_files_in_folder(folder):
     import os
 
     return "The files in the folder are " + ",".join(os.listdir(folder))
+
+
+@_context.tools.append
+@tool
+def generate_and_execute_code(task):
+    """Useful for generating code for a specific task and executing it."""
+
+    additional_hints= """
+    Write high-quality python code.
+    Use image-processing libraries such as scikit-image, scipy, numpy or pyclesperanto_prototype.
+    Do not show results, but save them in variables instead.
+    Do not provide additional explanations, just Python code.
+    The code should do the following:
+    """
+    from ._utilities import generate_code
+    print("Asking for code like this:\n", additional_hints + task + "\n")
+
+    code = generate_code(additional_hints + task)
+
+
+    print("Code:\n", code)
+
+    exec(code, _context.variables)
+

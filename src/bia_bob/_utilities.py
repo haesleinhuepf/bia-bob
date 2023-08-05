@@ -40,3 +40,24 @@ def find_image(variables, key):
     if _context.verbose:
         print("Searching for variable named ", other_name)
     return variables[other_name]
+
+def generate_code(task):
+    code = prompt(task)
+
+    code = code.replace("```python", "```")
+    code = code.replace("```", "")
+
+    return code
+
+def prompt(message:str, model="gpt-3.5-turbo"):
+    """A prompt helper function that sends a message to openAI
+    and returns only the text response.
+    """
+    import openai
+
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=[{"role": "user", "content": message}]
+    )
+    return response['choices'][0]['message']['content']
+
