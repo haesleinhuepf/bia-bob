@@ -9,17 +9,20 @@ Note: Bob is currently in an early alpha stage. It is not very smart yet. Feedba
 
 Detailed examples of how to interact with Bob are given in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
 
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia_bob_trailer.gif)
+
+
 ```
 from bia_bob import bob
 ```
 
-![img.png](docs/images/load_and_show.png)
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show.png)
 
-![img_1.png](docs/images/slice.png)
+![img_1.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/slice.png)
 
-![img.png](docs/images/chain_workflows.png)
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/chain_workflows.png)
 
-![img.png](docs/images/count_blobs.png)
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/count_blobs.png)
 
 ## Known issues
 

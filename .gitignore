@@ -1,0 +1,8 @@
+
+.idea/bia-bob.iml
+
+build/
+dist/
+.idea/
+
+*/.ipynb_checkpoints/*
