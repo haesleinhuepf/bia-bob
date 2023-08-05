@@ -3,14 +3,15 @@
 BIA Bob is a Jupyter-based assistant for interacting with image data and for working on Bio-image Analysis tasks.
 It is based on [LangChain](https://python.langchain.com/docs/get_started/introduction.html) and [OpenAI's API](https://openai.com/blog/openai-api). You need an openai API account to use it.
 
+Trailer:
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia_bob_trailer.gif)
+
 Note: Bob is currently in an early alpha stage. It is not very smart yet. Feedback is very welcome!
 
 ## Usage
 
 Detailed examples of how to interact with Bob are given in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
-
-![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia_bob_trailer.gif)
-
 
 ```
 from bia_bob import bob
