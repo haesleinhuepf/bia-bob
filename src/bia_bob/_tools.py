@@ -30,6 +30,61 @@ def image_size(filename: str):
 
 @_context.tools.append
 @tool
+def gaussian_blur(image_name):
+    """Useful for removing noise from an image using a simple method: the Gaussian blur."""
+    from skimage.filters import gaussian
+
+    if _context.verbose:
+        print("denoising (Gaussian blur)", image_name)
+
+    image = find_image(_context.variables, image_name)
+    denoised_image = gaussian(image, sigma=1)
+
+    denoised_image_name = make_variable_name("denoised_" + image_name)
+    _context.variables[denoised_image_name] = denoised_image
+
+    return "The denoised image has been stored as " + denoised_image_name
+
+
+
+@_context.tools.append
+@tool
+def top_hat(image_name):
+    """Useful for removing background from an image using a simple method: the Top-Hat filter."""
+    from napari_segment_blobs_and_things_with_membranes import white_tophat
+
+    if _context.verbose:
+        print("remove background (Top-Hat)", image_name)
+
+    image = find_image(_context.variables, image_name)
+    background_subtracted_image = white_tophat(image, radius=10)
+
+    background_subtracted_image_name = make_variable_name("removed_background_" + image_name)
+    _context.variables[background_subtracted_image_name] = background_subtracted_image
+
+    return "The image with the background removed has been stored as " + background_subtracted_image_name
+
+
+@_context.tools.append
+@tool
+def morphological_gradient(image_name):
+    """Useful for enhancing edges in image using a simple method: the Morphological Gradient filter."""
+    from napari_segment_blobs_and_things_with_membranes import morphological_gradient as nsbatwm_morphological_gradient
+
+    if _context.verbose:
+        print("enhance edges (morphological gradient)", image_name)
+
+    image = find_image(_context.variables, image_name)
+    enhanced_edges_image = nsbatwm_morphological_gradient(image, radius=1)
+
+    enhanced_edges_image_name = make_variable_name("enhanced_edges_" + image_name)
+    _context.variables[enhanced_edges_image_name] = enhanced_edges_image
+
+    return "The image with the enhanced edges has been stored as " + enhanced_edges_image_name
+
+
+@_context.tools.append
+@tool
 def segment_bright_objects(image_name):
     """Useful for segmenting bright objects in an image that has been loaded and stored before."""
     from napari_segment_blobs_and_things_with_membranes import voronoi_otsu_labeling
