@@ -33,6 +33,11 @@ Afterwards, you can ask Bob questions like this:
 %bob Load blobs.tif and show it
 ```
 
+You can also ask Bob about available tools:
+```
+%bob list tools
+```
+
 Or like this:
 ```
 %%bob
