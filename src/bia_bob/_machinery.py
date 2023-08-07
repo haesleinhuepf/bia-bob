@@ -22,13 +22,16 @@ def bob(line: str = None, cell: str = None):
         print("Variables:", len(_context.variables.keys()))
 
     if line and cell:
-        return _context.agent.run(input=line + "\n" + cell)
+        result = _context.agent.run(input=line + "\n" + cell)
     if line:
-        return _context.agent.run(input=line)
+        result = _context.agent.run(input=line)
     elif cell:
-        return _context.agent.run(input=cell)
+        result = _context.agent.run(input=cell)
     else:
-        return "Please enter a question behind %bob"
+        result = "Please enter a question behind %bob"
+
+    from IPython.display import display, Markdown, Latex
+    display(Markdown(result))
 
 
 
