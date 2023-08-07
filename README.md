@@ -7,7 +7,8 @@ Trailer:
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia_bob_trailer.gif)
 
-Note: Bob is currently in an early alpha stage. It is not very smart yet. Feedback is very welcome!
+Note: Bob is currently in an early alpha stage. It is not very smart yet and only knows some basic image processing algorithms. 
+Feedback and contributions are very welcome!
 
 ## Usage
 
