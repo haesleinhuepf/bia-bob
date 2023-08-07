@@ -11,11 +11,38 @@ Note: Bob is currently in an early alpha stage. It is not very smart yet. Feedba
 
 ## Usage
 
-Detailed examples of how to interact with Bob are given in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
+Detailed examples of how to interact with Bob are given in these notebooks:
+* [Basic usage](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
+* [Accessing variables](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/globals.ipynb)
+* [Image Filtering](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/image_filtering.ipynb)
+* [Browsing folders](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/browsing_folders.ipynb)
+* [Interactive image stack viewing](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/interactive_stackview.ipynb)
 
+You can initialize Bob like this:
 ```
 from bia_bob import bob
 ```
+
+In case you want it to be aware of all your variables, call this addtionally:
+```
+bob.initialize(globals())
+```
+
+Afterwards, you can ask Bob questions like this:
+```
+%bob Load blobs.tif and show it
+```
+
+Or like this:
+```
+%%bob
+Please load the image blobs.tif,
+segment bright objects in it, 
+count them and 
+show the segmentation result.
+```
+
+## Example gallery
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show.png)
 
@@ -24,6 +51,8 @@ from bia_bob import bob
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/chain_workflows.png)
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/count_blobs.png)
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/edge_detection.png)
 
 ## Known issues
 
