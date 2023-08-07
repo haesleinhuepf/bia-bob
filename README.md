@@ -18,6 +18,7 @@ Detailed examples of how to interact with Bob are given in these notebooks:
 * [Image Filtering](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/image_filtering.ipynb)
 * [Choosing image segmentation algorithms](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/segmentation_algorithms.ipynb)
 * [Asking Bob what it does](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/asking_bob_what_it_does.ipynb)
+* [Listing tools](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/listing_tools.ipynb)
 * [Browsing folders](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/browsing_folders.ipynb)
 * [Interactive image stack viewing](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/interactive_stackview.ipynb)
 
