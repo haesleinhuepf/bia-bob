@@ -86,14 +86,32 @@ def morphological_gradient(image_name):
 @_context.tools.append
 @tool
 def segment_bright_objects(image_name):
-    """Useful for segmenting bright objects in an image that has been loaded and stored before."""
+    """Useful for segmenting bright objects in an image that has been loaded and stored before using the Voronoi-Otsu-Labeling algorithm."""
     from napari_segment_blobs_and_things_with_membranes import voronoi_otsu_labeling
 
     if _context.verbose:
-        print("segmenting", image_name)
+        print("segmenting (voronoi_otsu_labeling)", image_name)
 
     image = find_image(_context.variables, image_name)
     label_image = voronoi_otsu_labeling(image, spot_sigma=4)
+
+    label_image_name = "segmented_" + image_name
+    _context.variables[make_variable_name(label_image_name)] = label_image
+
+    return "The segmented image has been stored as " + label_image_name
+
+
+@_context.tools.append
+@tool
+def segment_dark_objects_with_bright_borders(image_name):
+    """Useful for segmenting dark objects with bright borders in an image that has been loaded and stored before using the Local-Minima-Seeded-Watershed algorithm. This might be good for segmenting cells in case membranes are in the image."""
+    from napari_segment_blobs_and_things_with_membranes import local_minima_seeded_watershed
+
+    if _context.verbose:
+        print("segmenting (local_minima_seeded_watershed)", image_name)
+
+    image = find_image(_context.variables, image_name)
+    label_image = local_minima_seeded_watershed(image, spot_sigma=10)
 
     label_image_name = "segmented_" + image_name
     _context.variables[make_variable_name(label_image_name)] = label_image

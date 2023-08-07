@@ -15,6 +15,7 @@ Detailed examples of how to interact with Bob are given in these notebooks:
 * [Basic usage](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
 * [Accessing variables](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/globals.ipynb)
 * [Image Filtering](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/image_filtering.ipynb)
+* [Choosing image segmentation algorithms](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/segmentation_algorithms.ipynb)
 * [Browsing folders](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/browsing_folders.ipynb)
 * [Interactive image stack viewing](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/interactive_stackview.ipynb)
 
