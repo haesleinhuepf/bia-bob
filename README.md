@@ -23,7 +23,7 @@ You can initialize Bob like this:
 from bia_bob import bob
 ```
 
-In case you want it to be aware of all your variables, call this addtionally:
+In case you want it to be aware of all your variables, call this additionally:
 ```
 bob.initialize(globals())
 ```
