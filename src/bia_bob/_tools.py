@@ -46,6 +46,23 @@ def gaussian_blur(image_name):
     return "The denoised image has been stored as " + denoised_image_name
 
 
+@_context.tools.append
+@tool
+def median_filter(image_name):
+    """Useful for removing noise from an image using a simple method: the Gaussian blur."""
+    from napari_segment_blobs_and_things_with_membranes import median_filter as nsbatwm_median_filter
+
+    if _context.verbose:
+        print("denoising (Median filter)", image_name)
+
+    image = find_image(_context.variables, image_name)
+    denoised_image = nsbatwm_median_filter(image, radius=1)
+
+    denoised_image_name = make_variable_name("denoised_" + image_name)
+    _context.variables[denoised_image_name] = denoised_image
+
+    return "The denoised image has been stored as " + denoised_image_name
+
 
 @_context.tools.append
 @tool
@@ -219,3 +236,6 @@ def list_files_in_folder(folder):
     import os
 
     return "The files in the folder are " + ",".join(os.listdir(folder))
+
+
+
