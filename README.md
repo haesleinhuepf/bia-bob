@@ -33,11 +33,6 @@ Afterwards, you can ask Bob questions like this:
 %bob Load blobs.tif and show it
 ```
 
-You can also ask Bob about available tools:
-```
-%bob list tools
-```
-
 Or like this:
 ```
 %%bob
@@ -45,6 +40,12 @@ Please load the image blobs.tif,
 segment bright objects in it, 
 count them and 
 show the segmentation result.
+```
+
+
+You can also ask Bob about available tools:
+```
+%bob list tools
 ```
 
 ## Example gallery
@@ -64,7 +65,7 @@ show the segmentation result.
 If you want to ask Bob a question, you need to put a space before the `?`.
 
 ```
-What do you know about blobs.gif?
+What do you know about blobs.gif ?
 ```
 
 ## Installation
