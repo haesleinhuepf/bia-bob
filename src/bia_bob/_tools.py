@@ -93,6 +93,45 @@ def slice(image_name):
     else:
         return f"The image {image_name} cannot be sliced."
 
+
+
+@_context.tools.append
+@tool
+def picker(image_name):
+    """Useful for interactively inspecting images and picking pixel intensities."""
+    import stackview
+    from IPython.core.display_functions import display
+
+    image = find_image(_context.variables, image_name)
+
+    if _context.verbose:
+        print("stackview.slice", image_name)
+
+    if len(image.shape) == 3:
+        display(stackview.picker(image))
+        return f"The image {image_name} has {image.shape[0]} slices."
+    else:
+        return f"The image {image_name} cannot be sliced."
+
+
+@_context.tools.append
+@tool
+def orthogonal(image_name):
+    """Useful for interactively inspecting 3D image stacks using orthogonal views."""
+    import stackview
+    from IPython.core.display_functions import display
+
+    image = find_image(_context.variables, image_name)
+
+    if _context.verbose:
+        print("stackview.slice", image_name)
+
+    if len(image.shape) == 3:
+        display(stackview.orthogonal(image))
+        return f"The image {image_name} has {image.shape[0]} slices."
+    else:
+        return f"The image {image_name} cannot be sliced."
+
 @_context.tools.append
 @tool
 def list_tools(text):
