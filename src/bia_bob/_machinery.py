@@ -28,7 +28,7 @@ def bob(line: str = None, cell: str = None):
     elif cell:
         return _context.agent.run(input=cell)
     else:
-        return "Please enter a question behind %ba"
+        return "Please enter a question behind %bob"
 
 
 
