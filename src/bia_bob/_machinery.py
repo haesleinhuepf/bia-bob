@@ -42,17 +42,23 @@ def init_assistant(variables, temperature=0):
     from langchain.chat_models import ChatOpenAI
     from langchain.agents import initialize_agent
     from langchain.agents import AgentType
+    from langchain.prompts import MessagesPlaceholder
 
     if len(_context.tools) == 0:
         from ._tools import load_image
 
+    chat_history = MessagesPlaceholder(variable_name="chat_history")
     _context.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     _context.llm = ChatOpenAI(temperature=temperature)
     _context.agent = initialize_agent(
         _context.tools,
         _context.llm,
         agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-        memory=_context.memory
+        memory=_context.memory,
+        agent_kwargs = {
+            "memory_prompts": [chat_history],
+            "input_variables": ["input", "agent_scratchpad", "chat_history"]
+        }
     )
 
     _context.variables = variables
