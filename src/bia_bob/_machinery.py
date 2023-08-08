@@ -1,6 +1,7 @@
 class _context():
     tools = []
     llm = None
+    chat_agent = None
     agent = None
     variables = None
     verbose = False
@@ -34,7 +35,6 @@ def bob(line: str = None, cell: str = None):
     display(Markdown(result))
 
 
-
 def init_assistant(variables, temperature=0):
     if _context.verbose:
         print("Initializing assistant")
@@ -47,14 +47,31 @@ def init_assistant(variables, temperature=0):
         from ._tools import load_image
 
     _context.memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-    _context.llm = ChatOpenAI(temperature=temperature)
-    _context.agent = initialize_agent(
-        _context.tools,
-        _context.llm,
-        agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
-        memory=_context.memory
+
+    # set up the prompt
+    prefix = """Have a conversation with a human, answering the following questions as best you can. You have access to the following tools:"""
+    suffix = """Begin!"
+
+    {chat_history}
+    Question: {input}
+    {agent_scratchpad}"""
+
+    prompt = StructuredChatAgent.create_prompt(
+        tools,
+        prefix=prefix,
+        suffix=suffix,
+        input_variables=["input", "chat_history", "agent_scratchpad"],
+    )
+    memory = ConversationBufferMemory(memory_key="chat_history")
+
+    # make the agent executor
+    _context.llm = LLMChain(llm=OpenAI(temperature=0), prompt=prompt)
+    _context.chat_agent = StructuredChatAgent(llm_chain=llm_chain, tools=tools, verbose=True)
+    _context.agent = AgentExecutor.from_agent_and_tools(
+        agent=agent, tools=tools, verbose=True, memory=memory
     )
 
+    # store the variables
     _context.variables = variables
 
 
