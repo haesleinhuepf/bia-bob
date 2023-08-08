@@ -23,7 +23,7 @@ def bob(line: str = None, cell: str = None):
 
     if line and cell:
         result = _context.agent.run(input=line + "\n" + cell)
-    if line:
+    elif line:
         result = _context.agent.run(input=line)
     elif cell:
         result = _context.agent.run(input=cell)
