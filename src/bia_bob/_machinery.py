@@ -51,7 +51,7 @@ def init_assistant(variables, temperature=0):
     _context.agent = initialize_agent(
         _context.tools,
         _context.llm,
-        agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+        agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
         memory=_context.memory
     )
 
