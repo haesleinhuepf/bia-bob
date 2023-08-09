@@ -22,6 +22,7 @@ Detailed examples of how to interact with Bob are given in these notebooks:
 * [Browsing folders](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/browsing_folders.ipynb)
 * [Interactive image stack viewing](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/interactive_stackview.ipynb)
 * [For developers](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/for_developers.ipynb)
+* [Extensibility](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/extensibility.ipynb)
 
 You can initialize Bob like this:
 ```

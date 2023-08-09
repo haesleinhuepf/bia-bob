@@ -77,3 +77,20 @@ def init_assistant(variables, temperature=0):
 
 
 init_assistant(globals())
+
+def add_function_tool(callable):
+    """
+    Adds a function tool to the agent.
+
+    The given callable must have parameters of type string, int and float.
+    It must have a docstring that describes the function, ideally explaining what the function is useful for using
+    terms from the target audience.
+
+    After calling this function, the agent is re-initialized.
+    """
+    from langchain.tools import StructuredTool
+
+    _context.tools.append(StructuredTool.from_function(callable))
+
+    if _context.agent is not None:
+        init_assistant(_context.variables)
