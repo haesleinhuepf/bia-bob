@@ -57,6 +57,8 @@ You can also ask Bob about available tools:
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show.png)
 
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/curtain.png)
+
 ![img_1.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/slice.png)
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/chain_workflows.png)

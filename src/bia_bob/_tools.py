@@ -215,13 +215,32 @@ def orthogonal(image_name: str):
     image = find_image(_context.variables, image_name)
 
     if _context.verbose:
-        print("stackview.slice", image_name)
+        print("stackview.orthogonal", image_name)
 
     if len(image.shape) == 3:
         display(stackview.orthogonal(image))
         return f"The image {image_name} has {image.shape[0]} slices."
     else:
         return f"The image {image_name} cannot be sliced."
+
+
+@_context.tools.append
+@tool
+def curtain(image1_name: str, image2_name: str, zoom_factor: float = 1.0):
+    """Useful for blending one image over another using an interactive curtain."""
+    import stackview
+    from IPython.core.display_functions import display
+
+    image1 = find_image(_context.variables, image1_name)
+    image2 = find_image(_context.variables, image2_name)
+
+    if _context.verbose:
+        print("stackview.curtain", image1_name, image2_name)
+
+    display(stackview.curtain(image1, image2, zoom_factor=zoom_factor))
+    return f"The images {image1_name} and {image2_name} can now be blended over each other using a curtain."
+
+
 
 @_context.tools.append
 @tool
