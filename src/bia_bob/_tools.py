@@ -242,7 +242,7 @@ def list_files_in_folder(folder: str):
 
 @_context.tools.append
 @StructuredTool.from_function
-def multiply_image(image_name: str, factor: int):
+def multiply_image_with_factor(image_name: str, factor: int):
     """Useful for multiplying the pixel values in an image by an integer value and showing the result"""
 
     if _context.verbose:
