@@ -14,8 +14,9 @@ def load_image(filename: str):
     if _context.verbose:
         print("loading image", filename)
     image = imread(filename)
-    _context.variables[make_variable_name(filename)] = image
-    return "The image is now stored as " + filename
+    variable_name = make_variable_name(filename)
+    _context.variables[variable_name] = image
+    return "The image is now stored as " + variable_name
 
 
 @_context.tools.append
@@ -27,8 +28,10 @@ def load_csv(filename: str):
     if _context.verbose:
         print("loading csv", filename)
     df = read_csv(filename)
-    _context.variables[make_variable_name(filename)] = df
-    return "The csv file is now stored as " + filename
+
+    variable_name = make_variable_name(filename)
+    _context.variables[variable_name] = df
+    return "The csv file is now stored as " + variable_name
 
 
 

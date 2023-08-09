@@ -3,6 +3,7 @@ def make_variable_name(name: str) -> str:
     name = name.replace("/", "_")
     name = name.replace("\\", "_")
     name = name.replace(" ", "_")
+    name = name.replace(".", "_")
 
     while name.startswith("_"):
         name = name[1:]
