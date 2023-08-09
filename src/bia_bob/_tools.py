@@ -240,4 +240,21 @@ def list_files_in_folder(folder: str):
     return "The files in the folder are " + ",".join(os.listdir(folder))
 
 
+@_context.tools.append
+@StructuredTool.from_function
+def multiply_image(image_name: str, factor: int):
+    """Useful for multiplying the pixel values in an image by an integer value and showing the result"""
+
+    if _context.verbose:
+        print(f"multiplying {image_name} by {factor}")
+    factor = int(factor)
+    image = find_image(_context.variables, image_name)
+    result = image * factor
+
+    result_filename = f"multiplied_{image_name}"
+    _context.variables[result_filename] = result
+
+    return f"The result is now stored as {result_filename}."
+
+
 

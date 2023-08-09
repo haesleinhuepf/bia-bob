@@ -37,7 +37,6 @@ def bob(line: str = None, cell: str = None):
 def init_assistant(variables, temperature=0):
     if _context.verbose:
         print("Initializing assistant")
-    from langchain import OpenAI, LLMChain
     from langchain.chat_models import ChatOpenAI
     from langchain.memory import ConversationBufferMemory
     from langchain.agents import StructuredChatAgent, AgentExecutor, OpenAIFunctionsAgent, initialize_agent, AgentType
