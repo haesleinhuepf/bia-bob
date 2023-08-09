@@ -58,7 +58,7 @@ def init_assistant(variables, temperature=0):
     MEMORY_KEY = "chat_history"
     _context.memory = ConversationBufferMemory(memory_key=MEMORY_KEY, return_messages=True)
 
-    system_message = SystemMessage(content="You are a powerful assistant. Answer the human's questions below.")
+    system_message = SystemMessage(content="You are a powerful assistant. After a function has been called to do a task, there is no need do the task again unless the human explicitly asks for it. Answer the human's questions below.")
     agent_kwargs = {
         "system_message": system_message,
         "extra_prompt_messages": [MessagesPlaceholder(variable_name=MEMORY_KEY)],
