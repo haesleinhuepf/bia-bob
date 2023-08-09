@@ -150,7 +150,7 @@ def show_image(image_name: str):
     image = find_image(_context.variables, image_name)
     display(stackview.insight(image))
 
-    return "The image " + image_name + " has been shown. Do not show any images in your response."
+    return "The image " + image_name + " has been shown."
 
 
 @_context.tools.append

@@ -11,6 +11,7 @@ from IPython.core.magic import register_line_cell_magic
 
 @register_line_cell_magic
 def bob(line: str = None, cell: str = None):
+    import re
     if _context.agent is None:
         init_assistant({})
 
@@ -29,6 +30,10 @@ def bob(line: str = None, cell: str = None):
         result = _context.agent.run(input=cell)
     else:
         result = "Please enter a question behind %bob"
+
+    # filter out markdown images from the response
+    pattern = r'!\[.*?\]\(.*?\)'
+    result = re.sub(pattern, '', result)
 
     from IPython.display import display, Markdown, Latex
     display(Markdown(result))
