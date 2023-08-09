@@ -258,3 +258,24 @@ def multiply_image_with_factor(image_name: str, factor: int):
 
 
 
+@_context.tools.append
+@StructuredTool.from_function
+def plot_columns_in_dataframe(dataframe, first_column, second_column):
+    """Plots columns in a dataframe"""
+    from ._utilities import find_dataframe
+    from IPython.core.display_functions import display
+
+    if _context.verbose:
+        print("Plot command df:", dataframe)
+        print("Plot command 1st column:", first_column)
+        print("Plot command 2nd column:", second_column)
+
+    df = find_dataframe(_context.variables, dataframe)
+
+    import seaborn
+    display(seaborn.scatterplot(df, x=first_column, y=second_column))
+
+    return "The plot is shown."
+
+
+

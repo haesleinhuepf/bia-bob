@@ -28,6 +28,19 @@ def is_image(potential_image):
 
 
 def find_image(variables, key):
+    return find_variable(variables, key, is_image)
+
+
+def is_dataframe(potential_dataframe):
+    import pandas as pd
+    return isinstance(potential_dataframe, pd.DataFrame)
+
+
+def find_dataframe(variables, key):
+    return find_variable(variables, key, is_dataframe)
+
+
+def find_variable(variables, key, type_checker_function):
     from ._machinery import _context
     if key in variables.keys():
         return variables[key]
@@ -36,7 +49,7 @@ def find_image(variables, key):
     if other_name in variables.keys():
         return variables[other_name]
 
-    other_name = find_best_fit([v for v in variables.keys() if is_image(variables[v])], key)
+    other_name = find_best_fit([v for v in variables.keys() if type_checker_function(variables[v])], key)
     if _context.verbose:
         print("Searching for variable named ", other_name)
     return variables[other_name]
