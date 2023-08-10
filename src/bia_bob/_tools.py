@@ -1,4 +1,4 @@
-from langchain.tools import tool
+from langchain.tools import StructuredTool, tool
 from ._machinery import _context
 from ._utilities import make_variable_name, find_image
 
@@ -30,7 +30,7 @@ def image_size(filename: str):
 
 @_context.tools.append
 @tool
-def gaussian_blur(image_name):
+def gaussian_blur(image_name: str):
     """Useful for removing noise from an image using a simple method: the Gaussian blur."""
     from skimage.filters import gaussian
 
@@ -48,7 +48,7 @@ def gaussian_blur(image_name):
 
 @_context.tools.append
 @tool
-def median_filter(image_name):
+def median_filter(image_name: str):
     """Useful for removing noise from an image using a simple method: the Gaussian blur."""
     from napari_segment_blobs_and_things_with_membranes import median_filter as nsbatwm_median_filter
 
@@ -66,7 +66,7 @@ def median_filter(image_name):
 
 @_context.tools.append
 @tool
-def top_hat(image_name):
+def top_hat(image_name: str):
     """Useful for removing background from an image using a simple method: the Top-Hat filter."""
     from napari_segment_blobs_and_things_with_membranes import white_tophat
 
@@ -84,7 +84,7 @@ def top_hat(image_name):
 
 @_context.tools.append
 @tool
-def morphological_gradient(image_name):
+def morphological_gradient(image_name: str):
     """Useful for enhancing edges in image using a simple method: the Morphological Gradient filter."""
     from napari_segment_blobs_and_things_with_membranes import morphological_gradient as nsbatwm_morphological_gradient
 
@@ -102,7 +102,7 @@ def morphological_gradient(image_name):
 
 @_context.tools.append
 @tool
-def segment_bright_objects(image_name):
+def segment_bright_objects(image_name: str):
     """Useful for segmenting bright objects in an image that has been loaded and stored before using the Voronoi-Otsu-Labeling algorithm."""
     from napari_segment_blobs_and_things_with_membranes import voronoi_otsu_labeling
 
@@ -120,7 +120,7 @@ def segment_bright_objects(image_name):
 
 @_context.tools.append
 @tool
-def segment_dark_objects_with_bright_borders(image_name):
+def segment_dark_objects_with_bright_borders(image_name: str):
     """Useful for segmenting dark objects with bright borders in an image that has been loaded and stored before using the Local-Minima-Seeded-Watershed algorithm. This might be good for segmenting cells in case membranes are in the image."""
     from napari_segment_blobs_and_things_with_membranes import local_minima_seeded_watershed
 
@@ -138,8 +138,9 @@ def segment_dark_objects_with_bright_borders(image_name):
 
 @_context.tools.append
 @tool
-def show_image(image_name):
-    """Useful for showing an image that has been loaded and stored before."""
+def show_image(image_name: str):
+    """Useful for showing an image that has been loaded and stored before.
+    """
     import stackview
     from IPython.core.display_functions import display
 
@@ -149,12 +150,12 @@ def show_image(image_name):
     image = find_image(_context.variables, image_name)
     display(stackview.insight(image))
 
-    return "The image " + image_name + " is shown above."
+    return "The image " + image_name + " has been shown."
 
 
 @_context.tools.append
 @tool
-def count_objects(image_name):
+def count_objects(image_name: str):
     """Useful for counting objects in a segmented image that has been loaded and stored before."""
     label_image = find_image(_context.variables, image_name)
 
@@ -167,7 +168,7 @@ def count_objects(image_name):
 
 @_context.tools.append
 @tool
-def slice(image_name):
+def slice(image_name: str):
     """Useful for slicing a 3d image and going through its slices interactively."""
     import stackview
     from IPython.core.display_functions import display
@@ -187,7 +188,7 @@ def slice(image_name):
 
 @_context.tools.append
 @tool
-def picker(image_name):
+def picker(image_name: str):
     """Useful for interactively inspecting images and picking pixel intensities."""
     import stackview
     from IPython.core.display_functions import display
@@ -206,7 +207,7 @@ def picker(image_name):
 
 @_context.tools.append
 @tool
-def orthogonal(image_name):
+def orthogonal(image_name: str):
     """Useful for interactively inspecting 3D image stacks using orthogonal views."""
     import stackview
     from IPython.core.display_functions import display
@@ -214,7 +215,7 @@ def orthogonal(image_name):
     image = find_image(_context.variables, image_name)
 
     if _context.verbose:
-        print("stackview.slice", image_name)
+        print("stackview.orthogonal", image_name)
 
     if len(image.shape) == 3:
         display(stackview.orthogonal(image))
@@ -222,20 +223,57 @@ def orthogonal(image_name):
     else:
         return f"The image {image_name} cannot be sliced."
 
+
 @_context.tools.append
 @tool
-def list_tools(text):
+def curtain(image1_name: str, image2_name: str, zoom_factor: float = 1.0):
+    """Useful for blending one image over another using an interactive curtain."""
+    import stackview
+    from IPython.core.display_functions import display
+
+    image1 = find_image(_context.variables, image1_name)
+    image2 = find_image(_context.variables, image2_name)
+
+    if _context.verbose:
+        print("stackview.curtain", image1_name, image2_name)
+
+    display(stackview.curtain(image1, image2, zoom_factor=zoom_factor))
+    return f"The images {image1_name} and {image2_name} can now be blended over each other using a curtain."
+
+
+
+@_context.tools.append
+@tool
+def list_tools(text: str):
     """Lists all available tools"""
 
     return "\n".join(list([t.name for t in _context.tools]))
 
 @_context.tools.append
 @tool
-def list_files_in_folder(folder):
+def list_files_in_folder(folder: str):
     """Lists all files in a folder"""
     import os
-
+    if not os.path.isdir(folder):
+        return f"{folder} does not exist."
     return "The files in the folder are " + ",".join(os.listdir(folder))
+
+
+@_context.tools.append
+@StructuredTool.from_function
+def multiply_image_with_factor(image_name: str, factor: int):
+    """Useful for multiplying the pixel values in an image by an integer value and showing the result"""
+
+    if _context.verbose:
+        print(f"multiplying {image_name} by {factor}")
+    factor = int(factor)
+    image = find_image(_context.variables, image_name)
+    result = image * factor
+
+    result_filename = f"multiplied_{image_name}"
+    _context.variables[result_filename] = result
+
+    return f"The result is now stored as {result_filename}."
 
 
 
