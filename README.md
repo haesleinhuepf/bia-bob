@@ -12,18 +12,6 @@ Feedback and contributions are very welcome!
 
 ## Usage
 
-Detailed examples of how to interact with Bob are given in these notebooks:
-* [Basic usage](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
-* [Accessing variables](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/globals.ipynb)
-* [Image Filtering](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/image_filtering.ipynb)
-* [Choosing image segmentation algorithms](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/segmentation_algorithms.ipynb)
-* [Asking Bob what it does](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/asking_bob_what_it_does.ipynb)
-* [Listing tools](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/listing_tools.ipynb)
-* [Browsing folders](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/browsing_folders.ipynb)
-* [Interactive image stack viewing](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/interactive_stackview.ipynb)
-* [For developers](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/for_developers.ipynb)
-* [Extensibility](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/extensibility.ipynb)
-
 You can initialize Bob like this:
 ```
 from bia_bob import bob
@@ -48,11 +36,23 @@ count them and
 show the segmentation result.
 ```
 
-
 You can also ask Bob about available tools:
 ```
 %bob list tools
 ```
+
+Detailed examples of how to interact with Bob are given in these notebooks:
+* [Basic usage](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
+* [Complete Bio-image Analysis Workflow](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/complete_workflow.ipynb)
+* [Accessing variables](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/globals.ipynb)
+* [Image Filtering](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/image_filtering.ipynb)
+* [Choosing image segmentation algorithms](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/segmentation_algorithms.ipynb)
+* [Asking Bob what it does](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/asking_bob_what_it_does.ipynb)
+* [Listing tools](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/listing_tools.ipynb)
+* [Browsing folders](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/browsing_folders.ipynb)
+* [Interactive image stack viewing](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/interactive_stackview.ipynb)
+* [For developers](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/for_developers.ipynb)
+* [Extensibility](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/extensibility.ipynb)
 
 ## Example gallery
 
