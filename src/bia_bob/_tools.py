@@ -8,14 +8,31 @@ if _context.verbose:
 @_context.tools.append
 @tool
 def load_image(filename: str):
-    """Useful for loading and image file and storing it under a given variable name."""
+    """Useful for loading an image file and storing it under a given variable name."""
     from skimage.io import imread
 
     if _context.verbose:
-        print("loading", filename)
+        print("loading image", filename)
     image = imread(filename)
-    _context.variables[make_variable_name(filename)] = image
-    return "The image is now stored as " + filename
+    variable_name = make_variable_name(filename)
+    _context.variables[variable_name] = image
+    return "The image is now stored as " + variable_name
+
+
+@_context.tools.append
+@tool
+def load_csv(filename: str):
+    """Useful for loading a csv file and storing its as pandas DataFrame under a given variable name."""
+    from pandas import read_csv
+
+    if _context.verbose:
+        print("loading csv", filename)
+    df = read_csv(filename)
+
+    variable_name = make_variable_name(filename)
+    _context.variables[variable_name] = df
+    return "The csv file is now stored as " + variable_name
+
 
 
 @_context.tools.append
@@ -244,10 +261,33 @@ def curtain(image1_name: str, image2_name: str, zoom_factor: float = 1.0):
 
 @_context.tools.append
 @tool
-def list_tools(text: str):
+def list_tools():
     """Lists all available tools"""
 
     return "\n".join(list([t.name for t in _context.tools]))
+
+
+
+@_context.tools.append
+@tool
+def list_dataframes():
+    """Lists all available dataframes"""
+    from ._utilities import is_dataframe
+
+    return "\n".join(list([v for v in _context.variables.keys() if is_dataframe(_context.variables[v])]))
+
+
+@_context.tools.append
+@tool
+def list_images():
+    """Lists all available images"""
+    from ._utilities import is_image
+
+    return "\n".join(list([v for v in _context.variables.keys() if is_image(_context.variables[v])]))
+
+
+
+
 
 @_context.tools.append
 @tool
@@ -274,6 +314,77 @@ def multiply_image_with_factor(image_name: str, factor: int):
     _context.variables[result_filename] = result
 
     return f"The result is now stored as {result_filename}."
+
+
+@_context.tools.append
+@StructuredTool.from_function
+def extract_features(intensity_image_name:str, label_image_name:str,  size : bool = False, intensity : bool = False, perimeter : bool = False, shape : bool = False, position : bool = False, moments : bool = False) -> str:
+    """Useful for extracting features from a label image and an intensity image."""
+    from napari_skimage_regionprops import regionprops_table
+
+    if _context.verbose:
+        print(f"Extracting features (size={size}, intensity={intensity}, perimeter={perimeter}, shape={shape}, position={position}, moments={moments}) from intensity image {intensity_image_name} and label image {label_image_name}.")
+
+    intensity_image = find_image(_context.variables, intensity_image_name)
+    label_image = find_image(_context.variables, label_image_name)
+
+    df = regionprops_table(intensity_image, label_image, size=size, intensity=intensity, perimeter=perimeter, shape=shape, position=position, moments=moments)
+
+    result_df_name = make_variable_name(f"extracted_features_{label_image_name}_{intensity_image_name}")
+    _context.variables[result_df_name] = df
+
+    return f"The resulting dataframe is stored as '{result_df_name}'"
+
+
+@_context.tools.append
+@StructuredTool.from_function
+def show_dataframe(dataframe_name):
+    """Useful for showing a dataframe that has been stored before."""
+    from IPython.core.display_functions import display
+    from ._utilities import find_dataframe
+
+    if _context.verbose:
+        print("Showing dataframe", dataframe_name)
+
+    df = find_dataframe(_context.variables, dataframe_name)
+
+    display(df)
+
+    return f"The dataframe {dataframe_name} has been shown."
+
+
+@_context.tools.append
+@StructuredTool.from_function
+def list_columns_of_dataframe(dataframe_name):
+    """Useful for listing the columns of a dataframe that has been stored before."""
+    from ._utilities import find_dataframe
+
+    if _context.verbose:
+        print("Listing columns of dataframe", dataframe_name)
+
+    df = find_dataframe(_context.variables, dataframe_name)
+
+    return f"The dataframe has the columns {list(df.columns)}."
+
+
+@_context.tools.append
+@StructuredTool.from_function
+def plot_columns_in_dataframe(dataframe, first_column, second_column):
+    """Plots columns in a dataframe"""
+    from ._utilities import find_dataframe
+    from IPython.core.display_functions import display
+
+    if _context.verbose:
+        print("Plot command df:", dataframe)
+        print("Plot command 1st column:", first_column)
+        print("Plot command 2nd column:", second_column)
+
+    df = find_dataframe(_context.variables, dataframe)
+
+    import seaborn
+    display(seaborn.scatterplot(df, x=first_column, y=second_column))
+
+    return "The plot is shown."
 
 
 
