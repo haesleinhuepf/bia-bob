@@ -11,7 +11,7 @@ from IPython.core.magic import register_line_cell_magic
 
 @register_line_cell_magic
 def bob(line: str = None, cell: str = None):
-    import re
+    from IPython.display import display, Markdown
     if _context.agent is None:
         init_assistant({})
 
@@ -23,19 +23,21 @@ def bob(line: str = None, cell: str = None):
         print("Variables:", len(_context.variables.keys()))
 
     if line and cell:
-        result = _context.agent.run(input=line + "\n" + cell)
+        prompt = line + "\n" + cell
     elif line:
-        result = _context.agent.run(input=line)
+        prompt = line
     elif cell:
-        result = _context.agent.run(input=cell)
+        prompt = cell
     else:
-        result = "Please enter a question behind %bob"
+        display("Please enter a question behind %bob")
+        return ""
 
-    # filter out markdown images from the response
-    pattern = r'!\[.*?\]\(.*?\)'
-    result = re.sub(pattern, '', result)
+    # why? https://github.com/haesleinhuepf/bia-bob/issues/13
+    if not prompt.strip().endswith("?"):
+        prompt = prompt + "\nSummarize the answers in maximum two sentences."
 
-    from IPython.display import display, Markdown, Latex
+    result = _context.agent.run(input=prompt)
+
     display(Markdown(result))
 
 
@@ -61,12 +63,11 @@ def init_assistant(variables, temperature=0):
     system_message = SystemMessage(content="""
     You never produce sample data.
     You never print out dataframes.
-    Do not answer questions that are not asked.
     Answer the human's questions below and keep your answers short.
     """)
     agent_kwargs = {
         "system_message": system_message,
-        "extra_prompt_messages": [MessagesPlaceholder(variable_name=MEMORY_KEY)],
+        "extra_prompt_messages": [MessagesPlaceholder(variable_name=MEMORY_KEY)]
     }
     _context.agent = initialize_agent(
         _context.tools,
