@@ -43,6 +43,7 @@ You can also ask Bob about available tools:
 
 Detailed examples of how to interact with Bob are given in these notebooks:
 * [Basic usage](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
+* [Speech recognition](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/speech_recognition.ipynb)
 * [Complete Bio-image Analysis Workflow](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/complete_workflow.ipynb)
 * [Accessing variables](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/globals.ipynb)
 * [Image Filtering](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/image_filtering.ipynb)
