@@ -3,6 +3,7 @@ class _context():
     llm = None
     agent = None
     variables = None
+    voice = None
     verbose = False
 
 
@@ -39,6 +40,9 @@ def bob(line: str = None, cell: str = None):
     result = _context.agent.run(input=prompt)
 
     display(Markdown(result))
+    if _context.voice:
+        from ._speak import _speak_out
+        _speak_out(result)
 
 
 def init_assistant(variables, temperature=0):
