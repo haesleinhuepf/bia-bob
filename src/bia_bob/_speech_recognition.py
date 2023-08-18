@@ -1,15 +1,28 @@
-def _listen():
+def _listen(until_bye_bye=False):
     """
     Activate the microphone and listen to the user.
     The passed command is then executed.
+
+    If until_bye_bye is True, the discussion is continued until the user says "bye bye".
     """
-    result = _listen_to_microphone()
-    if result:
-        print("You said:", result)
 
-        from ._machinery import bob
-        bob(result)
+    while True:
+        result = _listen_to_microphone()
+        if result:
+            print("You said:", result)
 
+
+            from ._machinery import bob
+            bob(result)
+
+            if result.lower().strip() in ["bye bye", "bye-bye", "bye", "goodbye", "good bye", "good-bye", "see you later", "see you", "stop", "quit", "halt"]:
+                return
+
+        else:
+            return
+
+        if not until_bye_bye:
+            return
 
 def _listen_to_microphone():
     """Recognizes speech from microphone and return it as string"""
