@@ -446,3 +446,23 @@ def histogram_of_image(image_name:str):
 
     return "The histogram is shown."
 
+
+@_context.tools.append
+@StructuredTool.from_function
+def correlation_matrix(dataframe:str):
+    """Useful for drawing a correlation matrix of columns in a dataframe."""
+    from ._utilities import find_dataframe
+    from IPython.core.display_functions import display
+    import seaborn
+
+    if _context.verbose:
+        print("Plot command df:", dataframe)
+
+    df = find_dataframe(_context.variables, dataframe)
+
+
+    corr = df.corr()
+
+    display(seaborn.heatmap(corr, annot=False, cmap="coolwarm", vmin=-1, vmax=1))
+    return "The correlation matrix is shown."
+
