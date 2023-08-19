@@ -47,7 +47,7 @@ def image_size(filename: str):
 
 @_context.tools.append
 @tool
-def gaussian_blur(image_name: str):
+def gaussian_blur(image_name: str, sigma: float = 1):
     """Useful for removing noise from an image using a simple method: the Gaussian blur."""
     from skimage.filters import gaussian
 
@@ -55,7 +55,7 @@ def gaussian_blur(image_name: str):
         print("denoising (Gaussian blur)", image_name)
 
     image = find_image(_context.variables, image_name)
-    denoised_image = gaussian(image, sigma=1)
+    denoised_image = gaussian(image, sigma=sigma)
 
     denoised_image_name = make_variable_name("denoised_" + image_name)
     _context.variables[denoised_image_name] = denoised_image
@@ -65,7 +65,7 @@ def gaussian_blur(image_name: str):
 
 @_context.tools.append
 @tool
-def median_filter(image_name: str):
+def median_filter(image_name: str, radius: int = 1):
     """Useful for removing noise from an image using a simple method: the Gaussian blur."""
     from napari_segment_blobs_and_things_with_membranes import median_filter as nsbatwm_median_filter
 
@@ -73,7 +73,7 @@ def median_filter(image_name: str):
         print("denoising (Median filter)", image_name)
 
     image = find_image(_context.variables, image_name)
-    denoised_image = nsbatwm_median_filter(image, radius=1)
+    denoised_image = nsbatwm_median_filter(image, radius=radius)
 
     denoised_image_name = make_variable_name("denoised_" + image_name)
     _context.variables[denoised_image_name] = denoised_image
@@ -83,7 +83,7 @@ def median_filter(image_name: str):
 
 @_context.tools.append
 @tool
-def top_hat(image_name: str):
+def top_hat(image_name: str, radius: int = 10):
     """Useful for removing background from an image using a simple method: the Top-Hat filter."""
     from napari_segment_blobs_and_things_with_membranes import white_tophat
 
@@ -91,7 +91,7 @@ def top_hat(image_name: str):
         print("remove background (Top-Hat)", image_name)
 
     image = find_image(_context.variables, image_name)
-    background_subtracted_image = white_tophat(image, radius=10)
+    background_subtracted_image = white_tophat(image, radius=radius)
 
     background_subtracted_image_name = make_variable_name("removed_background_" + image_name)
     _context.variables[background_subtracted_image_name] = background_subtracted_image
@@ -101,7 +101,7 @@ def top_hat(image_name: str):
 
 @_context.tools.append
 @tool
-def morphological_gradient(image_name: str):
+def morphological_gradient(image_name: str, radius: int = 1):
     """Useful for enhancing edges in image using a simple method: the Morphological Gradient filter."""
     from napari_segment_blobs_and_things_with_membranes import morphological_gradient as nsbatwm_morphological_gradient
 
@@ -109,7 +109,7 @@ def morphological_gradient(image_name: str):
         print("enhance edges (morphological gradient)", image_name)
 
     image = find_image(_context.variables, image_name)
-    enhanced_edges_image = nsbatwm_morphological_gradient(image, radius=1)
+    enhanced_edges_image = nsbatwm_morphological_gradient(image, radius=radius)
 
     enhanced_edges_image_name = make_variable_name("enhanced_edges_" + image_name)
     _context.variables[enhanced_edges_image_name] = enhanced_edges_image
@@ -119,25 +119,25 @@ def morphological_gradient(image_name: str):
 
 @_context.tools.append
 @tool
-def segment_bright_objects(image_name: str):
+def segment_bright_objects(image_name: str, spot_sigma: float = 4, outline_sigma:float = 2):
     """Useful for segmenting bright objects in an image that has been loaded and stored before using the Voronoi-Otsu-Labeling algorithm."""
     from napari_segment_blobs_and_things_with_membranes import voronoi_otsu_labeling
 
     if _context.verbose:
-        print("segmenting (voronoi_otsu_labeling)", image_name)
+        print("segmenting (voronoi_otsu_labeling)", image_name, "using spot_sigma", spot_sigma, "and outline_sigma", outline_sigma)
 
     image = find_image(_context.variables, image_name)
-    label_image = voronoi_otsu_labeling(image, spot_sigma=4)
+    label_image = voronoi_otsu_labeling(image, spot_sigma=spot_sigma, outline_sigma=outline_sigma)
 
-    label_image_name = "segmented_" + image_name
-    _context.variables[make_variable_name(label_image_name)] = label_image
+    label_image_name = make_variable_name("segmented_" + image_name)
+    _context.variables[label_image_name] = label_image
 
-    return "The segmented image has been stored as " + label_image_name
+    return f"Voronoi-Otsu-Labeling has been applied using spot_sigma {spot_sigma} and outline_sigma={outline_sigma}. The segmented image has been stored as {label_image_name}."
 
 
 @_context.tools.append
 @tool
-def segment_dark_objects_with_bright_borders(image_name: str):
+def segment_dark_objects_with_bright_borders(image_name: str, spot_sigma: float = 4, outline_sigma:float = 0):
     """Useful for segmenting dark objects with bright borders in an image that has been loaded and stored before using the Local-Minima-Seeded-Watershed algorithm. This might be good for segmenting cells in case membranes are in the image."""
     from napari_segment_blobs_and_things_with_membranes import local_minima_seeded_watershed
 
@@ -145,12 +145,12 @@ def segment_dark_objects_with_bright_borders(image_name: str):
         print("segmenting (local_minima_seeded_watershed)", image_name)
 
     image = find_image(_context.variables, image_name)
-    label_image = local_minima_seeded_watershed(image, spot_sigma=10)
+    label_image = local_minima_seeded_watershed(image, spot_sigma=spot_sigma, outline_sigma=outline_sigma)
 
     label_image_name = "segmented_" + image_name
     _context.variables[make_variable_name(label_image_name)] = label_image
 
-    return "The segmented image has been stored as " + label_image_name
+    return f"Local-minima-seeded-watershed has been applied using spot_sigma {spot_sigma} and outline_sigma={outline_sigma}. The segmented image has been stored as {label_image_name}."
 
 
 @_context.tools.append
