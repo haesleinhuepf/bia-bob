@@ -369,8 +369,8 @@ def list_columns_of_dataframe(dataframe_name):
 
 @_context.tools.append
 @StructuredTool.from_function
-def plot_columns_in_dataframe(dataframe, first_column, second_column):
-    """Plots columns in a dataframe"""
+def scatterplot_columns_in_dataframe(dataframe:str, first_column:str, second_column:str):
+    """Useful for drawing a scatterplot of two columns in a dataframe"""
     from ._utilities import find_dataframe
     from IPython.core.display_functions import display
 
@@ -382,9 +382,67 @@ def plot_columns_in_dataframe(dataframe, first_column, second_column):
     df = find_dataframe(_context.variables, dataframe)
 
     import seaborn
-    display(seaborn.scatterplot(df, x=first_column, y=second_column))
+    display(seaborn.jointplot(df, x=first_column, y=second_column))
 
-    return "The plot is shown."
+    return "The scatter plot is shown."
 
 
+@_context.tools.append
+@StructuredTool.from_function
+def pairplot_dataframe(dataframe:str, hue_column:str = None):
+    """Useful for drawing a pariplot of a dataframe."""
+    from ._utilities import find_dataframe
+    from IPython.core.display_functions import display
+
+    if _context.verbose:
+        print("Plot command df:", dataframe)
+        print("Plot command hue_column:", hue_column)
+
+    df = find_dataframe(_context.variables, dataframe)
+
+    import seaborn
+    display(seaborn.pairplot(df, hue=hue_column))
+
+    return "The pairplot is shown."
+
+
+@_context.tools.append
+@StructuredTool.from_function
+def histogram_of_column_in_dataframe(dataframe:str, column:str):
+    """Useful for drawing a histogram of a column in a dataframe."""
+    from ._utilities import find_dataframe
+    from IPython.core.display_functions import display
+
+    if _context.verbose:
+        print("Plot command df:", dataframe)
+        print("Plot command column:", column)
+
+    df = find_dataframe(_context.variables, dataframe)
+
+    import seaborn
+    display(seaborn.histplot(df, x=column))
+
+    return "The histogram is shown."
+
+
+@_context.tools.append
+@StructuredTool.from_function
+def histogram_of_image(image_name:str):
+    """Useful for drawing a histogram of an image."""
+    from ._utilities import find_image
+    import pandas as pd
+    from IPython.core.display_functions import display
+
+    if _context.verbose:
+        print("Histogram of image", image_name)
+
+    image = find_image(_context.variables, image_name)
+
+    column = "intensity"
+    df = pd.DataFrame({column:image.ravel()})
+
+    import seaborn
+    display(seaborn.histplot(df, x=column))
+
+    return "The histogram is shown."
 
