@@ -63,14 +63,19 @@ def list_images():
 
 @_context.tools.append
 @tool
-def generate_and_execute_code(task):
+def generate_and_execute_code(task:str):
     """Useful for generating code for a specific task and executing it."""
 
-    additional_hints= """
+    variables = list(_context.variables.keys())
+
+    additional_hints= f"""
     Write high-quality python code.
     Use image-processing libraries such as scikit-image, scipy, numpy or pyclesperanto_prototype.
     Do not show results, but save them in variables instead.
     Do not provide additional explanations, just Python code.
+    The following variables are available:
+    {variables}
+    
     The code should do the following:
     """
     from ._utilities import generate_code
@@ -81,5 +86,8 @@ def generate_and_execute_code(task):
 
     print("Code:\n", code)
 
+    print("Execution:")
+
     exec(code, _context.variables)
-    
+
+    print("Execution done.")
