@@ -61,4 +61,25 @@ def list_images():
     return "\n".join(list([v for v in _context.variables.keys() if is_image(_context.variables[v])]))
 
 
+@_context.tools.append
+@tool
+def generate_and_execute_code(task):
+    """Useful for generating code for a specific task and executing it."""
 
+    additional_hints= """
+    Write high-quality python code.
+    Use image-processing libraries such as scikit-image, scipy, numpy or pyclesperanto_prototype.
+    Do not show results, but save them in variables instead.
+    Do not provide additional explanations, just Python code.
+    The code should do the following:
+    """
+    from ._utilities import generate_code
+    print("Asking for code like this:\n", additional_hints + task + "\n")
+
+    code = generate_code(additional_hints + task)
+
+
+    print("Code:\n", code)
+
+    exec(code, _context.variables)
+    
