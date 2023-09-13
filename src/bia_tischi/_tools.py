@@ -65,8 +65,17 @@ def list_images():
 @tool
 def generate_and_execute_code(task:str):
     """Useful for generating code for a specific task and executing it."""
-
-    variables = list(_context.variables.keys())
+    # determine useful variables in context
+    variables = []
+    functions = []
+    for k, v in _context.variables.items():
+        if k.startswith("_"):
+            continue
+        if callable(v):
+            if k not in ["quit", "exit"]:
+                functions.append(k)
+            continue
+        variables.append(k)
 
     additional_hints= f"""
     Write high-quality python code.
@@ -75,19 +84,26 @@ def generate_and_execute_code(task:str):
     Do not provide additional explanations, just Python code.
     The following variables are available:
     {variables}
+    The following functions are available:
+    {functions}
     
     The code should do the following:
     """
     from ._utilities import generate_code
-    print("Asking for code like this:\n", additional_hints + task + "\n")
+    if _context.verbose:
+        print("Asking for code like this:\n", additional_hints + task + "\n")
 
     code = generate_code(additional_hints + task)
 
+    if _context.verbose:
+        print("Code:\n", code)
 
-    print("Code:\n", code)
-
-    print("Execution:")
+    if _context.verbose:
+        print("Execution:")
 
     exec(code, _context.variables)
 
-    print("Execution done.")
+    if _context.verbose:
+        print("Execution done.")
+
+    return "Code was generated and executed."
