@@ -56,16 +56,83 @@ def find_variable(variables, key, type_checker_function):
     return variables[other_name]
 
 
+def generate_and_execute_code(task: str):
+    """Useful for generating code for a specific task and executing it."""
+    from ._machinery import _context
+
+    # determine useful variables and functions in context
+    variables = []
+    functions = []
+    for k, v in _context.variables.items():
+        if k.startswith("_"):
+            continue
+        if callable(v):
+            if k not in ["quit", "exit"]:
+                functions.append(k)
+            continue
+        variables.append(k)
+
+    libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn"}
+
+    additional_hints = f"""
+    Write high-quality python code.
+    Use preferably the python libraries {",".join([str(v) for v in libraries])}.
+    Show results and save them in variables.
+    The following variables are available: {",".join([str(v) for v in variables])}
+    Do not set the values of the variables that are available.
+    The following functions are available: {",".join([str(v) for v in functions])}
+    A live python environment is available and the code you produce will be executed afterwards.
+
+    The code should do the following:
+    """
+    from ._utilities import generate_code
+    from IPython.display import display, Markdown
+
+    if _context.verbose:
+        print("Code request:\n", additional_hints + task + "\n")
+
+    code, full_response = generate_code(additional_hints + task)
+
+    display(Markdown(full_response))
+
+    if _context.verbose:
+        print("Code response:\n", code)
+
+    if _context.verbose:
+        print("Execution:")
+
+    exec(code, _context.variables)
+
+    if _context.verbose:
+        print("Execution done.")
+
+    return "Code was generated and executed."
+
+
 def generate_code(task):
-    code = prompt(task)
+    """Uses a language model to generate code that solves a given task."""
+    full_response = prompt(task)
 
-    code = code.replace("```python", "```")
-    code = code.replace("```", "")
+    modified_response = full_response.replace("```python", "```")
 
-    return code
+    potential_code_blocks = modified_response.split("```")
+
+    if len(potential_code_blocks) == 1:
+        code = potential_code_blocks[0]
+
+    else:
+        code = ""
+        for i, code_block in enumerate(potential_code_blocks):
+            if "pip install" in code_block or "conda install" in code_block:
+                continue
+
+            if i % 2 == 1:  # chatGPT commonly answers with text first and python code between ``` and ```
+                code = code + code_block + "\n"
+
+    return code, full_response
 
 
-def prompt(message:str, model="gpt-3.5-turbo"):
+def prompt(message:str, model="gpt-4"):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
