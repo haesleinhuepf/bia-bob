@@ -1,14 +1,14 @@
 # bia-tischi
 
-BIA Bob is a Jupyter-based assistant for interacting with data using generated python code. 
+BIA `tischi` is a Jupyter-based assistant for interacting with data using generated python code. 
 
 
 ## Known issues
 
-If you want to ask Bob a question, you need to put a space before the `?`.
+If you want to ask `tischi` a question, you need to put a space before the `?`.
 
 ```
-What do you know about blobs.gif ?
+%tischi What do you know about blobs.gif ?
 ```
 
 ## Installation
