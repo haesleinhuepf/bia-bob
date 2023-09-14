@@ -14,7 +14,9 @@ What do you know about blobs.gif ?
 ## Installation
 
 ```
-pip install bia-tischi
+git clone https://github.com/haesleinhuepf/bia-tischi.git
+cd bia-tischi
+pip install -e .
 ```
 
 
