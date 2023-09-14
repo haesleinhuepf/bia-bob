@@ -91,14 +91,13 @@ def generate_and_execute_code(task: str):
     The code should do the following:
     """
     from ._utilities import generate_code
-    from IPython.display import display, Markdown
 
     if _context.verbose:
         print("Code request:\n", additional_hints + task + "\n")
 
     code, full_response = generate_code(additional_hints + task)
 
-    display(Markdown(full_response))
+    output(full_response)
 
     if _context.verbose:
         print("Code response:\n", code)
@@ -112,6 +111,41 @@ def generate_and_execute_code(task: str):
         print("Execution done.")
 
     return "Code was generated and executed."
+
+
+def output(message):
+    """Display content in the notebook."""
+    message = message.replace("```python", "```")
+
+    sub_messages = message.split("```")
+
+    if len(sub_messages) == 1:
+        output_code(sub_messages[0])
+    else:
+        for i, m in enumerate(sub_messages):
+            if i % 2 == 0:
+                output_text(m)
+            else:
+                output_code(m)
+
+def output_text(markdown):
+    """Display markdown content in the notebook."""
+    from IPython.display import display, Markdown
+    display(Markdown(markdown))
+
+def output_code(code):
+    """Display code content in the notebook."""
+    from IPython.display import display, Markdown
+    from IPython.core.display import HTML
+
+    display(HTML(f"""
+    <details>
+    <summary> Show code </summary>
+    <pre>
+    {code}
+    </pre>
+    </details>
+    """))
 
 
 def generate_code(task):
