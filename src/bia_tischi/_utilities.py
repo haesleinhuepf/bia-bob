@@ -75,13 +75,18 @@ def generate_and_execute_code(task: str):
     libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn"}
 
     additional_hints = f"""
-    Write high-quality python code.
+    Write concise professional bioimage analysis high-quality python code.
+    The code should be as short as possible.
+    If there are several ways to solve the task, chose the option with the least amount of code.
     Use preferably the python libraries {",".join([str(v) for v in libraries])}.
     Show results and save them in variables.
     The following variables are available: {",".join([str(v) for v in variables])}
     Do not set the values of the variables that are available.
     The following functions are available: {",".join([str(v) for v in functions])}
     A live python environment is available and the code you produce will be executed afterwards.
+
+    Before writing and executing the code, provide a concise step-by-step plan of what you are going to do.
+    The step-by-step plan must not contain any code.
 
     The code should do the following:
     """
