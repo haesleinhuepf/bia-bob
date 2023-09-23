@@ -1,45 +1,106 @@
+
+from IPython.core.magic import register_line_cell_magic
+from IPython.display import display, Markdown
+from ._utilities import answer_to_user_input, display_in_notebook
+
 class _context():
     variables = None
     verbose = False
 
+@register_line_cell_magic
+def alice(line: str = None, cell: str = None):
+    """Sends a prompt to openAI
+    and shows the text and code response
+    and executes the code!
+    """
 
-from IPython.core.magic import register_line_cell_magic
+    user_input = update_context_and_create_user_input(cell, line)
 
+    if user_input is none:
+        display("Please ask a question!")
+
+    result = _context.agent.generate_and_execute_response(input=user_input)
+
+    display_in_notebook(Markdown(result))
 
 @register_line_cell_magic
-def tischi(line: str = None, cell: str = None):
-    from IPython.display import display, Markdown
+def bob(line: str = None, cell: str = None):
+    """Sends a prompt to openAI
+        and shows the text and code response
+        but does NOT execute the code!
+        """
+
+    user_input = update_context_and_create_user_input(cell, line)
+
+    if user_input is none:
+        display("Please ask a question!")
+
+    result = _context.agent.generate_response(input=user_input)
+
+    display_in_notebook(Markdown(result))
+
+
+def update_context_and_create_user_input(cell, line):
     if _context.agent is None:
         init_assistant({})
-
     if _context.verbose:
         print("Variables:", len(_context.variables.keys()))
-
     if line and cell:
-        prompt = line + "\n" + cell
+        user_input = line + "\n" + cell
     elif line:
-        prompt = line
+        user_input = line
     elif cell:
-        prompt = cell
+        user_input = cell
     else:
-        display("Please enter a question behind %tischi")
-        return ""
+        user_input = none
+    return user_input
 
-    result = _context.agent.run(input=prompt)
-
-    display(Markdown(result))
 
 class CustomAgent:
     def __init__(self):
         pass
 
-    def run(self, input: str):
-        """A prompt helper function that sends a message to openAI
-        and returns only the text response.
+    def generate_response(self, prompt: str):
+        """Sends a prompt to openAI
+        and shows  the text and code response.
         """
-        from ._utilities import generate_and_execute_code
-        generate_and_execute_code(input)
-        return ""
+        code, full_response = answer_to_user_input(prompt)
+        display_in_notebook(full_response)
+
+        if _context.verbose:
+            print("Code response:\n", code)
+
+        if _context.verbose:
+            print("Execution:")
+
+        exec(code, _context.variables)
+
+        if _context.verbose:
+            print("Execution done.")
+
+        return "Response was generated."
+
+    def generate_and_execute_response(self, prompt: str):
+        """Sends a prompt to openAI
+        and shows the text and code response
+        and immeditately executes the code.
+        """
+        code, full_response = answer_to_user_input(prompt)
+        display_in_notebook(full_response)
+
+        if _context.verbose:
+            print("Code response:\n", code)
+
+        if _context.verbose:
+            print("Execution:")
+
+        exec(code, _context.variables)
+
+        if _context.verbose:
+            print("Execution done.")
+
+        return "Code was generated and executed."
+
 
 
 def init_assistant(variables, temperature=0):

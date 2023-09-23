@@ -56,8 +56,11 @@ def find_variable(variables, key, type_checker_function):
     return variables[other_name]
 
 
-def generate_and_execute_code(task: str):
-    """Useful for generating code for a specific task and executing it."""
+def answer_to_user_input(user_input: str):
+    """Generates code and text respond for a specific user input.
+    To do so, it combines the user input with additional context such as
+    current variables and a prompt template."""
+
     from ._machinery import _context
 
     # determine useful variables and functions in context
@@ -88,32 +91,20 @@ def generate_and_execute_code(task: str):
     Before writing and executing the code, provide a concise step-by-step plan of what you are going to do.
     The step-by-step plan must not contain any code.
 
-    The code should do the following:
+    The python code should do the following:
     """
-    from ._utilities import generate_code
+
+    from ._utilities import answer_to_user_input_and_context
 
     if _context.verbose:
-        print("Code request:\n", additional_hints + task + "\n")
+        print("Code request:\n", additional_hints + user_input + "\n")
 
-    code, full_response = generate_code(additional_hints + task)
+    code, full_response = answer_to_user_input_and_context(additional_hints + user_input)
 
-    output(full_response)
-
-    if _context.verbose:
-        print("Code response:\n", code)
-
-    if _context.verbose:
-        print("Execution:")
-
-    exec(code, _context.variables)
-
-    if _context.verbose:
-        print("Execution done.")
-
-    return "Code was generated and executed."
+    return code, full_response
 
 
-def output(message):
+def display_in_notebook(message):
     """Display content in the notebook."""
     message = message.replace("```python", "```")
 
@@ -148,8 +139,9 @@ def output_code(code):
     """))
 
 
-def generate_code(task):
-    """Uses a language model to generate code that solves a given task."""
+def answer_to_user_input_and_context(task):
+    """Uses a language model to generate a reponse to a given task
+     and returns both the full response and also only the executable python code."""
     full_response = prompt(task)
 
     modified_response = full_response.replace("```python", "```")
@@ -168,7 +160,7 @@ def generate_code(task):
             if i % 2 == 1:  # chatGPT commonly answers with text first and python code between ``` and ```
                 code = code + code_block + "\n"
 
-    return code, full_response
+    return full_response, code
 
 
 def prompt(message:str, model="gpt-4"):
