@@ -1,14 +1,14 @@
 
 from IPython.core.magic import register_line_cell_magic
 from IPython.display import display, Markdown
-from ._utilities import answer_to_user_input, display_in_notebook
+from ._utilities import generate_response, display_in_notebook
 
 class _context():
     variables = None
     verbose = False
 
 @register_line_cell_magic
-def alice(line: str = None, cell: str = None):
+def xbob(line: str = None, cell: str = None):
     """Sends a prompt to openAI
     and shows the text and code response
     and executes the code!
@@ -16,7 +16,7 @@ def alice(line: str = None, cell: str = None):
 
     user_input = update_context_and_create_user_input(cell, line)
 
-    if user_input is none:
+    if user_input is None:
         display("Please ask a question!")
 
     result = _context.agent.generate_and_execute_response(input=user_input)
@@ -32,10 +32,10 @@ def bob(line: str = None, cell: str = None):
 
     user_input = update_context_and_create_user_input(cell, line)
 
-    if user_input is none:
+    if user_input is None:
         display("Please ask a question!")
 
-    result = _context.agent.generate_response(input=user_input)
+    result = _context.agent.generate_response(user_input)
 
     display_in_notebook(Markdown(result))
 
@@ -60,15 +60,12 @@ class CustomAgent:
     def __init__(self):
         pass
 
-    def generate_response(self, prompt: str):
+    def generate_response(self, input: str):
         """Sends a prompt to openAI
         and shows  the text and code response.
         """
-        code, full_response = answer_to_user_input(prompt)
+        code, full_response = generate_response(input)
         display_in_notebook(full_response)
-
-        if _context.verbose:
-            print("Code response:\n", code)
 
         if _context.verbose:
             print("Execution:")
@@ -80,16 +77,13 @@ class CustomAgent:
 
         return "Response was generated."
 
-    def generate_and_execute_response(self, prompt: str):
+    def generate_and_execute_response(self, input: str):
         """Sends a prompt to openAI
         and shows the text and code response
         and immeditately executes the code.
         """
-        code, full_response = answer_to_user_input(prompt)
+        code, full_response = generate_response(input)
         display_in_notebook(full_response)
-
-        if _context.verbose:
-            print("Code response:\n", code)
 
         if _context.verbose:
             print("Execution:")

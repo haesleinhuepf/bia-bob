@@ -56,7 +56,7 @@ def find_variable(variables, key, type_checker_function):
     return variables[other_name]
 
 
-def answer_to_user_input(user_input: str):
+def generate_response(input: str):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
@@ -94,12 +94,15 @@ def answer_to_user_input(user_input: str):
     The python code should do the following:
     """
 
-    from ._utilities import answer_to_user_input_and_context
+    from ._utilities import generate_answer_to_full_prompt
 
     if _context.verbose:
-        print("Code request:\n", additional_hints + user_input + "\n")
+        print("Prompt ----", additional_hints + input + "\n----\n")
 
-    code, full_response = answer_to_user_input_and_context(additional_hints + user_input)
+    code, full_response = generate_answer_to_full_prompt(additional_hints + input)
+
+    if _context.verbose:
+        print("Code response ----\n", code, "\n----\n")
 
     return code, full_response
 
@@ -139,10 +142,16 @@ def output_code(code):
     """))
 
 
-def answer_to_user_input_and_context(task):
+def generate_answer_to_full_prompt(task):
     """Uses a language model to generate a reponse to a given task
      and returns both the full response and also only the executable python code."""
     full_response = prompt(task)
+
+    from ._machinery import _context
+    if _context.verbose:
+        print("Full response ----\n", full_response, "\n----\n")
+
+    print("Modifying the response, splitting text and code....\n")
 
     modified_response = full_response.replace("```python", "```")
 
@@ -150,7 +159,6 @@ def answer_to_user_input_and_context(task):
 
     if len(potential_code_blocks) == 1:
         code = potential_code_blocks[0]
-
     else:
         code = ""
         for i, code_block in enumerate(potential_code_blocks):
