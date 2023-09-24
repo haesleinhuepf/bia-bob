@@ -67,7 +67,7 @@ class CustomAgent:
         """
         code, full_response = generate_response(input)
         output_text(full_response)
-        output_code(code)
+        # output_code(code) # already part of the full response
 
         return "Response was generated."
 
@@ -104,7 +104,6 @@ def init_assistant(variables, temperature=0):
 
     if _context.verbose:
         print("Agent and context initialised.")
-
 
 
 init_assistant(globals())

@@ -88,22 +88,21 @@ def generate_response(input: str):
     The following functions are available: {",".join([str(v) for v in functions])}
     A live python environment is available and the code you produce will be executed afterwards.
 
-    The code block must be start with the line
+    The code block must start with the line
     ```python
     and it must end with the line 
     ```
 
     Before writing the code, provide a concise step-by-step plan.
-    The plan must not contain anything about the # code start and end.
+    The plan must not contain any code nor information about the code block.
 
     The python code should do the following:
     """
 
-    from ._utilities import generate_answer_to_full_prompt
-
     if _context.verbose:
         print("Prompt ----", additional_hints + input + "\n----\n")
 
+    from ._utilities import generate_answer_to_full_prompt
     code, full_response = generate_answer_to_full_prompt(additional_hints + input)
 
     if _context.verbose:
@@ -140,7 +139,6 @@ def generate_answer_to_full_prompt(task):
     from ._machinery import _context
     if _context.verbose:
         print("Full response ----\n", full_response, "\n----\n")
-
 
     # Define the pattern
     import re
