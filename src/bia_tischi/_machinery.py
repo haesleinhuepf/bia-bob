@@ -1,9 +1,10 @@
 
 from IPython.core.magic import register_line_cell_magic
 from IPython.display import display, Markdown
-from ._utilities import generate_response, display_in_notebook
+from ._utilities import generate_response, output_text, output_code
 
 class _context():
+    agent = None
     variables = None
     verbose = False
 
@@ -14,14 +15,14 @@ def xbob(line: str = None, cell: str = None):
     and executes the code!
     """
 
-    user_input = update_context_and_create_user_input(cell, line)
+    user_input = update_context_and_fetch_user_input(cell, line)
 
     if user_input is None:
         display("Please ask a question!")
 
     result = _context.agent.generate_and_execute_response(input=user_input)
+    output_text(result)
 
-    display_in_notebook(Markdown(result))
 
 @register_line_cell_magic
 def bob(line: str = None, cell: str = None):
@@ -30,17 +31,17 @@ def bob(line: str = None, cell: str = None):
         but does NOT execute the code!
         """
 
-    user_input = update_context_and_create_user_input(cell, line)
+    user_input = update_context_and_fetch_user_input(cell, line)
 
     if user_input is None:
         display("Please ask a question!")
 
     result = _context.agent.generate_response(user_input)
 
-    display_in_notebook(Markdown(result))
+    output_text(result)
 
 
-def update_context_and_create_user_input(cell, line):
+def update_context_and_fetch_user_input(cell, line):
     if _context.agent is None:
         init_assistant({})
     if _context.verbose:
@@ -62,18 +63,11 @@ class CustomAgent:
 
     def generate_response(self, input: str):
         """Sends a prompt to openAI
-        and shows  the text and code response.
+        and shows the text and code response.
         """
         code, full_response = generate_response(input)
-        display_in_notebook(full_response)
-
-        if _context.verbose:
-            print("Execution:")
-
-        exec(code, _context.variables)
-
-        if _context.verbose:
-            print("Execution done.")
+        output_text(full_response)
+        output_code(code)
 
         return "Response was generated."
 
@@ -83,7 +77,8 @@ class CustomAgent:
         and immeditately executes the code.
         """
         code, full_response = generate_response(input)
-        display_in_notebook(full_response)
+        output_text(full_response)
+        output_code(code)
 
         if _context.verbose:
             print("Execution:")
@@ -98,13 +93,17 @@ class CustomAgent:
 
 
 def init_assistant(variables, temperature=0):
-    if _context.verbose:
-        print("Initializing assistant")
+    if _context.agent is not None:
+        print("Agent and context have been initialized already.")
+        return
 
     _context.agent = CustomAgent()
 
     # store the variables
     _context.variables = variables
+
+    if _context.verbose:
+        print("Agent and context initialised.")
 
 
 

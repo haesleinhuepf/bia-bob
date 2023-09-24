@@ -88,8 +88,13 @@ def generate_response(input: str):
     The following functions are available: {",".join([str(v) for v in functions])}
     A live python environment is available and the code you produce will be executed afterwards.
 
-    Before writing and executing the code, provide a concise step-by-step plan of what you are going to do.
-    The step-by-step plan must not contain any code.
+    The code block must be start with the line
+    ```python
+    and it must end with the line 
+    ```
+
+    Before writing the code, provide a concise step-by-step plan.
+    The plan must not contain anything about the # code start and end.
 
     The python code should do the following:
     """
@@ -102,30 +107,15 @@ def generate_response(input: str):
     code, full_response = generate_answer_to_full_prompt(additional_hints + input)
 
     if _context.verbose:
-        print("Code response ----\n", code, "\n----\n")
+        print("Code ----\n", code, "\n----\n")
 
     return code, full_response
 
 
-def display_in_notebook(message):
-    """Display content in the notebook."""
-    message = message.replace("```python", "```")
-
-    sub_messages = message.split("```")
-
-    if len(sub_messages) == 1:
-        output_code(sub_messages[0])
-    else:
-        for i, m in enumerate(sub_messages):
-            if i % 2 == 0:
-                output_text(m)
-            else:
-                output_code(m)
-
-def output_text(markdown):
+def output_text(text):
     """Display markdown content in the notebook."""
     from IPython.display import display, Markdown
-    display(Markdown(markdown))
+    display(Markdown(text))
 
 def output_code(code):
     """Display code content in the notebook."""
@@ -151,24 +141,37 @@ def generate_answer_to_full_prompt(task):
     if _context.verbose:
         print("Full response ----\n", full_response, "\n----\n")
 
-    print("Modifying the response, splitting text and code....\n")
 
-    modified_response = full_response.replace("```python", "```")
+    # Define the pattern
+    import re
+    pattern = re.compile(r'```python([\s\S]*?)```')
 
-    potential_code_blocks = modified_response.split("```")
+    # Search for the pattern in the text
+    match = pattern.search(full_response)
 
-    if len(potential_code_blocks) == 1:
-        code = potential_code_blocks[0]
+    if match:
+        code = match.group(1).strip()
     else:
-        code = ""
-        for i, code_block in enumerate(potential_code_blocks):
-            if "pip install" in code_block or "conda install" in code_block:
-                continue
+        code = None
 
-            if i % 2 == 1:  # chatGPT commonly answers with text first and python code between ``` and ```
-                code = code + code_block + "\n"
+    #modified_response = full_response.replace("```python", "```")
 
-    return full_response, code
+    #potential_code_blocks = modified_response.split("```")
+
+    # print("")
+    #
+    # if len(potential_code_blocks) == 1:
+    #     code = potential_code_blocks[0]
+    # else:
+    #     code = ""
+    #     for i, code_block in enumerate(potential_code_blocks):
+    #         if "pip install" in code_block or "conda install" in code_block:
+    #             continue
+    #
+    #         if i % 2 == 1:  # chatGPT commonly answers with text first and python code between ``` and ```
+    #             code = code + code_block + "\n"
+
+    return code, full_response
 
 
 def prompt(message:str, model="gpt-4"):
