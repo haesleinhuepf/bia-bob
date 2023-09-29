@@ -140,9 +140,8 @@ class CustomAgent:
         output_text(text)
         get_ipython().set_next_input(code, replace=False)
 
-        return ("Code was put into the next cell.\n"
-                "Carefully check it before executing it!\n"
-                "It is your responsibility to run it!")
+        return ("The code was put into the next cell.\n"
+                "It is your responsibility to carefully check it before executing it!\n")
 
 
 def init_agent(variables, temperature=0):
