@@ -82,6 +82,10 @@ class CustomAgent:
 
         if _context.verbose:
             print("Execution:")
+            print("Global variables:")
+            print(globals())
+            print("Context variables:")
+            print(_context.variables)
 
         exec(code, _context.variables)
 
