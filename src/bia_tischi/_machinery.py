@@ -1,6 +1,7 @@
 
 from IPython.core.magic import register_line_cell_magic
-from IPython.display import display, Markdown
+from IPython.core.getipython import get_ipython
+from IPython.display import display, Markdown, Javascript
 from ._utilities import generate_response, output_text, output_code
 
 class _context():
@@ -15,6 +16,18 @@ def vars(line):
     for name, value in globals.items():
         if not name.startswith('_') and not callable(value):
             print(name)
+
+
+@register_line_cell_magic
+def populate_next_cell(line):
+    # Define the code to be inserted into the next cell
+    code = """
+# This is some custom code
+def hello_world():
+    print("Hello, World!")
+    """
+
+    get_ipython().set_next_input(code, replace=False)
 
 @register_line_cell_magic
 def xbob(line: str = None, cell: str = None):
@@ -31,6 +44,24 @@ def xbob(line: str = None, cell: str = None):
         display("Please ask a question!")
 
     result = _context.agent.generate_and_execute_response(input=user_input)
+    output_text(result)
+
+
+@register_line_cell_magic
+def cbob(line: str = None, cell: str = None):
+    """Sends a prompt to openAI
+    and shows the text and code response
+    and pastes the code into the next cell.
+    """
+
+    # update the context, note that globals() does not work
+    _context.variables = get_ipython().user_ns
+    user_input = init_agent_and_combine_user_input(cell, line)
+
+    if user_input is None:
+        display("Please ask a question!")
+
+    result = _context.agent.generate_response_and_paste_code_in_next_cell(input=user_input)
     output_text(result)
 
 
@@ -76,19 +107,19 @@ class CustomAgent:
         """Sends a prompt to openAI
         and shows the text and code response.
         """
-        code, full_response = generate_response(input)
-        output_text(full_response)
-        # output_code(code) # already part of the full response
+        code, text = generate_response(input)
+        output_text(text)
+        output_code(code)
 
         return "Response was generated."
 
     def generate_and_execute_response(self, input: str):
         """Sends a prompt to openAI
         and shows the text and code response
-        and immeditately executes the code.
+        and immediately executes the code.
         """
-        code, full_response = generate_response(input)
-        output_text(full_response)
+        code, text = generate_response(input)
+        output_text(text)
         output_code(code)
 
         exec(code, _context.variables)
@@ -98,6 +129,20 @@ class CustomAgent:
 
         return "Code was generated and executed."
 
+
+    def generate_response_and_paste_code_in_next_cell(self, input: str):
+        """Sends a prompt to openAI
+        and shows the text and code response
+        and pastes the code into the next cell.
+        """
+        code, text = generate_response(input)
+
+        output_text(text)
+        get_ipython().set_next_input(code, replace=False)
+
+        return ("Code was put into the next cell.\n"
+                "Carefully check it before executing it!\n"
+                "It is your responsibility to run it!")
 
 
 def init_agent(variables, temperature=0):
