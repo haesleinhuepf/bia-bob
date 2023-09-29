@@ -9,13 +9,23 @@ class _context():
     verbose = False
 
 @register_line_cell_magic
+def vars(line):
+    globals = get_ipython().user_ns
+    print("Globals:", globals.keys())
+    for name, value in globals.items():
+        if not name.startswith('_') and not callable(value):
+            print(name)
+
+@register_line_cell_magic
 def xbob(line: str = None, cell: str = None):
     """Sends a prompt to openAI
     and shows the text and code response
     and executes the code!
     """
 
-    user_input = update_context_and_fetch_user_input(cell, line)
+    # update the context, note that globals() does not work
+    _context.variables = get_ipython().user_ns
+    user_input = init_agent_and_combine_user_input(cell, line)
 
     if user_input is None:
         display("Please ask a question!")
@@ -30,8 +40,8 @@ def bob(line: str = None, cell: str = None):
         and shows the text and code response
         but does NOT execute the code!
         """
-
-    user_input = update_context_and_fetch_user_input(cell, line)
+    _context.variables = get_ipython().user_ns
+    user_input = init_agent_and_combine_user_input(cell, line)
 
     if user_input is None:
         display("Please ask a question!")
@@ -41,11 +51,12 @@ def bob(line: str = None, cell: str = None):
     output_text(result)
 
 
-def update_context_and_fetch_user_input(cell, line):
+def init_agent_and_combine_user_input(cell, line):
     if _context.agent is None:
-        init_assistant({})
+        print("Initializing new AI assistant.")
+        init_agent(_context.variables)
     if _context.verbose:
-        print("Variables:", len(_context.variables.keys()))
+        print("Variables:", _context.variables.keys())
     if line and cell:
         user_input = line + "\n" + cell
     elif line:
@@ -80,13 +91,6 @@ class CustomAgent:
         output_text(full_response)
         output_code(code)
 
-        if _context.verbose:
-            print("Execution:")
-            print("Global variables:")
-            print(globals())
-            print("Context variables:")
-            print(_context.variables)
-
         exec(code, _context.variables)
 
         if _context.verbose:
@@ -96,7 +100,7 @@ class CustomAgent:
 
 
 
-def init_assistant(variables, temperature=0):
+def init_agent(variables, temperature=0):
     if _context.agent is not None:
         print("Agent and context have been initialized already.")
         return
@@ -106,8 +110,4 @@ def init_assistant(variables, temperature=0):
     # store the variables
     _context.variables = variables
 
-    if _context.verbose:
-        print("Agent and context initialised.")
-
-
-init_assistant(globals())
+    print("Agent and context initialised.")

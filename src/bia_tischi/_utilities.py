@@ -66,14 +66,15 @@ def generate_response(input: str):
     # determine useful variables and functions in context
     variables = []
     functions = []
-    for k, v in _context.variables.items():
-        if k.startswith("_"):
+    for key, value in _context.variables.items():
+        print(key)
+        if key.startswith("_"):
             continue
-        if callable(v):
-            if k not in ["quit", "exit"]:
-                functions.append(k)
+        if callable(value):
+            if key not in ["quit", "exit"]:
+                functions.append(key)
             continue
-        variables.append(k)
+        variables.append(key)
 
     libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn"}
 
@@ -94,19 +95,19 @@ def generate_response(input: str):
     ```
 
     Before writing the code, provide a concise step-by-step plan.
-    The plan must not contain any code nor information about the code block.
-
+    This plan must not contain any "`" characters!
+    
     The python code should do the following:
     """
 
     if _context.verbose:
-        print("Prompt ----", additional_hints + input + "\n----\n")
+        print("\nPrompt:", additional_hints + input)
 
     from ._utilities import generate_answer_to_full_prompt
     code, full_response = generate_answer_to_full_prompt(additional_hints + input)
 
     if _context.verbose:
-        print("Code ----\n", code, "\n----\n")
+        print("\nCode:\n", code)
 
     return code, full_response
 
@@ -138,7 +139,7 @@ def generate_answer_to_full_prompt(task):
 
     from ._machinery import _context
     if _context.verbose:
-        print("Full response ----\n", full_response, "\n----\n")
+        print("\nFull response:\n", full_response)
 
     # Define the pattern
     import re
