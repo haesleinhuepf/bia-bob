@@ -138,10 +138,16 @@ class CustomAgent:
         code, text = generate_response(input)
 
         output_text(text)
-        get_ipython().set_next_input(code, replace=False)
 
-        return ("The code was put into the next cell.\n"
-                "It is your responsibility to carefully check it before executing it!\n")
+        if code is not None:
+            get_ipython().set_next_input(code, replace=False)
+            return("#### Additional information\n\n"
+                   "The code was put into the next cell."
+                   "It is your responsibility to "
+                   "carefully check it before executing it!  ")
+        else:
+            return "#### Additional information\n\nThe response did not contain any code."
+
 
 
 def init_agent(variables, temperature=0):

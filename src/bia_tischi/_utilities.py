@@ -78,26 +78,30 @@ def generate_response(input: str):
     libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn"}
 
     additional_hints = f"""
-    Write concise professional bioimage analysis high-quality python code.
+    If the request entails writing code, write concise professional 
+    bioimage analysis high-quality python code.
     The code should be as short as possible.
     If there are several ways to solve the task, chose the option with the least amount of code.
-    Use preferably the python libraries {",".join([str(v) for v in libraries])}.
+    Preferably, use these python libraries {",".join([str(v) for v in libraries])}.
     Show results and save them in variables.
     The following variables are available: {",".join([str(v) for v in variables])}
     Do not set the values of the variables that are available.
     The following functions are available: {",".join([str(v) for v in functions])}
     A live python environment is available and the code you produce will be executed afterwards.
 
-    The code block must start with 
+    Before writing the code, provide a concise step-by-step plan 
+    of what the code will be going to do. 
+    This plan must not contain any "`" characters and should be written in plain text.
+    Then print the code.
+    The code block must start with the line: 
     ```python
-    and it must end with the line 
+    and it must end with the line:
     ```
+    There must be no text after the code block.
     
-    Before writing the code, provide a concise step-by-step plan.
-    This plan must not contain any "`" characters!
-    There must be no text after the code!
+    If the user request does not require to write code, simply answer in plain text.
     
-    The python code should do the following:
+    Here is the user request:
     """
 
     if _context.verbose:
@@ -133,10 +137,6 @@ def generate_answer_to_full_prompt(task):
      and returns both the full response and also only the executable python code."""
     full_response = prompt(task)
 
-    from ._machinery import _context
-    if _context.verbose:
-        print("\nFull response:\n", full_response)
-
     # Define the pattern
     import re
     pattern = re.compile(r'([\s\S]*?)```python([\s\S]*?)```')
@@ -148,8 +148,10 @@ def generate_answer_to_full_prompt(task):
         text = match.group(1).strip()
         code = match.group(2).strip()
     else:
-        text = None
+        text = full_response
         code = None
+
+    text = "### Assistant's response\n\n" + text
 
     return code, text
 
