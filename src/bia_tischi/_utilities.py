@@ -182,7 +182,7 @@ def generate_answer_to_full_prompt(full_prompt, model: str):
     return code, text
 
 
-def generate_response_from_openai(full_prompt: str, model="gpt-4"):
+def generate_response_from_openai(full_prompt: str, model: str):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """

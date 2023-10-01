@@ -9,6 +9,7 @@ class Context:
     assistant = None
     variables = None
     verbose = False
+    chat = []
 
 
 class Models:
