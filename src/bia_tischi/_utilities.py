@@ -57,7 +57,7 @@ def find_variable(variables, key, type_checker_function):
     return variables[other_name]
 
 
-def generate_response(user_input: str, model):
+def generate_response_to_user(model, user_prompt: str):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
@@ -78,9 +78,8 @@ def generate_response(user_input: str, model):
 
     libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn"}
 
-    additional_hints = f"""
-    If the request entails writing code, write concise professional 
-    bioimage analysis high-quality python code.
+    system_prompt = f"""
+    If the request entails writing code, write concise professional bioimage analysis high-quality python code.
     The code should be as short as possible.
     If there are several ways to solve the task, chose the option with the least amount of code.
     Preferably, use these python libraries {",".join([str(v) for v in libraries])}.
@@ -99,17 +98,18 @@ def generate_response(user_input: str, model):
     and it must end with the line:
     ```
     There must be no text after the code block.
-    
-    If the user request does not require to write code, simply answer in plain text.
-    
-    Here is the user request:
+    If the request does not require to write code, simply answer in plain text.
     """
 
-    if Context.verbose:
-        print("\nPrompt:", additional_hints + user_input)
+    # take the last ten entries
+    chat_history = Context.chat[-10:]
 
-    from ._utilities import generate_answer_to_full_prompt
-    code, text = generate_answer_to_full_prompt(additional_hints + user_input, model)
+    if Context.verbose:
+        print("\nSystem prompt:", system_prompt)
+        print("\nUser prompt:", user_prompt)
+        print("\nChat history:", chat_history)
+
+    code, text = generate_response_to_system_user_chat(model, system_prompt, user_prompt, chat_history)
 
     return code, text
 
@@ -122,7 +122,7 @@ def output_text(text):
 
 def output_code(code):
     """Display code content in the notebook."""
-    from IPython.display import display, Markdown
+    from IPython.display import display
     from IPython.core.display import HTML
 
     display(HTML(f"""
@@ -135,16 +135,16 @@ def output_code(code):
     """))
 
 
-def generate_answer_to_full_prompt(full_prompt, model: str):
+def generate_response_to_system_user_chat(model: str, system_prompt, user_prompt, chat_history):
     """Uses a language model to generate a response to a given prompt
      and returns both the text and executable code response."""
-    full_response = generate_response_from_openai(full_prompt, model)
+    full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history)
 
     from ._machinery import Context
     if Context.verbose:
         print("\n\nFull response:\n", full_response)
 
-    # Define the pattern
+    # Define the code pattern
     import re
     pattern = re.compile(r'([\s\S]*?)```python([\s\S]*?)```')
 
@@ -159,40 +159,49 @@ def generate_answer_to_full_prompt(full_prompt, model: str):
         code = None
 
     text = "### Assistant response\n\n" + text
-
-    import tiktoken
-    from ._machinery import Models
-    encoding = tiktoken.encoding_for_model(model)
-    input_token = len(encoding.encode(full_prompt))
-    output_token = len(encoding.encode(full_response))
-    details = "\n##### Request details\n\n"
-    details = details + "- Model: " + model + "\n"
-    details = details + "- Pricing: https://openai.com/pricing\n"
-    details = details + "- Input: " + str(input_token) + " token = "
-    input_price = Models.usd_per_1k_input_token(model) * input_token / 10.0
-    details = details + "{:.4f}".format(input_price) + " US Cent.\n"
-    details = details + "- Output: " + str(output_token) + " token = "
-    output_price = Models.usd_per_1k_output_token(model) * output_token / 10.0
-    details = details + "{:.4f}".format(output_price) + " US Cent.\n "
-    details = details + "\n"
-    text = details + text
-
-    text = text + "\n#### Additional information\n\n"
+    text += "\n#### Additional information\n\n"
 
     return code, text
 
 
-def generate_response_from_openai(full_prompt: str, model: str):
+def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
     import openai
 
+    system = [{"role": "system", "content": system_prompt}]
+    user = [{"role": "user", "content": user_prompt}]
+
     response = openai.ChatCompletion.create(
-        model=model,
-        messages=[{"role": "user", "content": full_prompt}]
-    )
-    return response['choices'][0]['message']['content']
+        messages=system + chat_history + user,
+        model=model)  # stream=True would be nice
+
+    reply = response['choices'][0]['message']['content']
+
+    from ._machinery import Context
+    Context.chat += user + [{"role": "assistant", "content": reply}]
+
+    # TODO: return also input and output tokens and compute the corresponding text
+    #  in the calling function
+    # import tiktoken
+    # from ._machinery import Models
+    # encoding = tiktoken.encoding_for_model(model)
+    # input_token = len(encoding.encode(full_prompt))
+    # output_token = len(encoding.encode(full_response))
+    # details = "\n##### Request details\n\n"
+    # details += "- Model: " + model + "\n"
+    # details += "- Pricing: https://openai.com/pricing\n"
+    # details += "- Input: " + str(input_token) + " token = "
+    # input_price = Models.usd_per_1k_input_token(model) * input_token / 10.0
+    # details += "{:.4f}".format(input_price) + " US Cent.\n"
+    # details += "- Output: " + str(output_token) + " token = "
+    # output_price = Models.usd_per_1k_output_token(model) * output_token / 10.0
+    # details += "{:.4f}".format(output_price) + " US Cent.\n "
+    # details += "\n"
+    # text = details + text
+
+    return reply
 
 
 def available_models():

@@ -2,7 +2,7 @@ from IPython.core.getipython import get_ipython
 from IPython.core.magic import register_line_cell_magic
 from IPython.display import display
 
-from ._utilities import generate_response, output_text
+from ._utilities import generate_response_to_user, output_text
 
 
 class Context:
@@ -61,7 +61,11 @@ def ai(line: str = None, cell: str = None):
         display("Please first init the assistant!")
         return
 
-    user_input = combine_user_input(cell, line)
+    if Context.verbose:
+        print("\nLine:", line)
+        print("\nCell:", cell)
+
+    user_input = combine_user_input(line, cell)
     if user_input is None:
         display("Please ask a question!")
         return
@@ -70,7 +74,7 @@ def ai(line: str = None, cell: str = None):
     Context.variables = get_ipython().user_ns
 
     # generate the response
-    Context.assistant.generate_response(user_input)
+    Context.assistant.generate_response_to_user(user_input)
 
 
 # @register_line_cell_magic
@@ -90,7 +94,7 @@ def ai(line: str = None, cell: str = None):
 #     output_text(result)
 
 
-def combine_user_input(cell, line):
+def combine_user_input(line, cell):
     if line and cell:
         user_input = line + "\n" + cell
     elif line:
@@ -133,12 +137,12 @@ class CustomAgent:
     #
     #     return "Code was generated and executed."
 
-    def generate_response(self, user_input: str):
+    def generate_response_to_user(self, user_input: str):
         """Sends a prompt to openAI
         and shows the text response
         and pastes the code into the next cell.
         """
-        code, text = generate_response(user_input, self.model)
+        code, text = generate_response_to_user(self.model, user_input)
 
         if code is None:
             text = text + "The response did not contain any code."
