@@ -158,7 +158,13 @@ def generate_answer_to_full_prompt(full_prompt, model):
         text = full_response
         code = None
 
-    text = "### Assistant response\n\n" + text
+    text = "#### Assistant response\n\n" + text
+    text = text + "\n#### Additional information\n\n"
+
+    import tiktoken
+    encoding = tiktoken.encoding_for_model(model)
+    text = text + "The input prompt contained " + str(len(encoding.encode(full_prompt))) + " tokens.  "
+    text = text + "The response contained " + str(len(encoding.encode(full_response))) + " tokens.  "
 
     return code, text
 

@@ -110,18 +110,16 @@ class CustomAgent:
 
     def generate_response(self, user_input: str):
         """Sends a prompt to openAI
-        and shows the text and code response
+        and shows the text response
         and pastes the code into the next cell.
         """
         code, text = generate_response(user_input, self.model)
 
-        text = text + "\n#### Additional information\n\n"
         if code is None:
             text = text + "The response did not contain any code."
         else:
             text = text + ("The code was put into the next cell.  It is your responsibility to carefully check it "
                            "before executing it!")
-
         output_text(text)
 
         if code is not None:
