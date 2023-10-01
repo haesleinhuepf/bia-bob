@@ -24,6 +24,7 @@ def find_best_fit(options, search_for):
             best_value = option
     return best_value
 
+
 def is_image(potential_image):
     return hasattr(potential_image, "shape") and hasattr(potential_image, "dtype")
 
@@ -42,7 +43,7 @@ def find_dataframe(variables, key):
 
 
 def find_variable(variables, key, type_checker_function):
-    from ._machinery import _context
+    from ._machinery import Context
     if key in variables.keys():
         return variables[key]
 
@@ -51,22 +52,22 @@ def find_variable(variables, key, type_checker_function):
         return variables[other_name]
 
     other_name = find_best_fit([v for v in variables.keys() if type_checker_function(variables[v])], key)
-    if _context.verbose:
+    if Context.verbose:
         print("Searching for variable named ", other_name)
     return variables[other_name]
 
 
-def generate_response(input: str):
+def generate_response(user_input: str, model):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
 
-    from ._machinery import _context
+    from ._machinery import Context
 
     # determine useful variables and functions in context
     variables = []
     functions = []
-    for key, value in _context.variables.items():
+    for key, value in Context.variables.items():
         if key.startswith("_"):
             continue
         if callable(value):
@@ -104,18 +105,20 @@ def generate_response(input: str):
     Here is the user request:
     """
 
-    if _context.verbose:
-        print("\nPrompt:", additional_hints + input)
+    if Context.verbose:
+        print("\nPrompt:", additional_hints + user_input)
 
     from ._utilities import generate_answer_to_full_prompt
-    code, text = generate_answer_to_full_prompt(additional_hints + input)
+    code, text = generate_answer_to_full_prompt(additional_hints + user_input, model)
 
     return code, text
+
 
 def output_text(text):
     """Display markdown content in the notebook."""
     from IPython.display import display, Markdown
     display(Markdown(text))
+
 
 def output_code(code):
     """Display code content in the notebook."""
@@ -132,10 +135,14 @@ def output_code(code):
     """))
 
 
-def generate_answer_to_full_prompt(task):
-    """Uses a language model to generate a reponse to a given task
-     and returns both the full response and also only the executable python code."""
-    full_response = prompt(task)
+def generate_answer_to_full_prompt(full_prompt, model):
+    """Uses a language model to generate a response to a given prompt
+     and returns both the text and executable code response."""
+    full_response = generate_response_from_openai(full_prompt, model)
+
+    from ._machinery import Context
+    if Context.verbose:
+        print("\n\nFull response:\n", full_response)
 
     # Define the pattern
     import re
@@ -151,12 +158,12 @@ def generate_answer_to_full_prompt(task):
         text = full_response
         code = None
 
-    text = "### Assistant's response\n\n" + text
+    text = "### Assistant response\n\n" + text
 
     return code, text
 
 
-def prompt(message:str, model="gpt-4"):
+def generate_response_from_openai(full_prompt: str, model="gpt-4"):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
@@ -164,6 +171,13 @@ def prompt(message:str, model="gpt-4"):
 
     response = openai.ChatCompletion.create(
         model=model,
-        messages=[{"role": "user", "content": message}]
+        messages=[{"role": "user", "content": full_prompt}]
     )
     return response['choices'][0]['message']['content']
+
+
+def available_models():
+    import openai
+    models = openai.Model.list()
+    for model in models['data']:
+        print(model['id'])
