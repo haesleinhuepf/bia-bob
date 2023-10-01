@@ -11,6 +11,26 @@ class Context:
     verbose = False
 
 
+class Models:
+    models = ["gpt-3.5-turbo", "gpt-4.0"]
+    input_price = [0.0015, 0.03]
+    output_price = [0.002, 0.06]
+
+    @classmethod
+    def supported_models(cls):
+        return cls.models
+
+    @classmethod
+    def input_price_per_1k_token(cls, model: str) -> float:
+        index = cls.models.index(model)
+        return cls.input_price[index]
+
+    @classmethod
+    def output_price_per_1k_token(cls, model: str) -> float:
+        index = cls.models.index(model)
+        return cls.output_price[index]
+
+
 # @register_line_cell_magic
 # def xbob(line: str = None, cell: str = None):
 #     """Sends a prompt to openAI
@@ -45,8 +65,12 @@ def ai(line: str = None, cell: str = None):
         display("Please ask a question!")
         return
 
+    # set context variables
     Context.variables = get_ipython().user_ns
-    Context.assistant.generate_response(user_input=user_input)
+
+    # generate the response
+    Context.assistant.generate_response(user_input)
+
 
 # @register_line_cell_magic
 # def bob(line: str = None, cell: str = None):
@@ -73,7 +97,7 @@ def combine_user_input(cell, line):
     elif cell:
         user_input = cell
     else:
-        user_input = none
+        user_input = None
     return user_input
 
 
@@ -118,8 +142,9 @@ class CustomAgent:
         if code is None:
             text = text + "The response did not contain any code."
         else:
-            text = text + ("The code was put into the next cell.  It is your responsibility to carefully check it "
-                           "before executing it!")
+            text = text + ("The code was put into the next cell.\n\n"
+                           "It is **your responsibility to carefully check it** before executing!\n\n")
+
         output_text(text)
 
         if code is not None:

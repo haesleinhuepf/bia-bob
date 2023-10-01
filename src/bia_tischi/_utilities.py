@@ -135,7 +135,7 @@ def output_code(code):
     """))
 
 
-def generate_answer_to_full_prompt(full_prompt, model):
+def generate_answer_to_full_prompt(full_prompt, model: str):
     """Uses a language model to generate a response to a given prompt
      and returns both the text and executable code response."""
     full_response = generate_response_from_openai(full_prompt, model)
@@ -162,9 +162,17 @@ def generate_answer_to_full_prompt(full_prompt, model):
     text = text + "\n#### Additional information\n\n"
 
     import tiktoken
+    from ._machinery import Models
     encoding = tiktoken.encoding_for_model(model)
-    text = text + "The input prompt contained " + str(len(encoding.encode(full_prompt))) + " tokens.  "
-    text = text + "The response contained " + str(len(encoding.encode(full_response))) + " tokens.  "
+    input_token = len(encoding.encode(full_prompt))
+    output_token = len(encoding.encode(full_response))
+    text = text + "Input: " + str(input_token) + " token = "
+    input_price = Models.input_price_per_1k_token(model) * input_token / 10.0
+    text = text + str(input_price) + " US Cent. "
+    text = text + "Output: " + str(output_token) + " token = "
+    output_price = Models.output_price_per_1k_token(model) * output_token / 10.0
+    text = text + str(output_price) + " US Cent, https://openai.com/pricing"
+    text = text + "\n\n"
 
     return code, text
 
