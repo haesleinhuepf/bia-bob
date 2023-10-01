@@ -158,21 +158,26 @@ def generate_answer_to_full_prompt(full_prompt, model: str):
         text = full_response
         code = None
 
-    text = "#### Assistant response\n\n" + text
-    text = text + "\n#### Additional information\n\n"
+    text = "### Assistant response\n\n" + text
 
     import tiktoken
     from ._machinery import Models
     encoding = tiktoken.encoding_for_model(model)
     input_token = len(encoding.encode(full_prompt))
     output_token = len(encoding.encode(full_response))
-    text = text + "Input: " + str(input_token) + " token = "
-    input_price = Models.input_price_per_1k_token(model) * input_token / 10.0
-    text = text + str(input_price) + " US Cent. "
-    text = text + "Output: " + str(output_token) + " token = "
-    output_price = Models.output_price_per_1k_token(model) * output_token / 10.0
-    text = text + str(output_price) + " US Cent, https://openai.com/pricing"
-    text = text + "\n\n"
+    details = "\n##### Request details\n\n"
+    details = details + "- Model: " + model + "\n"
+    details = details + "- Pricing: https://openai.com/pricing\n"
+    details = details + "- Input: " + str(input_token) + " token = "
+    input_price = Models.usd_per_1k_input_token(model) * input_token / 10.0
+    details = details + "{:.4f}".format(input_price) + " US Cent.\n"
+    details = details + "- Output: " + str(output_token) + " token = "
+    output_price = Models.usd_per_1k_output_token(model) * output_token / 10.0
+    details = details + "{:.4f}".format(output_price) + " US Cent.\n "
+    details = details + "\n"
+    text = details + text
+
+    text = text + "\n#### Additional information\n\n"
 
     return code, text
 

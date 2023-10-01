@@ -21,12 +21,12 @@ class Models:
         return cls.models
 
     @classmethod
-    def input_price_per_1k_token(cls, model: str) -> float:
+    def usd_per_1k_input_token(cls, model: str) -> float:
         index = cls.models.index(model)
         return cls.input_price[index]
 
     @classmethod
-    def output_price_per_1k_token(cls, model: str) -> float:
+    def usd_per_1k_output_token(cls, model: str) -> float:
         index = cls.models.index(model)
         return cls.output_price[index]
 
