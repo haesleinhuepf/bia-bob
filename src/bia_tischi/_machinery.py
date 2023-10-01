@@ -123,7 +123,9 @@ class CustomAgent:
                            "before executing it!")
 
         output_text(text)
-        output_code(code)
+
+        if code is not None:
+            get_ipython().set_next_input(code, replace=False)
 
 
 def init_assistant(model="gpt-3.5-turbo", temperature=0):
