@@ -62,11 +62,27 @@ def generate_response_to_user(model, user_prompt: str):
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
 
-    from ._machinery import Context
+    system_prompt = create_system_prompt()
 
+    # take the last ten entries
+    from ._machinery import Context
+    chat_history = Context.chat[-10:]
+
+    if Context.verbose:
+        print("\nUser prompt:", user_prompt)
+        print("\nSystem prompt:", system_prompt)
+        print("\nChat history:", print_chat(chat_history))
+
+    code, text = generate_response_to_system_user_chat(model, system_prompt, user_prompt, chat_history)
+
+    return code, text
+
+
+def create_system_prompt():
     # determine useful variables and functions in context
     variables = []
     functions = []
+    from ._machinery import Context
     for key, value in Context.variables.items():
         if key.startswith("_"):
             continue
@@ -75,9 +91,7 @@ def generate_response_to_user(model, user_prompt: str):
                 functions.append(key)
             continue
         variables.append(key)
-
     libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn"}
-
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality python code.
     The code should be as short as possible.
@@ -100,18 +114,19 @@ def generate_response_to_user(model, user_prompt: str):
     There must be no text after the code block.
     If the request does not require to write code, simply answer in plain text.
     """
+    return system_prompt
 
-    # take the last ten entries
-    chat_history = Context.chat[-10:]
 
-    if Context.verbose:
-        print("\nSystem prompt:", system_prompt)
-        print("\nUser prompt:", user_prompt)
-        print("\nChat history:", chat_history)
+def print_chat(chat):
+    for message in chat:
+        role = message['role']
+        content = message['content']
 
-    code, text = generate_response_to_system_user_chat(model, system_prompt, user_prompt, chat_history)
+        # Limiting the content to first 100 characters
+        # and appending "..." if the content is longer
+        content = content[:100] + '...' if len(content) > 50 else content
 
-    return code, text
+        print(f"{role}: {content}")
 
 
 def output_text(text):
