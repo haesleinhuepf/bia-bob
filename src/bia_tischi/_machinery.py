@@ -9,6 +9,7 @@ class Context:
     assistant = None
     variables = None
     verbose = False
+    session_price_us_cent = 0.0
     chat = []
 
 
@@ -60,10 +61,6 @@ def ai(line: str = None, cell: str = None):
     if Context.assistant is None:
         display("Please first init the assistant!")
         return
-
-    if Context.verbose:
-        print("\nLine:", line)
-        print("\nCell:", cell)
 
     user_input = combine_user_input(line, cell)
     if user_input is None:
@@ -145,10 +142,13 @@ class CustomAgent:
         code, text = generate_response_to_user(self.model, user_input)
 
         if code is None:
-            text = text + "The response did not contain any code."
+            text = text + ("The response did not contain any code."
+                           "If you expected code, it could be a mistake in parsing the "
+                           "assistants output. "
+                           "This can usually be fixed by running the request cell again.")
         else:
-            text = text + ("The code was put into the next cell.\n\n"
-                           "It is **your responsibility to carefully check it** before executing!\n\n")
+            text = text + ("Code was put into the next cell.\n\n"
+                           "It is **your responsibility to carefully check the code** before executing!\n\n")
 
         output_text(text)
 
@@ -158,5 +158,7 @@ class CustomAgent:
 
 def init_assistant(model="gpt-3.5-turbo", temperature=0):
     Context.assistant = CustomAgent(model, temperature)
-    print("Assistant initialised.\n\nYou can call it using the %ai command, e.g.\n\n%ai please generate a random 2D "
-          "grayscale image.")
+    print("Assistant initialised. You can now use it, e.g., copy and paste the"
+          "below two lines into the next cell and execute it."
+          "\n\n%%ai"
+          "\nplease generate a noisy grayscale image containing 10 blurry blobs with a diameter of 20 pixels each.")

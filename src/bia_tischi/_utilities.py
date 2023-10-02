@@ -64,18 +64,65 @@ def generate_response_to_user(model, user_prompt: str):
 
     system_prompt = create_system_prompt()
 
-    # take the last ten entries
+    # take the last n chat entries
     from ._machinery import Context
-    chat_history = Context.chat[-10:]
+    n = 10
+    chat_history = Context.chat[-n:]
 
     if Context.verbose:
         print("\nUser prompt:", user_prompt)
         print("\nSystem prompt:", system_prompt)
-        print("\nChat history:", print_chat(chat_history))
+        print_chat(chat_history)
 
-    code, text = generate_response_to_system_user_chat(model, system_prompt, user_prompt, chat_history)
+    full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history)
+
+    if Context.verbose:
+        print("\n\nFull response:\n", full_response)
+
+    pricing_summary = create_pricing_summary(model, chat_history, full_response, system_prompt, user_prompt)
+
+    # Search for the code pattern in the text
+    import re
+    pattern = re.compile(r'([\s\S]*?)```python([\s\S]*?)```')
+    match = pattern.search(full_response)
+    if match:
+        text = match.group(1).strip()
+        code = match.group(2).strip()
+    else:
+        text = full_response
+        code = None
+
+    text = pricing_summary + "### Assistant response\n\n" + text
+    text += "\n#### Additional information\n\n"
 
     return code, text
+
+
+def create_pricing_summary(model, chat_history, full_response, system_prompt, user_prompt):
+    import tiktoken
+    from ._machinery import Models, Context
+    encoding = tiktoken.encoding_for_model(model)
+    input_token = (len(encoding.encode(user_prompt))
+                   + len(encoding.encode(system_prompt))
+                   + len(encoding.encode(concatenate_chat_content(chat_history))))
+    output_token = len(encoding.encode(full_response))
+    pricing = "\n##### Pricing\n\n"
+    pricing += "- Model: " + model + "\n"
+    pricing += "- Pricing: https://openai.com/pricing\n"
+    pricing += "- Last input: " + str(input_token) + " token = "
+    input_price = Models.usd_per_1k_input_token(model) * input_token / 10.0
+    pricing += print_costs_in_cent(input_price)
+    pricing += "- Last output: " + str(output_token) + " token = "
+    output_price = Models.usd_per_1k_output_token(model) * output_token / 10.0
+    pricing += print_costs_in_cent(output_price)
+    Context.session_price_us_cent += input_price + output_price
+    pricing += "- Total session costs: " + print_costs_in_cent(Context.session_price_us_cent)
+    pricing += "\n"
+    return pricing
+
+
+def print_costs_in_cent(input_price):
+    return "{:.4f}".format(input_price) + " US Cent.\n"
 
 
 def create_system_prompt():
@@ -96,18 +143,18 @@ def create_system_prompt():
     If the request entails writing code, write concise professional bioimage analysis high-quality python code.
     The code should be as short as possible.
     If there are several ways to solve the task, chose the option with the least amount of code.
-    Preferably, use these python libraries {",".join([str(v) for v in libraries])}.
-    Show results and save them in variables.
+    The code will be executed by the user within a Jupyter notebook.
+    You can only use these python libraries: {",".join([str(v) for v in libraries])}.
+    If you create images, show them using matplotlib and save them in variables for later reuse.
     The following variables are available: {",".join([str(v) for v in variables])}
     Do not set the values of the variables that are available.
     The following functions are available: {",".join([str(v) for v in functions])}
-    A live python environment is available and the code you produce will be executed afterwards.
-
+    
     Before writing the code, provide a concise step-by-step plan 
     of what the code will be going to do. 
     This plan must not contain any "`" characters and should be written in plain text.
     Then print the code.
-    The code block must start with the line: 
+    Importantly, the code block must start with the line: 
     ```python
     and it must end with the line:
     ```
@@ -118,15 +165,19 @@ def create_system_prompt():
 
 
 def print_chat(chat):
+    print("\nChat history:")
     for message in chat:
         role = message['role']
         content = message['content']
+        print(role)
+        print(content)
 
-        # Limiting the content to first 100 characters
-        # and appending "..." if the content is longer
-        content = content[:100] + '...' if len(content) > 50 else content
 
-        print(f"{role}: {content}")
+def concatenate_chat_content(chat):
+    concatenated_chat = ""
+    for message in chat:
+        concatenated_chat += message['content']
+    return concatenated_chat
 
 
 def output_text(text):
@@ -150,35 +201,6 @@ def output_code(code):
     """))
 
 
-def generate_response_to_system_user_chat(model: str, system_prompt, user_prompt, chat_history):
-    """Uses a language model to generate a response to a given prompt
-     and returns both the text and executable code response."""
-    full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history)
-
-    from ._machinery import Context
-    if Context.verbose:
-        print("\n\nFull response:\n", full_response)
-
-    # Define the code pattern
-    import re
-    pattern = re.compile(r'([\s\S]*?)```python([\s\S]*?)```')
-
-    # Search for the pattern in the text
-    match = pattern.search(full_response)
-
-    if match:
-        text = match.group(1).strip()
-        code = match.group(2).strip()
-    else:
-        text = full_response
-        code = None
-
-    text = "### Assistant response\n\n" + text
-    text += "\n#### Additional information\n\n"
-
-    return code, text
-
-
 def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
@@ -196,25 +218,6 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
 
     from ._machinery import Context
     Context.chat += user + [{"role": "assistant", "content": reply}]
-
-    # TODO: return also input and output tokens and compute the corresponding text
-    #  in the calling function
-    # import tiktoken
-    # from ._machinery import Models
-    # encoding = tiktoken.encoding_for_model(model)
-    # input_token = len(encoding.encode(full_prompt))
-    # output_token = len(encoding.encode(full_response))
-    # details = "\n##### Request details\n\n"
-    # details += "- Model: " + model + "\n"
-    # details += "- Pricing: https://openai.com/pricing\n"
-    # details += "- Input: " + str(input_token) + " token = "
-    # input_price = Models.usd_per_1k_input_token(model) * input_token / 10.0
-    # details += "{:.4f}".format(input_price) + " US Cent.\n"
-    # details += "- Output: " + str(output_token) + " token = "
-    # output_price = Models.usd_per_1k_output_token(model) * output_token / 10.0
-    # details += "{:.4f}".format(output_price) + " US Cent.\n "
-    # details += "\n"
-    # text = details + text
 
     return reply
 
