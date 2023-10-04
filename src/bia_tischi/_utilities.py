@@ -92,33 +92,10 @@ def generate_response_to_user(model, user_prompt: str):
         text = full_response
         code = None
 
-    text = pricing_summary + "### Assistant response\n\n" + text
-    text += "\n#### Additional information\n\n"
 
     return code, text
 
 
-def create_pricing_summary(model, chat_history, full_response, system_prompt, user_prompt):
-    import tiktoken
-    from ._machinery import Models, Context
-    encoding = tiktoken.encoding_for_model(model)
-    input_token = (len(encoding.encode(user_prompt))
-                   + len(encoding.encode(system_prompt))
-                   + len(encoding.encode(concatenate_chat_content(chat_history))))
-    output_token = len(encoding.encode(full_response))
-    pricing = "\n##### Pricing\n\n"
-    pricing += "- Model: " + model + "\n"
-    pricing += "- Pricing: https://openai.com/pricing\n"
-    pricing += "- Last input: " + str(input_token) + " token = "
-    input_price = Models.usd_per_1k_input_token(model) * input_token / 10.0
-    pricing += print_costs_in_cent(input_price)
-    pricing += "- Last output: " + str(output_token) + " token = "
-    output_price = Models.usd_per_1k_output_token(model) * output_token / 10.0
-    pricing += print_costs_in_cent(output_price)
-    Context.session_price_us_cent += input_price + output_price
-    pricing += "- Total session costs: " + print_costs_in_cent(Context.session_price_us_cent)
-    pricing += "\n"
-    return pricing
 
 
 def print_costs_in_cent(input_price):

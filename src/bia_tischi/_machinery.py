@@ -13,26 +13,6 @@ class Context:
     chat = []
 
 
-class Models:
-    models = ["gpt-3.5-turbo", "gpt-4.0"]
-    input_price = [0.0015, 0.03]
-    output_price = [0.002, 0.06]
-
-    @classmethod
-    def supported_models(cls):
-        return cls.models
-
-    @classmethod
-    def usd_per_1k_input_token(cls, model: str) -> float:
-        index = cls.models.index(model)
-        return cls.input_price[index]
-
-    @classmethod
-    def usd_per_1k_output_token(cls, model: str) -> float:
-        index = cls.models.index(model)
-        return cls.output_price[index]
-
-
 # @register_line_cell_magic
 # def xbob(line: str = None, cell: str = None):
 #     """Sends a prompt to openAI
