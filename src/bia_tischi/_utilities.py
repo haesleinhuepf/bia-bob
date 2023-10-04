@@ -163,21 +163,6 @@ def output_text(text):
     display(Markdown(text))
 
 
-def output_code(code):
-    """Display code content in the notebook."""
-    from IPython.display import display
-    from IPython.core.display import HTML
-
-    display(HTML(f"""
-    <details>
-    <summary> Show code </summary>
-    <pre>
-    {code}
-    </pre>
-    </details>
-    """))
-
-
 def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
