@@ -59,8 +59,7 @@ def ai(line: str = None, cell: str = None):
     """
 
     if Context.assistant is None:
-        display("Please first init the assistant!")
-        return
+        init_assistant()
 
     user_input = combine_user_input(line, cell)
     if user_input is None:
@@ -149,7 +148,8 @@ class CustomAgent:
 
 def init_assistant(model="gpt-3.5-turbo", temperature=0):
     Context.assistant = CustomAgent(model, temperature)
-    print("Assistant initialised. You can now use it, e.g., copy and paste the"
+    if Context.verbose:
+        print("Assistant initialised. You can now use it, e.g., copy and paste the"
           "below two lines into the next cell and execute it."
           "\n\n%%ai"
           "\nplease generate a noisy grayscale image containing 10 blurry blobs with a diameter of 20 pixels each.")
