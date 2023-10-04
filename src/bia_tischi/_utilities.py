@@ -79,8 +79,6 @@ def generate_response_to_user(model, user_prompt: str):
     if Context.verbose:
         print("\n\nFull response:\n", full_response)
 
-    pricing_summary = create_pricing_summary(model, chat_history, full_response, system_prompt, user_prompt)
-
     # Search for the code pattern in the text
     import re
     pattern = re.compile(r'([\s\S]*?)```python([\s\S]*?)```')
