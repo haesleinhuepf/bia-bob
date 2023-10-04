@@ -13,7 +13,7 @@ class Context:
 
 
 @register_line_cell_magic
-def ai(line: str = None, cell: str = None):
+def bob(line: str = None, cell: str = None):
     """Sends a prompt to openAI
     and shows the text and code response
     and pastes the code into the next cell.
@@ -69,5 +69,5 @@ def init_assistant(model="gpt-3.5-turbo", temperature=0):
     if Context.verbose:
         print("Assistant initialised. You can now use it, e.g., copy and paste the"
           "below two lines into the next cell and execute it."
-          "\n\n%%ai"
+          "\n\n%%bob"
           "\nplease generate a noisy grayscale image containing 10 blurry blobs with a diameter of 20 pixels each.")
