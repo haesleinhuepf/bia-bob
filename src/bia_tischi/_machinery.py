@@ -9,7 +9,6 @@ class Context:
     assistant = None
     variables = None
     verbose = False
-    session_price_us_cent = 0.0
     chat = []
 
 
