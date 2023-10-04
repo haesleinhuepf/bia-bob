@@ -141,15 +141,6 @@ class CustomAgent:
         """
         code, text = generate_response_to_user(self.model, user_input)
 
-        if code is None:
-            text = text + ("The response did not contain any code."
-                           "If you expected code, it could be a mistake in parsing the "
-                           "assistants output. "
-                           "This can usually be fixed by running the request cell again.")
-        else:
-            text = text + ("Code was put into the next cell.\n\n"
-                           "It is **your responsibility to carefully check the code** before executing!\n\n")
-
         output_text(text)
 
         if code is not None:
