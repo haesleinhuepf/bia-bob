@@ -96,12 +96,6 @@ def generate_response_to_user(model, user_prompt: str):
     return code, text
 
 
-
-
-def print_costs_in_cent(input_price):
-    return "{:.4f}".format(input_price) + " US Cent.\n"
-
-
 def create_system_prompt():
     # determine useful variables and functions in context
     variables = []
