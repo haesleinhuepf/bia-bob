@@ -1,56 +1,73 @@
-class _context():
+from IPython.core.getipython import get_ipython
+from IPython.core.magic import register_line_cell_magic
+from IPython.display import display
+
+from ._utilities import generate_response_to_user, output_text
+
+
+class Context:
+    assistant = None
     variables = None
     verbose = False
-
-
-from IPython.core.magic import register_line_cell_magic
+    chat = []
 
 
 @register_line_cell_magic
-def tischi(line: str = None, cell: str = None):
-    from IPython.display import display, Markdown
-    if _context.agent is None:
-        init_assistant({})
+def bob(line: str = None, cell: str = None):
+    """Sends a prompt to openAI
+    and shows the text and code response
+    and pastes the code into the next cell.
+    """
 
-    if _context.verbose:
-        print("Variables:", len(_context.variables.keys()))
+    if Context.assistant is None:
+        init_assistant()
 
+    user_input = combine_user_input(line, cell)
+    if user_input is None:
+        display("Please ask a question!")
+        return
+
+    # set context variables
+    Context.variables = get_ipython().user_ns
+
+    # generate the response
+    Context.assistant.generate_response_to_user(user_input)
+
+
+def combine_user_input(line, cell):
     if line and cell:
-        prompt = line + "\n" + cell
+        user_input = line + "\n" + cell
     elif line:
-        prompt = line
+        user_input = line
     elif cell:
-        prompt = cell
+        user_input = cell
     else:
-        display("Please enter a question behind %tischi")
-        return ""
+        user_input = None
+    return user_input
 
-    result = _context.agent.run(input=prompt)
-
-    display(Markdown(result))
 
 class CustomAgent:
-    def __init__(self):
-        pass
+    def __init__(self, model="gpt-3.5-turbo", temperature=0):
+        self.model = model
+        self.temperature = temperature
 
-    def run(self, input: str):
-        """A prompt helper function that sends a message to openAI
-        and returns only the text response.
+    def generate_response_to_user(self, user_input: str):
+        """Sends a prompt to openAI
+        and shows the text response
+        and pastes the code into the next cell.
         """
-        from ._utilities import generate_and_execute_code
-        generate_and_execute_code(input)
-        return ""
+        code, text = generate_response_to_user(self.model, user_input)
+
+        output_text(text)
+
+        if code is not None:
+            get_ipython().set_next_input(code, replace=False)
 
 
-def init_assistant(variables, temperature=0):
-    if _context.verbose:
-        print("Initializing assistant")
-
-    _context.agent = CustomAgent()
-
-    # store the variables
-    _context.variables = variables
-
-
-
-init_assistant(globals())
+def init_assistant(model="gpt-3.5-turbo", temperature=0):
+    Context.assistant = CustomAgent(model, temperature)
+    if Context.verbose:
+        print("Assistant initialised. You can now use it, e.g., copy and paste the"
+          "below two lines into the next cell and execute it."
+          "\n\n%%bob"
+          "\nplease generate a noisy grayscale image containing 10 blurry blobs with a diameter of 20 pixels each.")
