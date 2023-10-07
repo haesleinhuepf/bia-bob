@@ -78,7 +78,7 @@ def create_system_prompt():
     from skimage.io import imread
     image = imread(filename)
     ```
-    * Display an image stored in a variable `image`:
+    * Display an image stored in a variable `image` (this also works with label images):
     ```
     import stackview
     stackview.insight(image)
