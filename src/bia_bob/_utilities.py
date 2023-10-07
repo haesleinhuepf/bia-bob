@@ -48,7 +48,7 @@ def create_system_prompt():
                 functions.append(key)
             continue
         variables.append(key)
-    libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn"}
+    libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn", "stackview"}
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality python code.
     The code should be as short as possible.
@@ -70,6 +70,29 @@ def create_system_prompt():
     ```
     There must be no text after the code block.
     If the request does not require to write code, simply answer in plain text.
+    
+    ## Code snippets
+    If the user asks for those simple tasks, use these code snippets.
+    * Load a image file from disc and store it in a variable:
+    ```
+    from skimage.io import imread
+    image = imread(filename)
+    ```
+    * Display an image stored in a variable `image`:
+    ```
+    import stackview
+    stackview.insight(image)
+    ```
+    * Slicing an image stored in a variable `image`:
+    ```
+    import stackview
+    stackview.slice(image)
+    ```
+    * Showing an image stored in variable `image` and a segmented image stored in variable `labels` on top:
+    ```
+    import stackview
+    stackview.curtain(image, labels)
+    ```
     """
     return system_prompt
 
