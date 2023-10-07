@@ -2,6 +2,8 @@
 
 BIA `bob` is a Jupyter-based assistant for interacting with data using generated python code. It is based on [OpenAI's API](https://openai.com/blog/openai-api). You need an openai API account to use it.
 
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/screencast.png)
+
 ## Usage
 
 You can initialize Bob like this:
@@ -24,7 +26,7 @@ image = imread('blobs.tif')
 stackview.insight(image)
 ```
 
-![img.png](docs/images/load_and_show_blobs.png)
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
 
 ## Known issues
 
