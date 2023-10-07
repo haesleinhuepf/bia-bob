@@ -1,6 +1,18 @@
 # bia-bob
 
-BIA `bob` is a Jupyter-based assistant for interacting with data using generated python code. 
+BIA `bob` is a Jupyter-based assistant for interacting with data using generated python code. It is based on [OpenAI's API](https://openai.com/blog/openai-api). You need an openai API account to use it.
+
+## Usage
+
+You can initialize Bob like this:
+```
+from bia_bob import bob
+```
+
+Afterwards, you can ask Bob questions like this:
+```
+%bob Load blobs.tif and show it
+```
 
 
 ## Known issues
