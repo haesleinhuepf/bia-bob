@@ -46,6 +46,10 @@ mamba activate bt39
 pip install bia-bob
 ```
 
+## Similar projects
+
+There are similar projects offering LLM-based support in Jupyter notebooks:
+* [jupyter-ai](https://github.com/jupyterlab/jupyter-ai)
 
 ## Issues
 
