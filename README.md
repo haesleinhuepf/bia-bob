@@ -14,13 +14,24 @@ Afterwards, you can ask Bob questions like this:
 %bob Load blobs.tif and show it
 ```
 
+It will then respond with a python code snippet that you can execute ([see full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/analysis_workflow.ipynb)):
+
+```
+from skimage.io import imread
+import stackview
+
+image = imread('blobs.tif')
+stackview.insight(image)
+```
+
+![img.png](docs/images/load_and_show_blobs.png)
 
 ## Known issues
 
 If you want to ask `bob` a question, you need to put a space before the `?`.
 
 ```
-%bob What do you know about blobs.gif ?
+%bob What do you know about blobs.tif ?
 ```
 
 ## Installation
