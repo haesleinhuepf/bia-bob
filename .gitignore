@@ -5,8 +5,9 @@ build/
 dist/
 .idea/
 
-*/.ipynb_checkpoints/*
+**/.ipynb_checkpoints/*
 */bia_bob.egg-info/*
+*/bia_tischi.egg-info/*
 *__pycache__*
 
 *Untitled*
