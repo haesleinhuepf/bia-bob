@@ -2,7 +2,7 @@ from IPython.core.getipython import get_ipython
 from IPython.core.magic import register_line_cell_magic
 from IPython.display import display
 
-from ._utilities import generate_response_to_user, output_text
+from ._utilities import generate_response_to_user, output_text, keep_available_packages
 
 
 class Context:
@@ -10,6 +10,28 @@ class Context:
     variables = None
     verbose = False
     chat = []
+    libraries = keep_available_packages([
+        "scikit-image",
+        "numpy",
+        "scipy",
+        "pandas",
+        "matplotlib",
+        "seaborn",
+        "scikit-learn",
+        "stackview",
+        "torch",
+        "pytorch-lightning",
+        "cellpose",
+        "stardist",
+        "n2v",
+        "pyclesperanto-prototype",
+        "apoc",
+        "napari-segment-blobs-and-things-with-membranes",
+        "napari-simpleitk-image-processing",
+        "napari-skimage-regionprops",
+
+        # to add libraries here, add their pypi package names (not their import names)
+    ])
 
 
 @register_line_cell_magic

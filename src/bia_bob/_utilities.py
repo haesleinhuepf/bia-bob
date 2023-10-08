@@ -48,14 +48,14 @@ def create_system_prompt():
                 functions.append(key)
             continue
         variables.append(key)
-    libraries = {"skimage", "numpy", "scipy", "pandas", "matplotlib", "seaborn", "sklearn", "stackview"}
+    libraries = Context.libraries
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality python code.
     The code should be as short as possible.
     If there are several ways to solve the task, chose the option with the least amount of code.
     The code will be executed by the user within a Jupyter notebook.
     You can only use these python libraries: {",".join([str(v) for v in libraries])}.
-    If you create images, show them using matplotlib and save them in variables for later reuse.
+    If you create images, show the results and save them in variables for later reuse.
     The following variables are available: {",".join([str(v) for v in variables])}
     Do not set the values of the variables that are available.
     The following functions are available: {",".join([str(v) for v in functions])}
@@ -145,3 +145,19 @@ def available_models():
     models = openai.Model.list()
     for model in models['data']:
         print(model['id'])
+
+
+def keep_available_packages(libraries):
+    """Goes through a given list of package names and return those that are installed on the system."""
+    try:
+        # Python 3.8+
+        from importlib.metadata import distributions
+    except ImportError:
+        # Python < 3.8
+        from importlib_metadata import distributions
+
+    installed = [dist.metadata['Name'] for dist in distributions()]
+    result = [i for i in libraries if i in installed]
+
+    return result
+
