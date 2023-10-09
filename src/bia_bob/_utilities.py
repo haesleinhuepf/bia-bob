@@ -61,7 +61,7 @@ def create_system_prompt():
     The following functions are available: {",".join([str(v) for v in functions])}
     
     Before writing the code, provide a concise step-by-step plan 
-    of what the code will be going to do. 
+    of what the code will be going to do. Always provide this text explanation first.
     This plan must not contain any "`" characters and should be written in plain text.
     Then print the code.
     Importantly, the code block must start with the line: 
