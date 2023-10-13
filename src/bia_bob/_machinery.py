@@ -9,6 +9,7 @@ class Context:
     assistant = None
     variables = None
     verbose = False
+    auto_execute = False
     chat = []
     libraries = keep_available_packages([
         "scikit-image",
@@ -83,7 +84,13 @@ class CustomAgent:
         output_text(text)
 
         if code is not None:
-            get_ipython().set_next_input(code, replace=False)
+            p = get_ipython()
+            if Context.auto_execute:
+                p.set_next_input(code, replace=True)
+                p.run_cell(code)
+            else:
+                p.set_next_input(code, replace=False)
+            
 
 
 def init_assistant(model="gpt-3.5-turbo", temperature=0):
