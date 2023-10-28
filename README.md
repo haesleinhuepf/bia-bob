@@ -40,9 +40,21 @@ If you want to ask `bob` a question, you need to put a space before the `?`.
 
 You can install `bia-bob` using pip. it is recommended to install it into via conda/mamba environment. If you have never used conda before, please [read this guide first](https://biapol.github.io/blog/mara_lampert/getting_started_with_mambaforge_and_python/readme.html).  
 
+It is recommended to install `bia-bob` in a conda-environment together with useful tools for bio-image analysis. 
+
 ```
-mamba create --name bt39 python=3.9 git
+mamba env create -f https://github.com/haesleinhuepf/bia-bob/raw/main/environment.yml
+```
+
+You can then activate this environment...
+
+```
 mamba activate bt39
+```
+
+... and install `bia-bob`.
+
+```
 pip install bia-bob
 ```
 
