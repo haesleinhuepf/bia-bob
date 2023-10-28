@@ -81,7 +81,8 @@ class CustomAgent:
         """
         code, text = generate_response_to_user(self.model, user_input)
 
-        output_text(text)
+        if code is None or not Context.auto_execute:
+            output_text(text)
 
         if code is not None:
             p = get_ipython()
@@ -93,8 +94,9 @@ class CustomAgent:
             
 
 
-def init_assistant(model="gpt-3.5-turbo", temperature=0):
+def init_assistant(model="gpt-3.5-turbo", temperature=0, auto_execute:bool = False):
     Context.assistant = CustomAgent(model, temperature)
+    Context.auto_execute = auto_execute
     if Context.verbose:
         print("Assistant initialised. You can now use it, e.g., copy and paste the"
           "below two lines into the next cell and execute it."
