@@ -9,4 +9,4 @@ bob.initialize = init_assistant
 bob.__version__ = __version__
 
 
-from ._fine_tuning import FineTuningFromNotebooks
+from ._fine_tuning import FineTuningFromQuestionsAndAnswers

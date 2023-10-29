@@ -174,3 +174,18 @@ def filter_out_blacklist(old_list, black_list):
         if allowed:
             new_list.append(entry)
     return new_list
+
+
+def load_jsonl_file(file_path):
+    import json
+    with open(file_path, 'r') as file:
+        data = [json.loads(line) for line in file]
+    return data
+
+
+def save_jsonl_file(dictionary_data, final_file_name):
+    import json
+    with open(final_file_name, 'w') as outfile:
+        for entry in dictionary_data:
+            json.dump(entry, outfile)
+            outfile.write('\n')
