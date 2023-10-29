@@ -161,3 +161,16 @@ def keep_available_packages(libraries):
 
     return result
 
+
+def filter_out_blacklist(old_list, black_list):
+    """Filters out entries from a list that contain a blacklisted string"""
+    new_list = []
+    for entry in old_list:
+        allowed = True
+        for black in black_list:
+            if black in str(entry):
+                allowed = False
+                break
+        if allowed:
+            new_list.append(entry)
+    return new_list
