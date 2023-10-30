@@ -28,6 +28,12 @@ stackview.insight(image)
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
 
+### Automatic bug fixing
+
+Bob can fix simple bugs in code you executed. Just call `bob.fix()` right after the error happened.
+
+![img.png](docs/images/bug_fixing.png)
+
 ## Known issues
 
 If you want to ask `bob` a question, you need to put a space before the `?`.
