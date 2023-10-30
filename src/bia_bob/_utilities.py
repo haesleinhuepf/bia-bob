@@ -115,8 +115,27 @@ def concatenate_chat_content(chat):
 
 def output_text(text):
     """Display markdown content in the notebook."""
-    from IPython.display import display, Markdown
-    display(Markdown(text))
+    if is_notebook():
+        from IPython.display import display, Markdown
+        display(Markdown(text))
+    else:
+        print(text)
+    
+
+def is_notebook() -> bool:
+    # adapted from: https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook
+    from IPython.core.getipython import get_ipython
+
+    try:
+        shell = get_ipython().__class__.__name__
+        if shell == 'ZMQInteractiveShell':
+            return True   # Jupyter notebook or qtconsole
+        elif shell == 'TerminalInteractiveShell':
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False      # Probably standard Python interpreter
 
 
 def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history):
