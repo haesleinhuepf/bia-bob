@@ -28,6 +28,14 @@ stackview.insight(image)
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
 
+
+### Code documentation
+
+Using the `%%doc` magic, you can generate documentation for a given code cell.
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/documenting_mini.gif)
+
+
 ## Known issues
 
 If you want to ask `bob` a question, you need to put a space before the `?`.
