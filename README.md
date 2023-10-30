@@ -30,9 +30,9 @@ stackview.insight(image)
 
 ### Automatic bug fixing
 
-Bob can fix simple bugs in code you executed. Just call `bob.fix()` right after the error happened.
+Bob can fix simple bugs in code you executed. Just add `%%fix` on top of the cell right after the error happened.
 
-![img.png](docs/images/bug_fixing.png)
+![img.png](docs/images/bug_fixing_mini.gif)
 
 ## Known issues
 
