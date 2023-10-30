@@ -8,4 +8,3 @@ from ._bug_fixing import fix
 
 bob.initialize = init_assistant
 bob.__version__ = __version__
-bob.fix = fix
