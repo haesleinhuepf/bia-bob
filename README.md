@@ -11,28 +11,28 @@ You can initialize Bob like this:
 from bia_bob import bob
 ```
 
-Afterwards, you can ask Bob questions like this:
+### Code generation
+
+Afterwards, you can ask Bob to generate code like this:
 ```
 %bob Load blobs.tif and show it
 ```
 
 It will then respond with a python code snippet that you can execute ([see full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/analysis_workflow.ipynb)):
 
-```
-from skimage.io import imread
-import stackview
-
-image = imread('blobs.tif')
-stackview.insight(image)
-```
-
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
 
-### Automatic bug fixing
+### Bug fixing
 
 Bob can fix simple bugs in code you executed. Just add `%%fix` on top of the cell right after the error happened.
 
 ![img.png](docs/images/bug_fixing_mini.gif)
+
+### Code documentation
+
+Using the `%%doc` magic, you can generate documentation for a given code cell.
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/documenting_mini.gif)
 
 ## Known issues
 
@@ -46,9 +46,21 @@ If you want to ask `bob` a question, you need to put a space before the `?`.
 
 You can install `bia-bob` using pip. it is recommended to install it into via conda/mamba environment. If you have never used conda before, please [read this guide first](https://biapol.github.io/blog/mara_lampert/getting_started_with_mambaforge_and_python/readme.html).  
 
+It is recommended to install `bia-bob` in a conda-environment together with useful tools for bio-image analysis. 
+
 ```
-mamba create --name bt39 python=3.9 git
+mamba env create -f https://github.com/haesleinhuepf/bia-bob/raw/main/environment.yml
+```
+
+You can then activate this environment...
+
+```
 mamba activate bt39
+```
+
+... and install `bia-bob`.
+
+```
 pip install bia-bob
 ```
 
