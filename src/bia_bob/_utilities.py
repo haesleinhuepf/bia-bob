@@ -108,13 +108,6 @@ def print_chat(chat):
         print(content)
 
 
-def concatenate_chat_content(chat):
-    concatenated_chat = ""
-    for message in chat:
-        concatenated_chat += message['content']
-    return concatenated_chat
-
-
 def output_text(text):
     """Display markdown content in the notebook."""
     if is_notebook():
