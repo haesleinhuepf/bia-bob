@@ -93,7 +93,3 @@ def init_assistant(model="gpt-3.5-turbo", temperature=0):
           "below two lines into the next cell and execute it."
           "\n\n%%bob"
           "\nplease generate a noisy grayscale image containing 10 blurry blobs with a diameter of 20 pixels each.")
-
-def wtf():
-    from IPython.core.getipython import get_ipython
-    i = get_ipython()
