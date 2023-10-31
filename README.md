@@ -6,14 +6,14 @@ BIA `bob` is a Jupyter-based assistant for interacting with data using generated
 
 ## Usage
 
-You can initialize Bob like this:
+You can initialize `bob` like this:
 ```
 from bia_bob import bob
 ```
 
 ### Code generation
 
-Afterwards, you can ask Bob to generate code like this:
+You can ask Bob to generate code like this:
 ```
 %bob Load blobs.tif and show it
 ```
@@ -64,6 +64,8 @@ mamba activate bt39
 pip install bia-bob
 ```
 
+Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+
 ## Development
 
 If you want to contribute to `bia-bob`, you can install it in development mode like this:
@@ -82,7 +84,7 @@ There are similar projects offering LLM-based support in Jupyter notebooks:
 
 ## Issues
 
-If you encounter any problems or want to provide feedback or suggestions, please create a thread on [image.sc](https://image.sc) along with a detailed description and tag [@haesleinhuepf].
+If you encounter any problems or want to provide feedback or suggestions, please create a thread on [image.sc](https://image.sc) along with a detailed description and tag @haesleinhuepf .
 
 
 
