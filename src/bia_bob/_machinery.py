@@ -50,9 +50,6 @@ def bob(line: str = None, cell: str = None):
         display("Please ask a question!")
         return
 
-    # set context variables
-    Context.variables = get_ipython().user_ns
-
     # generate the response
     Context.assistant.generate_response_to_user(user_input)
 
@@ -94,9 +91,28 @@ class CustomAgent:
             
 
 
-def init_assistant(model="gpt-3.5-turbo", temperature=0, auto_execute:bool = False):
+def init_assistant(model="gpt-3.5-turbo", temperature=0, auto_execute:bool = False, variables:dict=None):
+    """Initialises the assistant.
+
+    Parameters
+    ----------
+    model: str
+    temperature: float, optional (default: 0, between 0 and 1) The higher the temperature, the more random the output.
+    auto_execute: bool, optional (default: False) If True, the assistant will automatically execute the code it generates.
+    variables: dict, optional (default: None) A dictionary of variables that should be available to the assistant.
+               If None, it will use the global variables of the current namespace.
+
+    """
+    from IPython.core.getipython import get_ipython
     Context.assistant = CustomAgent(model, temperature)
     Context.auto_execute = auto_execute
+
+    if variables is None:
+        p = get_ipython()
+        Context.variables = p.user_ns
+    else:
+        Context.variables = variables
+
     if Context.verbose:
         print("Assistant initialised. You can now use it, e.g., copy and paste the"
           "below two lines into the next cell and execute it."

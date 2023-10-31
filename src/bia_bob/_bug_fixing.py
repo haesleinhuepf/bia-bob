@@ -31,7 +31,6 @@ Please correct the code.
     if Context.assistant is None:
         init_assistant()
     p = get_ipython()
-    Context.variables = p.user_ns
 
     code, text = generate_response_to_user(Context.assistant.model, prompt)
 
