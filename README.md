@@ -64,10 +64,21 @@ mamba activate bt39
 pip install bia-bob
 ```
 
+## Development
+
+If you want to contribute to `bia-bob`, you can install it in development mode like this:
+
+```
+git clone https://github.com/haesleinhuepf/bia-bob.git
+cd bia-bob
+pip install -e .
+```
+
 ## Similar projects
 
 There are similar projects offering LLM-based support in Jupyter notebooks:
 * [jupyter-ai](https://github.com/jupyterlab/jupyter-ai)
+* [napari-chatGPT](https://github.com/royerlab/napari-chatgpt)
 
 ## Issues
 
