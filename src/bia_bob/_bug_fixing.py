@@ -1,4 +1,6 @@
 from IPython.core.magic import register_line_cell_magic
+
+
 @register_line_cell_magic
 def fix(line: str = None, cell: str = None):
     """This Jupyter Magic automatically fixes code when it's in the first line of a cell that caused an error that just

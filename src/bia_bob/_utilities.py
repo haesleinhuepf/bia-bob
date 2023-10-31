@@ -146,7 +146,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     import openai
     from ._machinery import Context
 
-    # assemple prompt
+    # assemble prompt
     system_message = [{"role": "system", "content": system_prompt}]
     user_message = [{"role": "user", "content": user_prompt}]
 

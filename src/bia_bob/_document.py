@@ -1,5 +1,6 @@
-
 from IPython.core.magic import register_line_cell_magic
+
+
 @register_line_cell_magic
 def doc(line:str=None, cell:str=None):
     """

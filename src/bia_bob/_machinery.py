@@ -1,8 +1,5 @@
-from IPython.core.getipython import get_ipython
 from IPython.core.magic import register_line_cell_magic
-from IPython.display import display
-
-from ._utilities import generate_response_to_user, output_text, keep_available_packages
+from ._utilities import keep_available_packages
 
 
 class Context:
@@ -41,6 +38,9 @@ def bob(line: str = None, cell: str = None):
     and shows the text and code response
     and pastes the code into the next cell.
     """
+    from IPython.core.getipython import get_ipython
+    from IPython.display import display
+    from ._utilities import generate_response_to_user, output_text
 
     if Context.model is None:
         init_assistant()
