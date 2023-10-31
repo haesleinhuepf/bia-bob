@@ -1,0 +1,19 @@
+name: bt39
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.9
+  - aicsimageio
+  - bioformats_jar
+  - scikit-image=0.19.3
+  - pandas
+  - seaborn
+  - jupyterlab
+  - matplotlib
+  - scikit-learn
+  - stackview
+  - scipy
+  - numpy
+  
