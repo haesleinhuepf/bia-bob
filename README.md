@@ -91,6 +91,7 @@ pip install -e .
 There are similar projects offering LLM-based support in Jupyter notebooks:
 * [jupyter-ai](https://github.com/jupyterlab/jupyter-ai)
 * [napari-chatGPT](https://github.com/royerlab/napari-chatgpt)
+* [bioimageio-chatbot](https://github.com/bioimage-io/bioimageio-chatbot)
 
 ## Issues
 
