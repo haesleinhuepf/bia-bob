@@ -60,17 +60,6 @@ def create_system_prompt():
     Do not set the values of the variables that are available.
     The following functions are available: {",".join([str(v) for v in functions])}
     
-    Before writing the code, provide a concise step-by-step plan 
-    of what the code will be going to do. Always provide this text explanation first.
-    This plan must not contain any "`" characters and should be written in plain text.
-    Then print the code.
-    Importantly, the code block must start with the line: 
-    ```python
-    and it must end with the line:
-    ```
-    There must be no text after the code block.
-    If the request does not require to write code, simply answer in plain text.
-    
     ## Code snippets
     If the user asks for those simple tasks, use these code snippets.
     * Load a image file from disc and store it in a variable:
@@ -93,6 +82,19 @@ def create_system_prompt():
     import stackview
     stackview.curtain(image, labels)
     ```
+    
+    ## Explanations and code
+    
+    Before writing the code, provide a concise step-by-step plan 
+    of what the code will be going to do. Always provide this text explanation first.
+    This plan must not contain any "`" characters and should be written in plain text.
+    Then print the code.
+    Importantly, the code block must start with the line: 
+    ```python
+    and it must end with the line:
+    ```
+    There must be no text after the code block.
+    If the request does not require to write code, simply answer in plain text.
     """
     return system_prompt
 
