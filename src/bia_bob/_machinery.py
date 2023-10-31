@@ -67,9 +67,8 @@ def combine_user_input(line, cell):
 
 
 class CustomAgent:
-    def __init__(self, model="gpt-3.5-turbo", temperature=0):
+    def __init__(self, model="gpt-3.5-turbo"):
         self.model = model
-        self.temperature = temperature
 
     def generate_response_to_user(self, user_input: str):
         """Sends a prompt to openAI
@@ -91,20 +90,19 @@ class CustomAgent:
             
 
 
-def init_assistant(model="gpt-3.5-turbo", temperature=0, auto_execute:bool = False, variables:dict=None):
+def init_assistant(model="gpt-3.5-turbo", auto_execute:bool = False, variables:dict=None):
     """Initialises the assistant.
 
     Parameters
     ----------
     model: str
-    temperature: float, optional (default: 0, between 0 and 1) The higher the temperature, the more random the output.
     auto_execute: bool, optional (default: False) If True, the assistant will automatically execute the code it generates.
     variables: dict, optional (default: None) A dictionary of variables that should be available to the assistant.
                If None, it will use the global variables of the current namespace.
 
     """
     from IPython.core.getipython import get_ipython
-    Context.assistant = CustomAgent(model, temperature)
+    Context.assistant = CustomAgent(model)
     Context.auto_execute = auto_execute
 
     if variables is None:
