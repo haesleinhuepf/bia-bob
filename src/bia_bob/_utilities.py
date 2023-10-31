@@ -36,10 +36,13 @@ def generate_response_to_user(model, user_prompt: str):
 
 
 def create_system_prompt():
+    """Creates a system prompt that contains instructions of general interest, available functions and variables."""
     # determine useful variables and functions in context
     variables = []
     functions = []
     from ._machinery import Context
+
+    # figure out which variables are not private
     for key, value in Context.variables.items():
         if key.startswith("_"):
             continue
@@ -48,7 +51,9 @@ def create_system_prompt():
                 functions.append(key)
             continue
         variables.append(key)
+
     libraries = Context.libraries
+
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality python code.
     The code should be as short as possible.
@@ -108,13 +113,6 @@ def print_chat(chat):
         print(content)
 
 
-def concatenate_chat_content(chat):
-    concatenated_chat = ""
-    for message in chat:
-        concatenated_chat += message['content']
-    return concatenated_chat
-
-
 def output_text(text):
     """Display markdown content in the notebook."""
     if is_notebook():
@@ -125,6 +123,7 @@ def output_text(text):
     
 
 def is_notebook() -> bool:
+    """Returns true if the code is currently executed in a Jupyter notebook."""
     # adapted from: https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook
     from IPython.core.getipython import get_ipython
 
@@ -145,27 +144,30 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     and returns only the text response.
     """
     import openai
+    from ._machinery import Context
 
-    system = [{"role": "system", "content": system_prompt}]
-    user = [{"role": "user", "content": user_prompt}]
+    # assemble prompt
+    system_message = [{"role": "system", "content": system_prompt}]
+    user_message = [{"role": "user", "content": user_prompt}]
 
+    # retrieve answer
     response = openai.ChatCompletion.create(
-        messages=system + chat_history + user,
+        messages=system_message + chat_history + user_message,
         model=model)  # stream=True would be nice
-
     reply = response['choices'][0]['message']['content']
 
-    from ._machinery import Context
-    Context.chat += user + [{"role": "assistant", "content": reply}]
+    # store question and answer in chat history
+    assistant_message = [{"role": "assistant", "content": reply}]
+    Context.chat += user_message + assistant_message
 
     return reply
 
 
 def available_models():
+    """Returns a list of available model names in openAI."""
     import openai
     models = openai.Model.list()
-    for model in models['data']:
-        print(model['id'])
+    return [model['id'] for model in models['data']]
 
 
 def keep_available_packages(libraries):
