@@ -157,8 +157,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
 def available_models():
     import openai
     models = openai.Model.list()
-    for model in models['data']:
-        print(model['id'])
+    return [model['id'] for model in models['data']]
 
 
 def keep_available_packages(libraries):
