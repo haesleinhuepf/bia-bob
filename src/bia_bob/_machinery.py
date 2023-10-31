@@ -6,8 +6,8 @@ from ._utilities import generate_response_to_user, output_text, keep_available_p
 
 
 class Context:
-    assistant = None
     variables = None
+    model = None
     verbose = False
     auto_execute = False
     chat = []
@@ -42,7 +42,7 @@ def bob(line: str = None, cell: str = None):
     and pastes the code into the next cell.
     """
 
-    if Context.assistant is None:
+    if Context.model is None:
         init_assistant()
 
     user_input = combine_user_input(line, cell)
@@ -51,7 +51,18 @@ def bob(line: str = None, cell: str = None):
         return
 
     # generate the response
-    Context.assistant.generate_response_to_user(user_input)
+    code, text = generate_response_to_user(Context.model, user_input)
+
+    if code is None or not Context.auto_execute:
+        output_text(text)
+
+    if code is not None:
+        p = get_ipython()
+        if Context.auto_execute:
+            p.set_next_input(code, replace=True)
+            p.run_cell(code)
+        else:
+            p.set_next_input(code, replace=False)
 
 
 def combine_user_input(line, cell):
@@ -70,23 +81,12 @@ class CustomAgent:
     def __init__(self, model="gpt-3.5-turbo"):
         self.model = model
 
-    def generate_response_to_user(self, user_input: str):
+    def respond_to_user(self, user_input: str):
         """Sends a prompt to openAI
         and shows the text response
         and pastes the code into the next cell.
         """
-        code, text = generate_response_to_user(self.model, user_input)
 
-        if code is None or not Context.auto_execute:
-            output_text(text)
-
-        if code is not None:
-            p = get_ipython()
-            if Context.auto_execute:
-                p.set_next_input(code, replace=True)
-                p.run_cell(code)
-            else:
-                p.set_next_input(code, replace=False)
             
 
 
@@ -102,7 +102,7 @@ def init_assistant(model="gpt-3.5-turbo", auto_execute:bool = False, variables:d
 
     """
     from IPython.core.getipython import get_ipython
-    Context.assistant = CustomAgent(model)
+    Context.model = model
     Context.auto_execute = auto_execute
 
     if variables is None:

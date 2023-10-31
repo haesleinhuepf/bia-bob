@@ -28,10 +28,10 @@ And this error occurred:
 Please correct the code.
 """
 
-    if Context.assistant is None:
+    if Context.model is None:
         init_assistant()
     p = get_ipython()
 
-    code, text = generate_response_to_user(Context.assistant.model, prompt)
+    code, text = generate_response_to_user(Context.model, prompt)
 
     p.set_next_input(code, replace=True)
