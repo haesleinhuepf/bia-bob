@@ -26,7 +26,7 @@ It will then respond with a python code snippet that you can execute ([see full 
 
 Bob can fix simple bugs in code you executed. Just add `%%fix` on top of the cell right after the error happened.
 
-![img.png](docs/images/bug_fixing_mini.gif)
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bug_fixing_mini.gif)
 
 ### Code documentation
 
