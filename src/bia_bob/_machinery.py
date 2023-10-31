@@ -53,15 +53,19 @@ def bob(line: str = None, cell: str = None):
     # generate the response
     code, text = generate_response_to_user(Context.model, user_input)
 
+    # print out explanation
     if code is None or not Context.auto_execute:
         output_text(text)
 
     if code is not None:
         p = get_ipython()
         if Context.auto_execute:
+            # replace the current cell that contained the prompt
             p.set_next_input(code, replace=True)
+            # execute it
             p.run_cell(code)
         else:
+            # put a new cell below the current cell
             p.set_next_input(code, replace=False)
 
 
