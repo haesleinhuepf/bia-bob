@@ -91,8 +91,6 @@ class CustomAgent:
         and pastes the code into the next cell.
         """
 
-            
-
 
 def init_assistant(model="gpt-3.5-turbo", auto_execute:bool = False, variables:dict=None):
     """Initialises the assistant.

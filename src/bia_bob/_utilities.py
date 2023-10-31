@@ -144,18 +144,21 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     and returns only the text response.
     """
     import openai
+    from ._machinery import Context
 
-    system = [{"role": "system", "content": system_prompt}]
-    user = [{"role": "user", "content": user_prompt}]
+    # assemple prompt
+    system_message = [{"role": "system", "content": system_prompt}]
+    user_message = [{"role": "user", "content": user_prompt}]
 
+    # retrieve answer
     response = openai.ChatCompletion.create(
-        messages=system + chat_history + user,
+        messages=system_message + chat_history + user_message,
         model=model)  # stream=True would be nice
-
     reply = response['choices'][0]['message']['content']
 
-    from ._machinery import Context
-    Context.chat += user + [{"role": "assistant", "content": reply}]
+    # store question and answer in chat history
+    assistant_message = [{"role": "assistant", "content": reply}]
+    Context.chat += user_message + assistant_message
 
     return reply
 
