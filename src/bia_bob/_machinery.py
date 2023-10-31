@@ -67,7 +67,7 @@ def combine_user_input(line, cell):
 
 
 class CustomAgent:
-    def __init__(self, model="gpt-3.5-turbo", temperature=0):
+    def __init__(self, model: str = "gpt-3.5-turbo", temperature: float = 0):
         self.model = model
         self.temperature = temperature
 
@@ -76,7 +76,7 @@ class CustomAgent:
         and shows the text response
         and pastes the code into the next cell.
         """
-        code, text = generate_response_to_user(self.model, user_input)
+        code, text = generate_response_to_user(self.model, user_input, temperature=self.temperature)
 
         if code is None or not Context.auto_execute:
             output_text(text)
@@ -91,7 +91,7 @@ class CustomAgent:
             
 
 
-def init_assistant(model="gpt-3.5-turbo", temperature=0, auto_execute:bool = False, variables:dict=None):
+def init_assistant(model: str = "gpt-3.5-turbo", temperature: float = 0, auto_execute: bool = False, variables: dict = None):
     """Initialises the assistant.
 
     Parameters

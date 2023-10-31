@@ -1,4 +1,4 @@
-def generate_response_to_user(model, user_prompt: str):
+def generate_response_to_user(model, user_prompt: str, temperature: float = 0):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
@@ -15,7 +15,7 @@ def generate_response_to_user(model, user_prompt: str):
         print("\nSystem prompt:", system_prompt)
         print_chat(chat_history)
 
-    full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history)
+    full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, temperature=temperature)
 
     if Context.verbose:
         print("\n\nFull response:\n", full_response)
@@ -138,7 +138,7 @@ def is_notebook() -> bool:
         return False      # Probably standard Python interpreter
 
 
-def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history):
+def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, temperature: float = 0):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
@@ -149,7 +149,8 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
 
     response = openai.ChatCompletion.create(
         messages=system + chat_history + user,
-        model=model)  # stream=True would be nice
+        model=model,
+        temperature=temperature)  # stream=True would be nice
 
     reply = response['choices'][0]['message']['content']
 
