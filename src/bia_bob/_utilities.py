@@ -184,3 +184,31 @@ def keep_available_packages(libraries):
 
     return result
 
+
+def filter_out_blacklist(old_list, black_list):
+    """Filters out entries from a list that contain a blacklisted string"""
+    new_list = []
+    for entry in old_list:
+        allowed = True
+        for black in black_list:
+            if black in str(entry):
+                allowed = False
+                break
+        if allowed:
+            new_list.append(entry)
+    return new_list
+
+
+def load_jsonl_file(file_path):
+    import json
+    with open(file_path, 'r') as file:
+        data = [json.loads(line) for line in file]
+    return data
+
+
+def save_jsonl_file(dictionary_data, final_file_name):
+    import json
+    with open(final_file_name, 'w') as outfile:
+        for entry in dictionary_data:
+            json.dump(entry, outfile)
+            outfile.write('\n')
