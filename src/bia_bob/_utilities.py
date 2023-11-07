@@ -1,4 +1,4 @@
-def generate_response_to_user(model, user_prompt: str):
+def generate_response_to_user(model, user_prompt: str, image=None):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
@@ -15,7 +15,7 @@ def generate_response_to_user(model, user_prompt: str):
         print("\nSystem prompt:", system_prompt)
         print_chat(chat_history)
 
-    full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history)
+    full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
 
     if Context.verbose:
         print("\n\nFull response:\n", full_response)
@@ -139,7 +139,7 @@ def is_notebook() -> bool:
         return False      # Probably standard Python interpreter
 
 
-def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history):
+def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
@@ -149,11 +149,25 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     # assemble prompt
     system_message = [{"role": "system", "content": system_prompt}]
     user_message = [{"role": "user", "content": user_prompt}]
+    image_message = []
+    kwargs = {}
 
+    if image is not None:
+        image_message = image_to_message(image)
+
+    if model == "gpt-4-vision-preview":
+        # this seems necessary according to the docs:
+        # https://platform.openai.com/docs/guides/vision
+        # if it is not provided, the response will be
+        # cropped to half a sentence
+        kwargs['max_tokens'] = 300
+    
     # retrieve answer
     response = openai.ChatCompletion.create(
-        messages=system_message + chat_history + user_message,
-        model=model)  # stream=True would be nice
+        messages=system_message + chat_history + image_message + user_message,
+        model=model,
+        **kwargs
+    )  # stream=True would be nice
     reply = response['choices'][0]['message']['content']
 
     # store question and answer in chat history
@@ -161,6 +175,23 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     Context.chat += user_message + assistant_message
 
     return reply
+
+
+def image_to_message(image):
+    import base64
+
+    from stackview._image_widget import _img_to_rgb
+    from darth_d._utilities import numpy_to_bytestream
+
+    rgb_image = _img_to_rgb(image)
+    byte_stream = numpy_to_bytestream(rgb_image)
+    base64_image = base64.b64encode(byte_stream).decode('utf-8')
+
+    return [{"role": "user", "content": [{
+        "type": "image_url",
+        "image_url": f"data:image/jpeg;base64,{base64_image}",
+    }]}]
+
 
 
 def available_models():
