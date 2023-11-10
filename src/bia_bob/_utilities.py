@@ -22,7 +22,7 @@ def generate_response_to_user(model, user_prompt: str):
 
     # Search for the code pattern in the text
     import re
-    pattern = re.compile(r'([\s\S]*?)```python([\s\S]*?)```')
+    pattern = re.compile(r'([\s\S]*?)```([\s\S]*?)```')
     match = pattern.search(full_response)
     if match:
         text = match.group(1).strip()
