@@ -100,7 +100,7 @@ def create_system_prompt():
     Then print the code.
     There must be only one code block.
     Importantly, the code block must start with the line: 
-    ```code
+    ```
     and it must end with the line:
     ```
     There must be no text after the code block.
