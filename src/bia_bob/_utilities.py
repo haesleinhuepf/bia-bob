@@ -20,9 +20,18 @@ def generate_response_to_user(model, user_prompt: str, image=None):
     if Context.verbose:
         print("\n\nFull response:\n", full_response)
 
+    full_response = full_response\
+                    .replace("```python", "```")\
+                    .replace("```nextflow", "```")\
+                    .replace("```java", "```")\
+                    .replace("```javascript", "```")\
+                    .replace("```macro", "```")\
+                    .replace("```groovy", "```")\
+                    .replace("```jython", "```")
+
     # Search for the code pattern in the text
     import re
-    pattern = re.compile(r'([\s\S]*?)```python([\s\S]*?)```')
+    pattern = re.compile(r'([\s\S]*?)```([\s\S]*?)```')
     match = pattern.search(full_response)
     if match:
         text = match.group(1).strip()
@@ -55,17 +64,21 @@ def create_system_prompt():
     libraries = Context.libraries
 
     system_prompt = f"""
-    If the request entails writing code, write concise professional bioimage analysis high-quality python code.
-    The code should be as short as possible.
+    If the request entails writing code, write concise professional bioimage analysis high-quality code.
     If there are several ways to solve the task, chose the option with the least amount of code.
-    The code will be executed by the user within a Jupyter notebook.
-    You can only use these python libraries: {",".join([str(v) for v in libraries])}.
+    
+    If there is no specific programming language required, write python code and follow the below instructions.
+    
+    ## Python specific instruction
+    
+    For python, you can only use those libraries: {",".join([str(v) for v in libraries])}.
     If you create images, show the results and save them in variables for later reuse.
     The following variables are available: {",".join([str(v) for v in variables])}
     Do not set the values of the variables that are available.
     The following functions are available: {",".join([str(v) for v in functions])}
     
-    ## Code snippets
+    ### Python specific code snippets
+    
     If the user asks for those simple tasks, use these code snippets.
     * Load a image file from disc and store it in a variable:
     ```
@@ -90,12 +103,13 @@ def create_system_prompt():
     
     ## Explanations and code
     
-    Before writing the code, provide a concise step-by-step plan 
-    of what the code will be going to do. Always provide this text explanation first.
+    Before writing any code, provide a concise step-by-step plan 
+    of what the code will be going to do. Always provide the plan first.
     This plan must not contain any "`" characters and should be written in plain text.
     Then print the code.
+    There must be only one code block.
     Importantly, the code block must start with the line: 
-    ```python
+    ```
     and it must end with the line:
     ```
     There must be no text after the code block.
