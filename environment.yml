@@ -1,4 +1,4 @@
-name: bt39
+name: bob_env
 
 channels:
   - conda-forge

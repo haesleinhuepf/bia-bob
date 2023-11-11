@@ -65,7 +65,7 @@ mamba env create -f https://github.com/haesleinhuepf/bia-bob/raw/main/environmen
 You can then activate this environment...
 
 ```
-mamba activate bt39
+mamba activate bob_env
 ```
 
 ... and install `bia-bob`.
