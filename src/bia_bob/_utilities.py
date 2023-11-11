@@ -216,7 +216,7 @@ def available_models():
     """Returns a list of available model names in openAI."""
     import openai
     models = openai.Model.list()
-    return [model['id'] for model in models['data']]
+    return sorted([model['id'] for model in models['data']])
 
 
 def keep_available_packages(libraries):
