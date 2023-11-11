@@ -20,6 +20,15 @@ def generate_response_to_user(model, user_prompt: str):
     if Context.verbose:
         print("\n\nFull response:\n", full_response)
 
+    full_response = full_response\
+                    .replace("```python", "```")\
+                    .replace("```nextflow", "```")\
+                    .replace("```java", "```")\
+                    .replace("```javascript", "```")\
+                    .replace("```macro", "```")\
+                    .replace("```groovy", "```")\
+                    .replace("```jython", "```")
+
     # Search for the code pattern in the text
     import re
     pattern = re.compile(r'([\s\S]*?)```([\s\S]*?)```')
