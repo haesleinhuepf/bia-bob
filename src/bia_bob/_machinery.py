@@ -40,17 +40,17 @@ def bob(line: str = None, cell: str = None):
     """
     from IPython.core.getipython import get_ipython
     from IPython.display import display
-    from ._utilities import generate_response_to_user, output_text
+    from ._utilities import generate_response_to_user, output_text, is_image
 
     if Context.model is None:
         init_assistant()
 
-    if line in Context.variables:
+    if line in Context.variables and is_image(Context.variables[line]):
         image = Context.variables[line]
-        user_input = cell
     else:
         image = None
-        user_input = combine_user_input(line, cell)
+    
+    user_input = combine_user_input(line, cell)
 
     if user_input is None:
         display("Please ask a question!")

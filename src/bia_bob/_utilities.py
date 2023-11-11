@@ -174,7 +174,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         # https://platform.openai.com/docs/guides/vision
         # if it is not provided, the response will be
         # cropped to half a sentence
-        kwargs['max_tokens'] = 300
+        kwargs['max_tokens'] = 3000
     
     # retrieve answer
     response = openai.ChatCompletion.create(
@@ -206,6 +206,10 @@ def image_to_message(image):
         "image_url": f"data:image/jpeg;base64,{base64_image}",
     }]}]
 
+
+def is_image(potential_image):
+    """Returns true if the given object is a numpy-compatible image/array."""
+    return hasattr(potential_image, "shape") and hasattr(potential_image, "dtype")
 
 
 def available_models():
