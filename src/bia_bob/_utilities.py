@@ -100,13 +100,19 @@ def create_system_prompt():
     import stackview
     stackview.curtain(image, labels)
     ```
+    * Expanding labels by a given radius in a label image works like this:
+    ```
+    from skimage.segmentation import expand_labels
+    expanded_labels = expand_labels(label_image, radius=10)
+    ```
     
     ## Explanations and code
     
     Before writing any code, provide a concise step-by-step plan 
     of what the code will be going to do. Always provide the plan first.
-    This plan must not contain any "`" characters and should be written in plain text.
-    Then print the code.
+    This plan must not contain any "`" characters, no code examples, and should be written in plain text.
+    
+    After the plan, print the code.
     There must be only one code block.
     Importantly, the code block must start with the line: 
     ```
