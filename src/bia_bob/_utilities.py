@@ -94,7 +94,7 @@ def create_system_prompt():
     
     ## Explanations and code
     
-    Before writing any code in any language, provide a concise step-by-step plan 
+    Before writing any code, provide a concise step-by-step plan 
     of what the code will be going to do. Always provide the plan first.
     This plan must not contain any "`" characters and should be written in plain text.
     Then print the code.
