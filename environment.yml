@@ -16,4 +16,5 @@ dependencies:
   - stackview
   - scipy
   - numpy
+  - skan
   
