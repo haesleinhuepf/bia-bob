@@ -27,6 +27,7 @@ class Context:
         "napari-segment-blobs-and-things-with-membranes",
         "napari-simpleitk-image-processing",
         "napari-skimage-regionprops",
+        "skan"
 
         # to add libraries here, add their pypi package names (not their import names)
     ])
