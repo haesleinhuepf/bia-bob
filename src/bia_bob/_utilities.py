@@ -163,7 +163,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
-    import openai
+    from openai import OpenAI
     from ._machinery import Context
 
     # assemble prompt
@@ -181,14 +181,17 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         # if it is not provided, the response will be
         # cropped to half a sentence
         kwargs['max_tokens'] = 3000
-    
+
+    # init client
+    client = OpenAI()
+
     # retrieve answer
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         messages=system_message + chat_history + image_message + user_message,
         model=model,
         **kwargs
     )  # stream=True would be nice
-    reply = response['choices'][0]['message']['content']
+    reply = response.choices[0].message.content
 
     # store question and answer in chat history
     assistant_message = [{"role": "assistant", "content": reply}]
@@ -220,9 +223,10 @@ def is_image(potential_image):
 
 def available_models():
     """Returns a list of available model names in openAI."""
-    import openai
-    models = openai.Model.list()
-    return sorted([model['id'] for model in models['data']])
+    from openai import OpenAI
+    client = OpenAI()
+    models = client.models.list()
+    return sorted([model.id for model in models.data])
 
 
 def keep_available_packages(libraries):
