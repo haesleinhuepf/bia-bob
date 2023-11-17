@@ -84,10 +84,10 @@ If you want to communicate with Bob using your microphone, install [whisper-mic]
 pip install whisper-mic
 ```
 
-You can also discuss with Bob interactively. Please install [simpleaudio](https://simpleaudio.readthedocs.io/en/latest/installation.html).
+You can also discuss with Bob interactively. Please install [pydub](https://github.com/jiaaro/pydub).
 
 ```
-pip install simpleaudio
+pip install pydub
 ```
 
 You can then use it like this:
