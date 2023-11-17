@@ -4,6 +4,13 @@ class Internal:
 def listen(mic_index: int = None):
     """Listens to the microphone and forwards the prompt to Bob."""
     from ._machinery import bob
+    prompt = get_microphone_input(mic_index)
+
+    print("You said: " + prompt)
+    return bob(prompt)
+
+
+def get_microphone_input(mic_index: int = None):
     from pathlib import Path
     if Internal._microphone is None or mic_index is not None:
         try:
@@ -17,9 +24,51 @@ def listen(mic_index: int = None):
 
             Internal._microphone = WhisperMic(model_root=cache_dir, mic_index=mic_index)
         except:
-            raise Exception("Error initializing the microphone. Please install whisper-mic: https://github.com/mallorbc/whisper_mic#setup")
+            raise Exception(
+                "Error initializing the microphone. Please install whisper-mic: https://github.com/mallorbc/whisper_mic#setup")
 
-    prompt = Internal._microphone.listen()
-    print("You said: " + prompt)
-    return bob(prompt)
+    return Internal._microphone.listen()
 
+
+def discuss(mic_index: int = None):
+
+    from ._utilities import generate_response_to_user, output_text
+    from ._machinery import init_assistant, Context
+
+    if Context.model is None:
+        init_assistant()
+
+    while True:
+        user_input = get_microphone_input(mic_index=mic_index)
+
+        print("You said: " + user_input)
+
+        user_input = user_input + "\nUse matplotlib for showing images."
+
+        if user_input is None or user_input == "" or "bye" in user_input.lower():
+            break
+
+        mic_index = None
+
+        code, full_response = generate_response_to_user(Context.model, user_input)
+
+        output_text(full_response)
+
+        if code is not None:
+            code = code.replace(".tiff", ".tif")
+            exec(code, Context.variables)
+
+
+def output_code(code):
+    """Display code content in the notebook."""
+    from IPython.display import display, Markdown
+    from IPython.core.display import HTML
+
+    display(HTML(f"""
+    <details>
+    <summary> Show code </summary>
+    <pre>
+    {code}
+    </pre>
+    </details>
+    """))
