@@ -7,6 +7,8 @@ from ._machinery import bob, init_assistant
 from ._bug_fixing import fix
 from ._document import doc
 from ._utilities import available_models
+from ._sound import listen, discuss
 
 bob.initialize = init_assistant
 bob.__version__ = __version__
+bob.listen = listen

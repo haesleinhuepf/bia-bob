@@ -76,6 +76,33 @@ pip install bia-bob
 
 Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
+## Optional extensions: Voice recognition
+
+If you want to communicate with Bob using your microphone, install [whisper-mic](https://github.com/mallorbc/whisper_mic#setup) like this:
+
+```
+pip install whisper-mic
+```
+
+You can also discuss with Bob interactively. Please install [pydub](https://github.com/jiaaro/pydub).
+
+```
+pip install pydub
+```
+
+You can then use it like this:
+
+```
+from bia_bob import listen
+listen()
+```
+
+```
+from bia_bob import discss
+discuss()
+```
+
+
 ## Development
 
 If you want to contribute to `bia-bob`, you can install it in development mode like this:
