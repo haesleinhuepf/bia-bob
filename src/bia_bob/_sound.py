@@ -54,6 +54,9 @@ def discuss(mic_index: int = None):
 
         output_text(full_response)
 
+        _, summary = generate_response_to_user(Context.model, "Summarize the following to a single sentence: \n\n" + full_response, system_prompt="")
+        speak(summary)
+
         if code is not None:
             code = code.replace(".tiff", ".tif")
             exec(code, Context.variables)
@@ -72,3 +75,28 @@ def output_code(code):
     </pre>
     </details>
     """))
+
+
+def speak(text):
+    from openai import OpenAI
+    import os
+    from pydub import AudioSegment
+    from pydub.playback import play
+
+    client = OpenAI()
+
+    response = client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=text,
+    )
+
+    temp_filename = "temp_audio.mp3"
+    response.stream_to_file(temp_filename)
+
+    audio = AudioSegment.from_file(temp_filename, format="mp3")
+
+    # Play the audio
+    play(audio)
+
+    os.remove(temp_filename)

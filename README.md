@@ -84,11 +84,22 @@ If you want to communicate with Bob using your microphone, install [whisper-mic]
 pip install whisper-mic
 ```
 
+You can also discuss with Bob interactively. Please install [simpleaudio](https://simpleaudio.readthedocs.io/en/latest/installation.html).
+
+```
+pip install simpleaudio
+```
+
 You can then use it like this:
 
 ```
 from bia_bob import listen
 listen()
+```
+
+```
+from bia_bob import discss
+discuss()
 ```
 
 
