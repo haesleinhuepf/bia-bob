@@ -29,17 +29,18 @@ def generate_response_to_user(model, user_prompt: str, image=None):
                     .replace("```groovy", "```")\
                     .replace("```jython", "```")
 
-    # Search for the code pattern in the text
-    import re
-    pattern = re.compile(r'([\s\S]*?)```([\s\S]*?)```')
-    match = pattern.search(full_response)
-    if match:
-        text = match.group(1).strip()
-        code = match.group(2).strip()
-    else:
+    # split response in text and code
+    parts = full_response.split("```")
+    if len(parts) == 1:
         text = full_response
         code = None
-
+    else:
+        text = ""
+        code = ""
+        for t, c in zip(parts[::2], parts[1::2]):
+            text = text + t
+            code = code + c
+        code = code.strip("\n")
 
     return code, text
 
