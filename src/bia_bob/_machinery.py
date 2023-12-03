@@ -8,6 +8,7 @@ class Context:
     verbose = False
     auto_execute = False
     chat = []
+    seed = None
     libraries = keep_available_packages([
         "scikit-image",
         "numpy",
@@ -74,6 +75,15 @@ def bob(line: str = None, cell: str = None):
         else:
             # put a new cell below the current cell
             p.set_next_input(code, replace=False)
+
+
+def set_seed(seed):
+    """Sets the seed for improved reproducibility.
+    See Also
+    --------
+    https://platform.openai.com/docs/api-reference/chat/create#chat-create-seed
+    """
+    Context.seed = seed
 
 
 def combine_user_input(line, cell):
