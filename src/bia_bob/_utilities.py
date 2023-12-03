@@ -64,6 +64,23 @@ def create_system_prompt():
 
     libraries = Context.libraries
 
+    # if scikit-image is installed, give hints how to use it
+    skimage_snippets = """
+    * Load an image file from disc and store it in a variable:
+    ```
+    from skimage.io import imread
+    image = imread(filename)
+    ```
+    * Expanding labels by a given radius in a label image works like this:
+    ```
+    from skimage.segmentation import expand_labels
+    expanded_labels = expand_labels(label_image, radius=10)
+    ```
+
+    """
+    if "scikit-image" not in libraries:
+        skimage_snippets = ""
+
     # if aicsimageio is installed, give hints how to use it
     aicsimageio_snippets = """
     * Loading files with endings other than `.tif`, `.png` or `.jpg` works like this:
@@ -114,16 +131,7 @@ def create_system_prompt():
     ### Python specific code snippets
     
     If the user asks for those simple tasks, use these code snippets.
-    * Load a image file from disc and store it in a variable:
-    ```
-    from skimage.io import imread
-    image = imread(filename)
-    ```
-    * Expanding labels by a given radius in a label image works like this:
-    ```
-    from skimage.segmentation import expand_labels
-    expanded_labels = expand_labels(label_image, radius=10)
-    ```
+    {skimage_snippets}
     {aicsimageio_snippets}
     {stackview_snippets}
     
