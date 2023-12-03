@@ -64,6 +64,18 @@ def create_system_prompt():
 
     libraries = Context.libraries
 
+    # if aicsimageio is installed, give hints how to use it
+    aicsimageio_snippets = """
+    * Loading files with endings other than `.tif`, `.png` or `.jpg` works like this:
+    ```
+    from aicsimageio import AICSImage
+    aics_image = AICSImage(image_filename)
+    image = aics_image.get_image_data("ZYX")
+    ```
+    """
+    if "aicsimageio" not in libraries:
+        aicsimageio_snippets = ""
+
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality code.
     If there are several ways to solve the task, chose the option with the least amount of code.
@@ -106,6 +118,7 @@ def create_system_prompt():
     from skimage.segmentation import expand_labels
     expanded_labels = expand_labels(label_image, radius=10)
     ```
+    {aicsimageio_snippets}
     
     ## Explanations and code
     
