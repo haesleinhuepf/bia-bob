@@ -76,6 +76,27 @@ def create_system_prompt():
     if "aicsimageio" not in libraries:
         aicsimageio_snippets = ""
 
+    # if stackview is installed, give hints how to use it
+    stackview_snippets = """
+    * Display an image stored in a variable `image` (this also works with label images):
+    ```
+    import stackview
+    stackview.insight(image)
+    ```
+    * Slicing an image stored in a variable `image`:
+    ```
+    import stackview
+    stackview.slice(image)
+    ```
+    * Showing an image stored in variable `image` and a segmented image stored in variable `labels` on top:
+    ```
+    import stackview
+    stackview.curtain(image, labels)
+    ```
+    """
+    if "stackview" not in libraries:
+        stackview_snippets = ""
+
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality code.
     If there are several ways to solve the task, chose the option with the least amount of code.
@@ -98,27 +119,13 @@ def create_system_prompt():
     from skimage.io import imread
     image = imread(filename)
     ```
-    * Display an image stored in a variable `image` (this also works with label images):
-    ```
-    import stackview
-    stackview.insight(image)
-    ```
-    * Slicing an image stored in a variable `image`:
-    ```
-    import stackview
-    stackview.slice(image)
-    ```
-    * Showing an image stored in variable `image` and a segmented image stored in variable `labels` on top:
-    ```
-    import stackview
-    stackview.curtain(image, labels)
-    ```
     * Expanding labels by a given radius in a label image works like this:
     ```
     from skimage.segmentation import expand_labels
     expanded_labels = expand_labels(label_image, radius=10)
     ```
     {aicsimageio_snippets}
+    {stackview_snippets}
     
     ## Explanations and code
     
