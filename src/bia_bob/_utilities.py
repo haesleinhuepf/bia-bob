@@ -190,6 +190,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     response = client.chat.completions.create(
         messages=system_message + chat_history + image_message + user_message,
         model=model,
+        seed=Context.seed,
         **kwargs
     )  # stream=True would be nice
     reply = response.choices[0].message.content
