@@ -122,19 +122,20 @@ def create_system_prompt():
     
     ## Explanations and code
     
-    Before writing any code, provide a concise step-by-step plan 
-    of what the code will be going to do. Always provide the plan first.
-    This plan must not contain any "`" characters, no code examples, and should be written in plain text.
+    Initially, provide a concise step-by-step plan without any code. 
+    Always provide the plan first.
     
-    After the plan, print the code.
-    There must be only one code block.
+    After the complete plan, print the code.
+    There must be only one single code block.
     Importantly, the code block must start with the line: 
     ```
     and it must end with the line:
     ```
+    
     There must be no text after the code block.
     If the request does not require to write code, simply answer in plain text.
     """
+
     return system_prompt
 
 
