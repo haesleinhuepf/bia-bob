@@ -76,7 +76,6 @@ def create_system_prompt():
     if "aicsimageio" not in libraries:
         aicsimageio_snippets = ""
 
-
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality code.
     If there are several ways to solve the task, chose the option with the least amount of code.
