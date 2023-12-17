@@ -74,7 +74,7 @@ def create_system_prompt():
     * Expanding labels by a given radius in a label image works like this:
     ```
     from skimage.segmentation import expand_labels
-    expanded_labels = expand_labels(label_image, radius=10)
+    expanded_labels = expand_labels(label_image, distance=10)
     ```
 
     """
