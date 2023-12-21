@@ -15,7 +15,12 @@ def generate_response_to_user(model, user_prompt: str, image=None):
         print("\nSystem prompt:", system_prompt)
         print_chat(chat_history)
 
-    full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
+    if "gpt-" in model:
+        full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
+    elif "gemini-" in model:
+        full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image)
+    else:
+        raise RuntimeError(f"Unknown model API for {model}")
 
     if Context.verbose:
         print("\n\nFull response:\n", full_response)
@@ -45,26 +50,13 @@ def generate_response_to_user(model, user_prompt: str, image=None):
     return code, text
 
 
-def create_system_prompt():
+def create_system_prompt(reusable_variables_block=None):
     """Creates a system prompt that contains instructions of general interest, available functions and variables."""
     # determine useful variables and functions in context
-    variables = []
-    functions = []
-    from ._machinery import Context
-
-    # figure out which variables are not private
-    for key, value in Context.variables.items():
-        if key.startswith("_"):
-            continue
-        if callable(value):
-            if key not in ["quit", "exit"]:
-                functions.append(key)
-            continue
-        variables.append(key)
-
-    libraries = Context.libraries
 
     # if scikit-image is installed, give hints how to use it
+    from ._machinery import Context
+
     skimage_snippets = """
     * Load an image file from disc and store it in a variable:
     ```
@@ -78,7 +70,7 @@ def create_system_prompt():
     ```
 
     """
-    if "scikit-image" not in libraries:
+    if "scikit-image" not in Context.libraries:
         skimage_snippets = ""
 
     # if aicsimageio is installed, give hints how to use it
@@ -90,7 +82,7 @@ def create_system_prompt():
     image = aics_image.get_image_data("ZYX")
     ```
     """
-    if "aicsimageio" not in libraries:
+    if "aicsimageio" not in Context.libraries:
         aicsimageio_snippets = ""
 
     # if stackview is installed, give hints how to use it
@@ -111,8 +103,11 @@ def create_system_prompt():
     stackview.curtain(image, labels)
     ```
     """
-    if "stackview" not in libraries:
+    if "stackview" not in Context.libraries:
         stackview_snippets = ""
+
+    if reusable_variables_block is None:
+        reusable_variables_block = create_reusable_variables_block()
 
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality code.
@@ -120,15 +115,9 @@ def create_system_prompt():
     
     If there is no specific programming language required, write python code and follow the below instructions.
     
-    ## Python specific instruction
+    {reusable_variables_block}
     
-    For python, you can only use those libraries: {",".join([str(v) for v in libraries])}.
-    If you create images, show the results and save them in variables for later reuse.
-    The following variables are available: {",".join([str(v) for v in variables])}
-    Do not set the values of the variables that are available.
-    The following functions are available: {",".join([str(v) for v in functions])}
-    
-    ### Python specific code snippets
+    ## Python specific code snippets
     
     If the user asks for those simple tasks, use these code snippets.
     {skimage_snippets}
@@ -153,6 +142,36 @@ def create_system_prompt():
 
     return system_prompt
 
+
+def create_reusable_variables_block():
+    """Creates a block of text that explains which variables, functions and libraries are
+    available to be used."""
+    variables = []
+    functions = []
+    from ._machinery import Context
+
+    # figure out which variables are not private
+    for key, value in Context.variables.items():
+        if key.startswith("_"):
+            continue
+        if callable(value):
+            if key not in ["quit", "exit"]:
+                functions.append(key)
+            continue
+        variables.append(key)
+
+    libraries = Context.libraries
+
+    return f"""
+    ## Python specific instructions
+    
+    For python, you can only use those libraries: {",".join([str(v) for v in libraries])}.
+    If you create images, show the results and save them in variables for later reuse.
+    The following variables are available: {",".join([str(v) for v in variables])}
+    NEVER the values of the variables that are available.
+    
+    The following functions are available: {",".join([str(v) for v in functions])}
+    """
 
 def print_chat(chat):
     print("\nChat history:")
@@ -213,10 +232,11 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         kwargs['max_tokens'] = 3000
 
     # init client
-    client = OpenAI()
+    if Context.client is None or not isinstance(Context.client, OpenAI):
+        Context.client = OpenAI()
 
     # retrieve answer
-    response = client.chat.completions.create(
+    response = Context.client.chat.completions.create(
         messages=system_message + chat_history + image_message + user_message,
         model=model,
         **kwargs
@@ -228,6 +248,49 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     Context.chat += user_message + assistant_message
 
     return reply
+
+
+def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None):
+    """A prompt helper function that sends a message to Google Vertex AI
+    and returns only the text response.
+
+    See also
+    --------
+    https://colab.research.google.com/github/GoogleCloudPlatform/generative-ai/blob/main/gemini/getting-started/intro_gemini_python.ipynb#scrollTo=SFbGVflTfBBk
+    """
+    # from vertexai.generative_models._generative_models import ChatSession
+    from ._machinery import Context
+    from vertexai.preview.generative_models import (
+        GenerationConfig,
+        GenerativeModel,
+        Image,
+        Part,
+        ChatSession,
+    )
+
+    system_prompt = create_system_prompt(reusable_variables_block="")
+
+
+
+    if Context.client is None or not isinstance(Context.client, ChatSession):
+        model = GenerativeModel(Context.model)
+        Context.client = model.start_chat()
+        system_result = Context.client.send_message(system_prompt + "\n\nConfirm these general instructioons by answering 'yes'.").text
+
+    reusable_variables_block = create_reusable_variables_block()
+
+    prompt = f"""{reusable_variables_block}
+    
+    # Task
+    This is the task:
+    {user_prompt}
+    
+    Remember: Your output should be 1) a step-by-step plan and 2) code.
+    """
+
+    response = Context.client.send_message(prompt).text
+
+    return response
 
 
 def image_to_message(image):
