@@ -268,38 +268,66 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
         ChatSession,
     )
 
-    system_prompt = create_system_prompt(reusable_variables_block="")
 
+    if "vision" in Context.model:
+        # We need to do some special case here, because the vision model seems to not support chats (yet).
+        if Context.client is None or not isinstance(Context.client, GenerativeModel):
+            Context.client = GenerativeModel(Context.model)
 
+        if image is None:
+            prompt = f"""
+                       {system_prompt}
+                       
+                       # Task
+                       This is the task:
+                       {user_prompt}
+                       
+                       Remember: Your output should be 1) a step-by-step plan and 2) code.
+                       """
+        if image is not None:
+            from stackview._image_widget import _img_to_rgb
+            from darth_d._utilities import numpy_to_bytestream
 
-    if Context.client is None or not isinstance(Context.client, ChatSession):
-        model = GenerativeModel(Context.model)
-        Context.client = model.start_chat()
-        system_result = Context.client.send_message(system_prompt + "\n\nConfirm these general instructioons by answering 'yes'.").text
+            rgb_image = _img_to_rgb(image)
+            byte_stream = numpy_to_bytestream(rgb_image)
 
-    reusable_variables_block = create_reusable_variables_block()
+            image = Image.from_bytes(byte_stream)
 
-    prompt = f"""{reusable_variables_block}
-    
-    # Task
-    This is the task:
-    {user_prompt}
-    
-    Remember: Your output should be 1) a step-by-step plan and 2) code.
-    """
+            prompt = f"""
+                   {system_prompt}
 
-    if image is not None:
-        from stackview._image_widget import _img_to_rgb
-        from darth_d._utilities import numpy_to_bytestream
+                   # Task
+                   This is the task:
+                   {user_prompt}
 
-        rgb_image = _img_to_rgb(image)
-        byte_stream = numpy_to_bytestream(rgb_image)
+                   If the task is not explicitly about generating code, do not generated any code.
+                   """
 
-        image = Image.from_bytes(byte_stream)
+            prompt = [image, prompt]
 
-        prompt = [image, prompt]
+        response = Context.client.generate_content(prompt).text
 
-    response = Context.client.send_message(prompt).text
+    else:
+
+        system_prompt = create_system_prompt(reusable_variables_block="")
+
+        if Context.client is None or not isinstance(Context.client, ChatSession):
+            model = GenerativeModel(Context.model)
+            Context.client = model.start_chat()
+            system_result = Context.client.send_message(system_prompt + "\n\nConfirm these general instructioons by answering 'yes'.").text
+
+        reusable_variables_block = create_reusable_variables_block()
+
+        prompt = f"""{reusable_variables_block}
+        
+        # Task
+        This is the task:
+        {user_prompt}
+        
+        Remember: Your output should be 1) a step-by-step plan and 2) code.
+        """
+
+        response = Context.client.send_message(prompt).text
 
     return response
 
