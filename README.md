@@ -78,6 +78,7 @@ mamba activate bob_env
 ```
 pip install bia-bob openai
 ```
+(Recommended openai version >= 1.2.0)
 
 Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
@@ -86,6 +87,7 @@ Create an OpenAI API Key and add it to your environment variables as explained o
 ```
 pip install bia-bob google-cloud-aiplatform
 ```
+(Recommended google-cloud-aiplatform version >= 1.38.1)
 
 To make use of the Vertex AI API, you need to create a Google Cloud account [here](https://console.cloud.google.com/welcome/) and
 a project within the Google cloud (for billing) [here](https://console.cloud.google.com/projectcreate). 
