@@ -354,11 +354,25 @@ def is_image(potential_image):
 
 
 def available_models():
-    """Returns a list of available model names in openAI."""
-    from openai import OpenAI
-    client = OpenAI()
-    models = client.models.list()
-    return sorted([model.id for model in models.data])
+    """Returns a list of available model names"""
+    models = []
+    try:
+        from openai import OpenAI
+        client = OpenAI()
+        models = models + [model.id for model in client.models.list().data]
+    except:
+        print("Error while adding OpenAI models")
+        pass
+
+    try:
+        from vertexai.preview.generative_models import GenerativeModel
+        models.append("gemini-pro")
+        models.append("gemini-pro-vision")
+    except:
+        print("Error while adding VertexAI models")
+        pass
+
+    return sorted(models)
 
 
 def keep_available_packages(libraries):
