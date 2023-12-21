@@ -288,6 +288,17 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
     Remember: Your output should be 1) a step-by-step plan and 2) code.
     """
 
+    if image is not None:
+        from stackview._image_widget import _img_to_rgb
+        from darth_d._utilities import numpy_to_bytestream
+
+        rgb_image = _img_to_rgb(image)
+        byte_stream = numpy_to_bytestream(rgb_image)
+
+        image = Image.from_bytes(byte_stream)
+
+        prompt = [image, prompt]
+
     response = Context.client.send_message(prompt).text
 
     return response
