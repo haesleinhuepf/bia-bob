@@ -116,6 +116,7 @@ def init_assistant(model="gpt-3.5-turbo", auto_execute:bool = False, variables:d
     from IPython.core.getipython import get_ipython
     Context.model = model
     Context.auto_execute = auto_execute
+    Context.client = None
 
     if variables is None:
         p = get_ipython()
