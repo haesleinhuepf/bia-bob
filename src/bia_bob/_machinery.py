@@ -8,6 +8,7 @@ class Context:
     verbose = False
     auto_execute = False
     chat = []
+    client = None
     libraries = keep_available_packages([
         "scikit-image",
         "numpy",
@@ -32,6 +33,7 @@ class Context:
 
         # to add libraries here, add their pypi package names (not their import names)
     ])
+
 
 
 @register_line_cell_magic
@@ -114,6 +116,7 @@ def init_assistant(model="gpt-3.5-turbo", auto_execute:bool = False, variables:d
     from IPython.core.getipython import get_ipython
     Context.model = model
     Context.auto_execute = auto_execute
+    Context.client = None
 
     if variables is None:
         p = get_ipython()
