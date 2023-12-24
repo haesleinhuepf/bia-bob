@@ -82,18 +82,22 @@ pip install bia-bob openai
 
 Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
-### Using Google's Vertex AI API as backend
+### Using Google's Cloud AI API as backend
 
 ```
 pip install bia-bob google-cloud-aiplatform
 ```
 (Recommended google-cloud-aiplatform version >= 1.38.1)
 
-To make use of the Vertex AI API, you need to create a Google Cloud account [here](https://console.cloud.google.com/welcome/) and
+To make use of the Google Cloud API, you need to create a Google Cloud account [here](https://console.cloud.google.com/welcome/) and
 a project within the Google cloud (for billing) [here](https://console.cloud.google.com/projectcreate). 
-You needs to store authentication details locally as explained [here](https://cloud.google.com/docs/authentication/provide-credentials-adc#local-dev). 
-This requires installing [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (Note: In December 2023 the Windows installer seems broken as reported [here](https://issuetracker.google.com/u/4/issues/317177682), Workaround: Install an older version ([download link](https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-430.0.0-windows-x86_64.zip)). Unzip, run `install.bat` from within the folder, restart terminal run `gcloud init`. Restart the terminal window.)
-After installing Google Cloud CLI, start a terminal and authenticate using: `gcloud auth application-default login`. Follow the instructions in the browser. Enter your Project ID (not the name). If it worked the terminal should approximately look like this:
+You need to store authentication details locally as explained [here](https://cloud.google.com/docs/authentication/provide-credentials-adc#local-dev). 
+This requires installing [Google Cloud CLI](https://cloud.google.com/sdk/docs/install). In very short: run the installer and when asked, activate the "Run gcloud init' checkbox. Or run 'gcloud init' from the terminal yourself. Restart the terminal window.
+After installing Google Cloud CLI, start a terminal and authenticate using: 
+```
+gcloud auth application-default login
+```
+Follow the instructions in the browser. Enter your Project ID (not the name). If it worked the terminal should approximately look like this:
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/gcloud_auth.png)
 
