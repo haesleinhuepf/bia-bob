@@ -91,8 +91,12 @@ def create_system_prompt(reusable_variables_block=None):
     if Context.plugins_enabled:
         from importlib.metadata import entry_points
 
-        # Discover all bia-bob plugins
-        bia_bob_plugins = entry_points(group='bia_bob_plugins')
+        # Discover all bia-bob plugins\
+        try:
+            bia_bob_plugins = entry_points(group='bia_bob_plugins')
+        except TypeError:
+            all_plugins = entry_points()
+            bia_bob_plugins = all_plugins['bia_bob_plugins']
 
         additional_instructions = []
         # Iterate over discovered entry points and load them
