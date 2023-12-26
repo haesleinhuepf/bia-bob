@@ -140,7 +140,7 @@ Note that the syntax should be pretty much as shown above: A bullet point with a
 You can also generate the `list_bia_bob_plugins` function as demonstrated in [this notebook](https://github.com/haesleinhuepf/stackview/blob/c87b59b896aeef9c0b60928b169027d1480c14e9/docs/generate_bia_bob_connector.ipynb).
 Please only list the most important functions. If the list of all plugins extending BiA-Bob becomes too long, the prompt will exceed the maximum prompt length.
 
-List of known Python libraries that provid extensions to Bob:
+List of known Python libraries that provide extensions to Bob:
 * [pyclesperanto-prototype](https://github.com/clEsperanto/pyclesperanto_prototype)
 * [stackview](https://github.com/haesleinhuepf/stackview)
 
