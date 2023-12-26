@@ -85,44 +85,26 @@ def create_system_prompt(reusable_variables_block=None):
     if "aicsimageio" not in Context.libraries:
         aicsimageio_snippets = ""
 
-    # if stackview is installed, give hints how to use it
-    stackview_snippets = """
-    * Display an image stored in a variable `image` (this also works with label images):
-    ```
-    import stackview
-    stackview.insight(image)
-    ```
-    * Slicing an image stored in a variable `image`:
-    ```
-    import stackview
-    stackview.slice(image)
-    ```
-    * Showing an image stored in variable `image` and a segmented image stored in variable `labels` on top:
-    ```
-    import stackview
-    stackview.curtain(image, labels)
-    ```
-    """
-    if "stackview" not in Context.libraries:
-        stackview_snippets = ""
-
     if reusable_variables_block is None:
         reusable_variables_block = create_reusable_variables_block()
 
-    from importlib.metadata import entry_points
+    if Context.plugins_enabled:
+        from importlib.metadata import entry_points
 
-    # Discover all bia-bob plugins
-    bia_bob_plugins = entry_points(group='bia_bob_plugins')
+        # Discover all bia-bob plugins
+        bia_bob_plugins = entry_points(group='bia_bob_plugins')
 
-    additional_instructions = []
-    # Iterate over discovered entry points and load them
-    for ep in bia_bob_plugins:
-        func = ep.load()
+        additional_instructions = []
+        # Iterate over discovered entry points and load them
+        for ep in bia_bob_plugins:
+            func = ep.load()
 
-        # load instructions from a plugin
-        instructions = func()
-        additional_instructions.append(instructions)
-    additional_snippets = "\n".join(additional_instructions)
+            # load instructions from a plugin
+            instructions = func()
+            additional_instructions.append(instructions)
+        additional_snippets = "\n".join(additional_instructions)
+    else:
+        additional_snippets = ""
 
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality code.
@@ -137,7 +119,6 @@ def create_system_prompt(reusable_variables_block=None):
     If the user asks for those simple tasks, use these code snippets.
     {skimage_snippets}
     {aicsimageio_snippets}
-    {stackview_snippets}
     {additional_snippets}
     
     ## Explanations and code
