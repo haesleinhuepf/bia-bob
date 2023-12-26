@@ -111,6 +111,36 @@ cd bia-bob
 pip install -e .
 ```
 
+## Extensibility
+
+If you are maintainer of a Python library and want to make BiA-bob aware of functions in your library, you can extend Bob's knowledge using [entry-points](https://packaging.python.org/en/latest/specifications/entry-points/). Add this to your library `setup.cfg`:
+```
+
+[options.entry_points]
+bia_bob_plugins =
+    plugin1 = your_library._bia_bob_plugins:list_bia_bob_plugins
+
+```
+
+In the above mentioned `_bia_bob_plugins.py` define this function (and feel to rename the function and the Python file):
+```
+def list_bia_bob_plugins():
+    """List of function hints for bia_bob"""
+    return """
+    * Computes the sum of a and b
+    your_library.compute_sum(a:int,b:int) -> int
+    
+    * Determines the difference between a and b
+    your_library.compute_difference(a:int,b:int) -> int
+    
+    """
+```
+
+Note that the syntax should be pretty much as shown above: A bullet point with a short description and a code-snippet just below. 
+Please only list the most important functions. If the list of all plugins extending BiA-Bob becomes too long, the prompt will exceed chatGPT's maximum prompt length.
+
+You can also generate the `list_bia_bob_plugins` function as demonstrated in [this notebook]().
+
 ## Similar projects
 
 There are similar projects:
