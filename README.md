@@ -131,15 +131,14 @@ def list_bia_bob_plugins():
     your_library.compute_sum(a:int,b:int) -> int
     
     * Determines the difference between a and b
-    your_library.compute_difference(a:int,b:int) -> int
+    your_library.compute_difference(a:int, b:int) -> int
     
     """
 ```
 
 Note that the syntax should be pretty much as shown above: A bullet point with a short description and a code-snippet just below. 
-Please only list the most important functions. If the list of all plugins extending BiA-Bob becomes too long, the prompt will exceed chatGPT's maximum prompt length.
-
-You can also generate the `list_bia_bob_plugins` function as demonstrated in [this notebook]().
+You can also generate the `list_bia_bob_plugins` function as demonstrated in [this notebook](https://github.com/haesleinhuepf/stackview/blob/c87b59b896aeef9c0b60928b169027d1480c14e9/docs/generate_bia_bob_connector.ipynb).
+Please only list the most important functions. If the list of all plugins extending BiA-Bob becomes too long, the prompt will exceed the maximum prompt length.
 
 ## Similar projects
 
