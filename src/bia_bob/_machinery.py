@@ -9,6 +9,7 @@ class Context:
     auto_execute = False
     chat = []
     client = None
+    plugins_enabled = True
     libraries = keep_available_packages([
         "scikit-image",
         "numpy",
@@ -102,7 +103,7 @@ class CustomAgent:
         """
 
 
-def init_assistant(model="gpt-3.5-turbo", auto_execute:bool = False, variables:dict=None):
+def init_assistant(model="gpt-4-1106-preview", auto_execute:bool = False, variables:dict=None):
     """Initialises the assistant.
 
     Parameters
@@ -129,3 +130,6 @@ def init_assistant(model="gpt-3.5-turbo", auto_execute:bool = False, variables:d
           "below two lines into the next cell and execute it."
           "\n\n%%bob"
           "\nplease generate a noisy grayscale image containing 10 blurry blobs with a diameter of 20 pixels each.")
+
+def enable_plugins(enabled: bool = True):
+    Context.plugins_enabled = enabled
