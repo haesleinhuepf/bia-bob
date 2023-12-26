@@ -109,6 +109,21 @@ def create_system_prompt(reusable_variables_block=None):
     if reusable_variables_block is None:
         reusable_variables_block = create_reusable_variables_block()
 
+    from importlib.metadata import entry_points
+
+    # Discover all bia-bob plugins
+    bia_bob_plugins = entry_points(group='bia_bob_plugins')
+
+    additional_instructions = []
+    # Iterate over discovered entry points and load them
+    for ep in bia_bob_plugins:
+        func = ep.load()
+
+        # load instructions from a plugin
+        instructions = func()
+        additional_instructions.append(instructions)
+    additional_snippets = "\n".join(additional_instructions)
+
     system_prompt = f"""
     If the request entails writing code, write concise professional bioimage analysis high-quality code.
     If there are several ways to solve the task, chose the option with the least amount of code.
@@ -123,6 +138,7 @@ def create_system_prompt(reusable_variables_block=None):
     {skimage_snippets}
     {aicsimageio_snippets}
     {stackview_snippets}
+    {additional_snippets}
     
     ## Explanations and code
     
