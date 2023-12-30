@@ -30,7 +30,8 @@ class Context:
         "napari-simpleitk-image-processing",
         "napari-skimage-regionprops",
         "skan",
-        "aicsimageio"
+        "aicsimageio",
+        "os"
 
         # to add libraries here, add their pypi package names (not their import names)
     ])
