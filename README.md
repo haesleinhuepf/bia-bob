@@ -150,6 +150,7 @@ List of known Python libraries that provide extensions to Bob:
 ## Similar projects
 
 There are similar projects:
+* [chatGPT-jupyter-extension](https://github.com/jflam/chat-gpt-jupyter-extension)
 * [jupyter-ai](https://github.com/jupyterlab/jupyter-ai)
 * [napari-chatGPT](https://github.com/royerlab/napari-chatgpt)
 * [bioimageio-chatbot](https://github.com/bioimage-io/bioimageio-chatbot)
