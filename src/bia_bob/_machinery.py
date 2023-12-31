@@ -37,8 +37,6 @@ class Context:
     ])
 
 
-
-@register_line_cell_magic
 def bob(line: str = None, cell: str = None):
     """Sends a prompt to openAI
     and shows the text and code response
@@ -55,7 +53,7 @@ def bob(line: str = None, cell: str = None):
         image = Context.variables[line]
     else:
         image = None
-    
+
     user_input = combine_user_input(line, cell)
 
     if user_input is None:
@@ -79,6 +77,12 @@ def bob(line: str = None, cell: str = None):
         else:
             # put a new cell below the current cell
             p.set_next_input(code, replace=False)
+
+
+try:
+    register_line_cell_magic(bob)
+except NameError:
+    pass
 
 
 def combine_user_input(line, cell):
