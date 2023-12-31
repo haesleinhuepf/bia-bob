@@ -101,6 +101,14 @@ Follow the instructions in the browser. Enter your Project ID (not the name). If
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/gcloud_auth.png)
 
+### BiA-Bob Jupyter kernel (optional)
+
+If you want to use the BiA-Bob Jupyter kernel, please run additionally this command:
+
+```
+python -m bia_bob install
+```
+
 ## Development
 
 If you want to contribute to `bia-bob`, you can install it in development mode like this:
