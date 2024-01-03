@@ -1,7 +1,6 @@
 from IPython.core.magic import register_line_cell_magic
 
 
-@register_line_cell_magic
 def fix(line: str = None, cell: str = None):
     """This Jupyter Magic automatically fixes code when it's in the first line of a cell that caused an error that just
     happened.
@@ -42,3 +41,11 @@ Please correct the code.
     code, text = generate_response_to_user(Context.model, prompt)
 
     p.set_next_input(code, replace=True)
+
+
+try:
+    register_line_cell_magic(fix)
+except NameError:
+    pass
+
+

@@ -1,7 +1,6 @@
 from IPython.core.magic import register_line_cell_magic
 
 
-@register_line_cell_magic
 def doc(line:str=None, cell:str=None):
     """
     This Jupyter Magic automatically documents code when it's in the first line of a cell.
@@ -30,4 +29,9 @@ def doc(line:str=None, cell:str=None):
 
     p.set_next_input(code, replace=True)
 
+
+try:
+    register_line_cell_magic(doc)
+except NameError:
+    pass
 
