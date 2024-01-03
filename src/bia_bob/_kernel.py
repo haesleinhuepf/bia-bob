@@ -97,7 +97,7 @@ class BiABobKernel(MetaKernel):
     def prompt_chatgpt(self, prompt:str):
         """Submit a prompt to chatGPT, print out text response and execute code."""
         from ._utilities import generate_response_to_user
-        from ._machinery import init_assistant, Context
+        from ._machinery import Context
         from IPython.display import Markdown
 
         user_input = prompt
