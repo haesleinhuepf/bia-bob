@@ -105,10 +105,7 @@ def create_system_prompt(reusable_variables_block=None):
 
             # load instructions from a plugin
             instructions = func()
-
-            # special case for stackview: If it's not in the list of libraries, don't suggest to use it.
-            if "stackview" not in instructions or "stackview" in Context.libraries:
-                additional_instructions.append(instructions)
+            additional_instructions.append(instructions)
 
         additional_snippets = "\n".join(additional_instructions)
     else:
