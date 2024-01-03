@@ -109,6 +109,18 @@ If you want to use the BiA-Bob Jupyter kernel, please run additionally this comm
 python -m bia_bob install
 ```
 
+You can check if it's installed by printing out the list of installed kernels:
+
+```
+jupyter kernelspec list
+```
+
+And you can uninstall them using this command:
+
+```
+jupyter kernelspec uninstall bia-bob
+```
+
 ## Development
 
 If you want to contribute to `bia-bob`, you can install it in development mode like this:
