@@ -1,7 +1,5 @@
-
-
 from metakernel import MetaKernel
-import sys, copy, re
+import sys, os
 
 
 class BiABobKernel(MetaKernel):
@@ -21,23 +19,31 @@ class BiABobKernel(MetaKernel):
         "argv": [sys.executable,
                  "-m", "bia_bob",
                  "-f", "{connection_file}"],
-        "display_name": "BiA-Bob",
+        "display_name": "BiA-Bob (gpt-4-1106-preview)",
         "language": "prompt",
         "codemirror_mode": "prompt",
-        "name": "BiA-Bob"
+        "name": "BiA-Bob-gpt-4-1106-preview",
+        "logo": str(os.path.abspath(__file__)) + "/images/logo-64x64.png"
     }
+    model = 'gpt-4-1106-preview'
     magic_prefixes = dict(magic='%', shell='!', help='?')
     help_suffix = "?"
 
-    def __init__(self, model='gpt-4-1106-preview', *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(BiABobKernel, self).__init__(*args, **kwargs)
 
         # setup environment for bob
         from bia_bob import bob
         from bia_bob._machinery import Context
         self.variables = {}
-        bob.initialize(model=model, variables=self.variables)
-        Context.auto_execute = True
+        bob.initialize(model=self.model, variables=self.variables)
+
+        # We filter out some libraries because we have custom display capabilities in this custom kernel
+        Context.libraries = [l for l in Context.libraries if l != "stackview"]
+
+        # make sure the results are as reproducible as they get
+        Context.seed = 42
+        Context.temperature = 0.01
 
     def get_usage(self):
         return """
@@ -62,11 +68,10 @@ class BiABobKernel(MetaKernel):
 
     def do_execute_direct(self, prompt):
         """This function is called when the user executes a cell with a given prompt."""
-        self.Print("Executing", prompt)
-
         prompt = prompt + """ 
         For showing and displaying images or dataframes, use the `display()` function. 
         Instead of `plt.show()` always use `plt_show()`. Make sure this function is called after plotting things with matplotlib.
+        Do not forget to provide the code block by the very end.
         """
         self.variables['display'] = self.custom_display
         self.variables['plt_show'] = self.custom_plt_show
@@ -111,16 +116,12 @@ class BiABobKernel(MetaKernel):
         if code is not None:
             # out of Jupyter environment, e.g. in kernel execution
             self.display_code(code)
-            if Context.auto_execute:
-                try:
-                    print("Executing code")
-                    exec(code, Context.variables)
-                    print("Executed code")
-                except Exception as e:
-                    #import traceback
-                    print("An exception occurred:", e)
-                    #traceback.print_exc()
-                    print(*sys.exc_info())
+            try:
+                exec(code, Context.variables)
+            except Exception as e:
+                import traceback
+                self.Print("An exception occurred:", e)
+                self.Print(traceback.format_exc())
 
     def display_code(self, code):
         """Display code content in the notebook."""
@@ -134,7 +135,6 @@ class BiABobKernel(MetaKernel):
         </pre>
         </details>
         """))
-
 
     # not sure if those are strictly necessary: They were added by the IDE
     def do_clear(self):

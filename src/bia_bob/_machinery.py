@@ -10,6 +10,9 @@ class Context:
     chat = []
     client = None
     plugins_enabled = True
+    seed = None # openai only
+    temperature = None # openai only
+
     libraries = keep_available_packages([
         "scikit-image",
         "numpy",
