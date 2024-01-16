@@ -1,16 +1,18 @@
-def generate_response_to_user(model, user_prompt: str, image=None):
+def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
 
     system_prompt = create_system_prompt()
+    if additional_system_prompt is not None:
+        system_prompt += "\n" + additional_system_prompt
 
     # take the last n chat entries
     from ._machinery import Context
     n = 10
     chat_history = Context.chat[-n:]
 
-    if Context.verbose:
+    if Context.verbose or True:
         print("\nUser prompt:", user_prompt)
         print("\nSystem prompt:", system_prompt)
         print_chat(chat_history)
