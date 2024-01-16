@@ -1,55 +1,76 @@
-def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None):
+def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
+    text, plan, code = None, None, None
 
-    system_prompt = create_system_prompt()
-    if additional_system_prompt is not None:
-        system_prompt += "\n" + additional_system_prompt
+    for attempt in range(1, max_number_attempts + 1):
+        system_prompt = create_system_prompt()
+        if additional_system_prompt is not None:
+            system_prompt += "\n" + additional_system_prompt
 
-    # take the last n chat entries
-    from ._machinery import Context
-    n = 10
-    chat_history = Context.chat[-n:]
+        # take the last n chat entries
+        from ._machinery import Context
+        n = 10
+        chat_history = Context.chat[-n:]
 
-    if Context.verbose or True:
-        print("\nUser prompt:", user_prompt)
-        print("\nSystem prompt:", system_prompt)
-        print_chat(chat_history)
+        if Context.verbose:
+            print("\nUser prompt:", user_prompt)
+            print("\nSystem prompt:", system_prompt)
+            print_chat(chat_history)
 
-    if "gpt-" in model:
-        full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
-    elif "gemini-" in model:
-        full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image)
-    else:
-        raise RuntimeError(f"Unknown model API for {model}")
+        if "gpt-" in model:
+            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
+        elif "gemini-" in model:
+            full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image)
+        else:
+            raise RuntimeError(f"Unknown model API for {model}")
 
-    if Context.verbose:
-        print("\n\nFull response:\n", full_response)
+        if Context.verbose:
+            print("\n\nFull response:\n", full_response)
 
-    full_response = full_response\
-                    .replace("```python", "```")\
-                    .replace("```nextflow", "```")\
-                    .replace("```java", "```")\
-                    .replace("```javascript", "```")\
-                    .replace("```macro", "```")\
-                    .replace("```groovy", "```")\
-                    .replace("```jython", "```")
+        full_response = full_response\
+                        .replace("```python", "```")\
+                        .replace("```nextflow", "```")\
+                        .replace("```java", "```")\
+                        .replace("```javascript", "```")\
+                        .replace("```macro", "```")\
+                        .replace("```groovy", "```")\
+                        .replace("```jython", "```")
 
-    # split response in text and code
-    parts = full_response.split("```")
-    if len(parts) == 1:
-        text = full_response
-        code = None
-    else:
-        text = ""
-        code = ""
-        for t, c in zip(parts[::2], parts[1::2]):
-            text = text + t
-            code = code + c
-        code = code.strip("\n")
+        # split response in text and code
+        text, plan, code = split_response(full_response)
+
+        if text is not None and plan is not None:
+            break
+
+        print(f"There was an issue. Retrying ({attempt}/{max_number_attempts})...")
 
     return code, text
+
+def split_response(text):
+    # Split the text based on three predefined Markdown headlines
+    import re
+    sections = re.split(r'### (Summary|Plan|Code)\s*', text)
+
+    # The first element is usually an empty string before the first headline
+    # The rest of the elements are alternating between section names and contents
+    summary, plan, code = None, None, None
+    for i in range(1, len(sections), 2):
+        if sections[i] == 'Summary':
+            summary = sections[i + 1]
+        elif sections[i] == 'Plan':
+            plan = sections[i + 1]
+        elif sections[i] == 'Code':
+            code = sections[i + 1]
+
+    code = code.replace("```python", "```")
+    code = code.replace("```bash", "```")
+    code = code.replace("```java", "```")
+    code = code.replace("```javascript", "```")
+    code = code.replace("```", "")
+
+    return summary, plan, code
 
 
 def create_system_prompt(reusable_variables_block=None):
@@ -107,16 +128,18 @@ def create_system_prompt(reusable_variables_block=None):
 
             # load instructions from a plugin
             instructions = func()
-            additional_instructions.append(instructions)
+            # special treatment for code snippets from stackview, as it won't work with the custom kernel
+            if "stackview" not in instructions or "stackview" in Context.libraries:
+                additional_instructions.append(instructions)
 
         additional_snippets = "\n".join(additional_instructions)
     else:
         additional_snippets = ""
 
     system_prompt = f"""
+    You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
     If the request entails writing code, write concise professional bioimage analysis high-quality code.
-    If there are several ways to solve the task, chose the option with the least amount of code.
-    
+    If there are several ways to solve the task, chose the option with the least amount of code.    
     If there is no specific programming language required, write python code and follow the below instructions.
     
     {reusable_variables_block}
@@ -128,20 +151,33 @@ def create_system_prompt(reusable_variables_block=None):
     {aicsimageio_snippets}
     {additional_snippets}
     
-    ## Explanations and code
+    ## Todos
     
-    Initially, provide a concise step-by-step plan without any code. 
-    Always provide the plan first.
+    Answer your response in three sections:
+    1. First provide a short summary of the task.
+    2. Provide a concise step-by-step plan without any code.
+    3. Provide the code.
     
-    After the complete plan, print the code.
-    There must be only one single code block.
-    Importantly, the code block must start with the line: 
+    Structure it with markdown headings like this:
+    
+    ### Summary
+    I will do this and that.
+    
+    ### Plan
+    1. Do this.
+    2. Do that.
+    
+    ### Code
     ```
-    and it must end with the line:
+    this()
+    that()
     ```
     
-    There must be no text after the code block.
-    If the request does not require to write code, simply answer in plain text.
+    ## Final remarks
+    
+    The following points have highest importance and may overwrite the instructions above:
+    
+    Make sure to keep your answer concise and to the point. Make sure the code you write is correct and can be executed.
     """
 
     return system_prompt
@@ -291,7 +327,7 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
                        This is the task:
                        {user_prompt}
                        
-                       Remember: Your output should be 1) a step-by-step plan and 2) code.
+                       Remember: Your output should be 1) a summary, 2) a plan and 3) the code.
                        """
         if image is not None:
             from stackview._image_widget import _img_to_rgb
@@ -309,7 +345,7 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
                    This is the task:
                    {user_prompt}
 
-                   If the task is not explicitly about generating code, do not generated any code.
+                   If the task is not explicitly about generating code, do not generate any code.
                    """
 
             prompt = [image, prompt]
@@ -394,6 +430,10 @@ def keep_available_packages(libraries):
         from importlib_metadata import distributions
 
     installed = [dist.metadata['Name'] for dist in distributions()]
+
+    # add always available packages
+    installed.append('os')
+
     result = [i for i in libraries if i in installed]
 
     return result
