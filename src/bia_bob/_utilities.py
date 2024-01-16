@@ -106,6 +106,7 @@ def create_system_prompt(reusable_variables_block=None):
             # load instructions from a plugin
             instructions = func()
             additional_instructions.append(instructions)
+
         additional_snippets = "\n".join(additional_instructions)
     else:
         additional_snippets = ""
@@ -231,6 +232,11 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         # if it is not provided, the response will be
         # cropped to half a sentence
         kwargs['max_tokens'] = 3000
+
+    if Context.seed is not None:
+        kwargs['seed'] = Context.seed
+    if Context.temperature is not None:
+        kwargs['temperature'] = Context.temperature
 
     # init client
     if Context.client is None or not isinstance(Context.client, OpenAI):
