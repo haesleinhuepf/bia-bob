@@ -36,6 +36,16 @@ Using the `%%doc` magic, you can generate documentation for a given code cell.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/documenting_mini.gif)
 
+### No-code custom Jupyter Kernel
+
+If installed, you can also choose the BiA-Bob from the Launcher in Jupyter lab:
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia-bob-custom-kernel.png)
+
+This will give you a Jupyter kernel that allows you to type in English language instead of code:
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia-bob-custom-kernel2.png)
+
 ### Example notebooks
 
 * [Basic demo](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
