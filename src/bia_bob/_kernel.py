@@ -69,10 +69,11 @@ class BiABobKernel(MetaKernel):
     def do_execute_direct(self, prompt):
         """This function is called when the user executes a cell with a given prompt."""
         additional_system_prompt = """ 
-    For showing and displaying images or dataframes, use the `display()` function. 
+    For showing and displaying images or dataframes, use the `display` function.
     Instead of `plt.show()` always use `plt_show()`. Make sure this function is called after plotting things with matplotlib.
     Do not forget to provide the code block by the very end.
         """
+
         self.variables['display'] = self.custom_display
         self.variables['plt_show'] = self.custom_plt_show
         self.variables['print'] = self.custom_display
