@@ -100,7 +100,11 @@ def create_system_prompt(reusable_variables_block=None):
     from skimage.segmentation import expand_labels
     expanded_labels = expand_labels(label_image, distance=10)
     ```
-
+    * Measure properties of labels with respect to an image works like this:
+    ```
+    from skimage.measure import regionprops
+    properties = regionprops(label_image, image)
+    ```
     """
     if "scikit-image" not in Context.libraries:
         skimage_snippets = ""
@@ -186,7 +190,6 @@ def create_system_prompt(reusable_variables_block=None):
     
     The following points have highest importance and may overwrite the instructions above.
     Make sure to provide 1) summary, 2) plan and 3) code.
-    In the code section, to not provide any explanations.
     Make sure to keep your answer concise and to the point. Make sure the code you write is correct and can be executed.
     """
 
