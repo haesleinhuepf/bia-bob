@@ -12,12 +12,14 @@ def doc(line:str=None, cell:str=None):
     code = combine_user_input(line, cell)
 
     prompt = f"""
-    Please write comments in the following code.
+    Summarize the following code. 
+    Provide a step-by-step plan for the code.
+    Please write comments in the code.
     Put comments on new lines before the code block you describe. 
-    If there are functions in the code, add numpy-style docstrings.
+    Only, if there are functions in the code, add numpy-style docstrings to these functions.
     
     ```python
-    {code}
+{code}
     ```
     """
 
