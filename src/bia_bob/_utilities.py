@@ -2,7 +2,11 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
+    from ._machinery import Context
+
     text, plan, code = None, None, None
+
+    chat_backup = [c for c in Context.chat]
 
     for attempt in range(1, max_number_attempts + 1):
         system_prompt = create_system_prompt()
@@ -10,7 +14,6 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             system_prompt += "\n" + additional_system_prompt
 
         # take the last n chat entries
-        from ._machinery import Context
         n = 10
         chat_history = Context.chat[-n:]
 
@@ -45,6 +48,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             break
 
         print(f"There was an issue. Retrying ({attempt}/{max_number_attempts})...")
+        Context.chat = chat_backup
 
     return code, text
 
@@ -64,11 +68,16 @@ def split_response(text):
         elif sections[i] == 'Code':
             code = sections[i + 1]
 
-    code = code.replace("```python", "```")
-    code = code.replace("```bash", "```")
-    code = code.replace("```java", "```")
-    code = code.replace("```javascript", "```")
-    code = code.replace("```", "")
+    if code is not None:
+        parts = code.split("```")
+        if len(parts) == 1:
+            code = None
+        else:
+            text = ""
+            code = ""
+            for t, c in zip(parts[::2], parts[1::2]):
+                code = code + c
+            code = code.strip("\n")
 
     return summary, plan, code
 
@@ -154,9 +163,9 @@ def create_system_prompt(reusable_variables_block=None):
     ## Todos
     
     Answer your response in three sections:
-    1. First provide a short summary of the task.
-    2. Provide a concise step-by-step plan without any code.
-    3. Provide the code.
+    1. Summary: First provide a short summary of the task.
+    2. Plan: Provide a concise step-by-step plan without any code.
+    3. Code: Provide the code.
     
     Structure it with markdown headings like this:
     
@@ -175,8 +184,9 @@ def create_system_prompt(reusable_variables_block=None):
     
     ## Final remarks
     
-    The following points have highest importance and may overwrite the instructions above:
-    
+    The following points have highest importance and may overwrite the instructions above.
+    Make sure to provide 1) summary, 2) plan and 3) code.
+    In the code section, to not provide any explanations.
     Make sure to keep your answer concise and to the point. Make sure the code you write is correct and can be executed.
     """
 
