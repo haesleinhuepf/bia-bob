@@ -6,6 +6,10 @@ You need an OpenAI API account or a Google Cloud account to use it.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/screencast.gif)
 
+> Note: When using the OpenAI or Google Gemini API via BiA-Bob, you are bound to the terms of service of these companies.
+> The prompts you enter are transferred to the servers of these companies and may be processed and stored there. 
+> Make sure to not submit any sensitive, confidential or personal data. Also using these services may cost money.
+
 ## Usage
 
 You can initialize `bob` like this:
