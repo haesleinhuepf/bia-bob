@@ -28,6 +28,7 @@ class Context:
         "stardist",
         "n2v",
         "pyclesperanto-prototype",
+        "pyclesperanto_prototype",
         "apoc",
         "napari-segment-blobs-and-things-with-membranes",
         "napari-simpleitk-image-processing",
