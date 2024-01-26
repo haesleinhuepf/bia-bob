@@ -49,7 +49,7 @@ If installed, you can also choose the BiA-Bob from the Launcher in Jupyter lab:
 
 This will give you a Jupyter kernel that allows you to type in English language instead of code:
 
-![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia-bob-custom-kernel2.png)
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia-bob-custom-kernel3.png)
 
 ### Example notebooks
 
