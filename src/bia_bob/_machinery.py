@@ -2,6 +2,8 @@ from IPython.core.magic import register_line_cell_magic
 from ._utilities import keep_available_packages
 import warnings
 
+DEFAULT_MODEL = 'gpt-4-0125-preview'
+
 class Context:
     variables = None
     model = None
@@ -112,7 +114,7 @@ class CustomAgent:
         """
 
 
-def init_assistant(model="gpt-4-1106-preview", auto_execute:bool = False, variables:dict=None):
+def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None):
     """Initialises the assistant.
 
     Parameters

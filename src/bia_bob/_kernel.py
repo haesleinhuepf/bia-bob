@@ -1,10 +1,10 @@
 from metakernel import MetaKernel
 import sys, os
-
+from ._machinery import DEFAULT_MODEL
 
 class BiABobKernel(MetaKernel):
     implementation = 'BiA-Bob'
-    implementation_version = '1.0'
+    implementation_version = '1.1'
     language = 'prompt'
     language_version = '0.1'
     banner = "BiA-Bob"
@@ -19,13 +19,13 @@ class BiABobKernel(MetaKernel):
         "argv": [sys.executable,
                  "-m", "bia_bob",
                  "-f", "{connection_file}"],
-        "display_name": "BiA-Bob (gpt-4-1106-preview)",
+        "display_name": f"BiA-Bob ({DEFAULT_MODEL})",
         "language": "prompt",
         "codemirror_mode": "prompt",
-        "name": "BiA-Bob-gpt-4-1106-preview",
+        "name": f"BiA-Bob-{DEFAULT_MODEL}",
         "logo": str(os.path.abspath(__file__)) + "/images/logo-64x64.png"
     }
-    model = 'gpt-4-1106-preview'
+    model = DEFAULT_MODEL
     magic_prefixes = dict(magic='%', shell='!', help='?')
     help_suffix = "?"
 
