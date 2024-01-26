@@ -103,17 +103,6 @@ def combine_user_input(line, cell):
     return user_input
 
 
-class CustomAgent:
-    def __init__(self, model="gpt-3.5-turbo"):
-        self.model = model
-
-    def respond_to_user(self, user_input: str):
-        """Sends a prompt to openAI
-        and shows the text response
-        and pastes the code into the next cell.
-        """
-
-
 def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None):
     """Initialises the assistant.
 
