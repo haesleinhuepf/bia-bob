@@ -2,6 +2,8 @@ from IPython.core.magic import register_line_cell_magic
 from ._utilities import keep_available_packages
 import warnings
 
+DEFAULT_MODEL = 'gpt-4-0125-preview'
+
 class Context:
     variables = None
     model = None
@@ -101,18 +103,7 @@ def combine_user_input(line, cell):
     return user_input
 
 
-class CustomAgent:
-    def __init__(self, model="gpt-3.5-turbo"):
-        self.model = model
-
-    def respond_to_user(self, user_input: str):
-        """Sends a prompt to openAI
-        and shows the text response
-        and pastes the code into the next cell.
-        """
-
-
-def init_assistant(model="gpt-4-1106-preview", auto_execute:bool = False, variables:dict=None):
+def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None):
     """Initialises the assistant.
 
     Parameters

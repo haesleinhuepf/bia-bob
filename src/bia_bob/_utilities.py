@@ -132,7 +132,10 @@ def create_system_prompt(reusable_variables_block=None):
             bia_bob_plugins = entry_points(group='bia_bob_plugins')
         except TypeError:
             all_plugins = entry_points()
-            bia_bob_plugins = all_plugins['bia_bob_plugins']
+            try:
+                bia_bob_plugins = all_plugins['bia_bob_plugins']
+            except KeyError:
+                bia_bob_plugins = []
 
         additional_instructions = []
         # Iterate over discovered entry points and load them
