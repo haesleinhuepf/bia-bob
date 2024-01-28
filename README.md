@@ -1,14 +1,15 @@
 # bia-bob
 
 BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code. 
-It can make use of [OpenAI's chatGPT API](https://openai.com/blog/openai-api) or [Google's Vertex AI API](https://cloud.google.com/vertex-ai?hl=en) and [Gemini](https://blog.google/technology/ai/google-gemini-ai/). 
-You need an OpenAI API account or a Google Cloud account to use it.
+It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/) and [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/). 
+You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/screencast.gif)
 
 > [!CAUTION]
-> When using the OpenAI or Google Gemini API via BiA-Bob, you are bound to the terms of service of these companies.
-> The prompts you enter are transferred to the servers of these companies and may be processed and stored there. 
+> When using the OpenAI, Google Gemini API or any other endpoint via BiA-Bob, you are bound to the terms of service 
+> of the respective companies or organizations.
+> The prompts you enter are transferred to their servers and may be processed and stored there. 
 > Make sure to not submit any sensitive, confidential or personal data. Also using these services may cost money.
 
 ## Usage
@@ -96,6 +97,33 @@ pip install bia-bob openai
 (Recommended openai version >= 1.2.0)
 
 Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+
+### Using blablador as backend
+
+You can alternatively use the [blablador endpoint](https://helmholtz-blablador.fz-juelich.de/), a service provided by the Helmholtz foundation. 
+For this, just install the openai backend as explained above (tested version: 1.5.0) and get an API key as explained on
+[this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/). 
+Store this API key in the environment variable `BLABLADOR_API_KEY`. 
+For using this endpoint, you need to initialize bob like [shown in this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/blablador.ipynb):
+
+```
+bob.initialize(endpoint='blablador', model='Mistral-7B-Instruct-v0.2')
+```
+
+You can list supported models like this:
+```
+from bia_bob import available_models
+available_models(endpoint='blablador')
+```
+
+At the time of writing this (January 28th 2024), this is the list of supported models:
+```
+['Mistral-7B-Instruct-v0.2',
+ 'Mixtral-8x7B-Instruct-v0.1',
+ 'leo-mistral-hessianai-7b-chat',
+ 'neural-chat-7b-v3-1',
+ 'zephyr-7b-beta']
+```
 
 ### Using Google's Cloud AI API as backend
 
