@@ -2,7 +2,8 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
-    from ._machinery import Context
+    from ._machinery import Context, BLABLADOR_BASE_URL
+    import os
 
     text, plan, code = None, None, None
 
@@ -22,10 +23,19 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             print("\nSystem prompt:", system_prompt)
             print_chat(chat_history)
 
+
+
         if "gpt-" in model:
             full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
         elif "gemini-" in model:
             full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image)
+        elif Context.endpoint == 'blablador':
+            BLABLADOR_API_KEY = os.environ.get('BLABLADOR_API_KEY')
+            if BLABLADOR_API_KEY is not None:
+                full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                          base_url=BLABLADOR_BASE_URL, api_key=BLABLADOR_API_KEY)
+            else:
+                raise RuntimeError('The BLABLADOR_API_KEY environment variable is not set. Get one from https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/')
         else:
             raise RuntimeError(f"Unknown model API for {model}")
 
@@ -264,7 +274,8 @@ def is_notebook() -> bool:
         return False      # Probably standard Python interpreter
 
 
-def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None):
+def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
+                                  base_url:str=None, api_key:str=None):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
@@ -295,6 +306,11 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     # init client
     if Context.client is None or not isinstance(Context.client, OpenAI):
         Context.client = OpenAI()
+
+    if api_key is not None:
+        Context.client.api_key = api_key
+    if base_url is not None:
+        Context.client.base_url = base_url
 
     # retrieve answer
     response = Context.client.chat.completions.create(
@@ -414,24 +430,38 @@ def is_image(potential_image):
     return hasattr(potential_image, "shape") and hasattr(potential_image, "dtype")
 
 
-def available_models():
+def available_models(endpoint=None):
     """Returns a list of available model names"""
-    models = []
-    try:
-        from openai import OpenAI
-        client = OpenAI()
-        models = models + [model.id for model in client.models.list().data]
-    except:
-        print("Error while adding OpenAI models")
-        pass
+    import os
+    from ._machinery import BLABLADOR_BASE_URL
 
-    try:
-        from vertexai.preview.generative_models import GenerativeModel
-        models.append("gemini-pro")
-        models.append("gemini-pro-vision")
-    except:
-        print("Error while adding VertexAI models")
-        pass
+    models = []
+    if endpoint is None or endpoint == 'openai':
+        try:
+            from openai import OpenAI
+            client = OpenAI()
+            models = models + [model.id for model in client.models.list().data]
+        except:
+            print("Error while adding OpenAI models")
+            pass
+
+    if endpoint is None or endpoint == 'gemini':
+        try:
+            from vertexai.preview.generative_models import GenerativeModel
+            models.append("gemini-pro")
+            models.append("gemini-pro-vision")
+        except:
+            print("Error while adding VertexAI models")
+            pass
+
+    if endpoint is None or endpoint == 'blablador':
+        BLABLADOR_API_KEY = os.environ.get('BLABLADOR_API_KEY')
+        if BLABLADOR_API_KEY is not None:
+            from openai import OpenAI
+            client = OpenAI()
+            client.base_url = BLABLADOR_BASE_URL
+            client.api_key = BLABLADOR_API_KEY
+            models = models + [model.id for model in client.models.list().data]
 
     return sorted(models)
 
