@@ -102,7 +102,7 @@ Create an OpenAI API Key and add it to your environment variables as explained o
 
 You can alternatively use the [blablador endpoint](https://helmholtz-blablador.fz-juelich.de/), a service provided by the Helmholtz foundation. 
 For this, just install the openai backend as explained above (tested version: 1.5.0) and get an API key as explained on
-[this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/). 
+[this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/). Make sure to login there with any [EduGAIN](https://edugain.org/) account, such as your university account.
 Store this API key in the environment variable `BLABLADOR_API_KEY`. 
 For testing this endpoint, you need to initialize bob like [shown in this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/blablador.ipynb):
 
