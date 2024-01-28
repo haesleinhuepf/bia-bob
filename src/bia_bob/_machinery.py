@@ -16,6 +16,7 @@ class Context:
     seed = None # openai only
     temperature = None # openai only
     endpoint = None
+    api_key = None
 
     libraries = keep_available_packages([
         "scikit-image",
@@ -105,7 +106,7 @@ def combine_user_input(line, cell):
     return user_input
 
 
-def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None, endpoint=None):
+def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None):
     """Initialises the assistant.
 
     Parameters
@@ -128,6 +129,7 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
         Context.variables = variables
 
     Context.endpoint = endpoint
+    Context.api_key = api_key
 
     if Context.verbose:
         print("Assistant initialised. You can now use it, e.g., copy and paste the"

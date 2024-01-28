@@ -23,9 +23,10 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             print("\nSystem prompt:", system_prompt)
             print_chat(chat_history)
 
-
-
-        if "gpt-" in model:
+        if Context.endpoint is not None and Context.endpoint != 'blablador':
+            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                          base_url=Context.endpoint, api_key=Context.api_key)
+        elif "gpt-" in model:
             full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
         elif "gemini-" in model:
             full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image)
@@ -430,7 +431,7 @@ def is_image(potential_image):
     return hasattr(potential_image, "shape") and hasattr(potential_image, "dtype")
 
 
-def available_models(endpoint=None):
+def available_models(endpoint=None, api_key=None):
     """Returns a list of available model names"""
     import os
     from ._machinery import BLABLADOR_BASE_URL
@@ -462,6 +463,13 @@ def available_models(endpoint=None):
             client.base_url = BLABLADOR_BASE_URL
             client.api_key = BLABLADOR_API_KEY
             models = models + [model.id for model in client.models.list().data]
+
+    if endpoint is not None and endpoint != 'blablador':
+        from openai import OpenAI
+        client = OpenAI()
+        client.base_url = endpoint
+        client.api_key = api_key
+        models = models + [model.id for model in client.models.list().data]
 
     return sorted(models)
 

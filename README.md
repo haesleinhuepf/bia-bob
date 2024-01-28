@@ -125,6 +125,17 @@ At the time of writing this (January 28th 2024), this is the list of supported m
  'zephyr-7b-beta']
 ```
 
+### Using custom backends
+
+Custom endpoints can be used as well if they support the OpenAI API. An example is shown in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/custom_endpoints.ipynb):
+
+```
+bob.initialize(
+    endpoint='https://helmholtz-blablador.fz-juelich.de:8000/v1', 
+    api_key=os.environ.get('BLABLADOR_API_KEY'), 
+    model='Mistral-7B-Instruct-v0.2')
+```
+
 ### Using Google's Cloud AI API as backend
 
 ```
