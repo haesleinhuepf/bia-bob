@@ -104,25 +104,10 @@ You can alternatively use the [blablador endpoint](https://helmholtz-blablador.f
 For this, just install the openai backend as explained above (tested version: 1.5.0) and get an API key as explained on
 [this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/). 
 Store this API key in the environment variable `BLABLADOR_API_KEY`. 
-For using this endpoint, you need to initialize bob like [shown in this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/blablador.ipynb):
+For testing this endpoint, you need to initialize bob like [shown in this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/blablador.ipynb):
 
 ```
 bob.initialize(endpoint='blablador', model='Mistral-7B-Instruct-v0.2')
-```
-
-You can list supported models like this:
-```
-from bia_bob import available_models
-available_models(endpoint='blablador')
-```
-
-At the time of writing this (January 28th 2024), this is the list of supported models:
-```
-['Mistral-7B-Instruct-v0.2',
- 'Mixtral-8x7B-Instruct-v0.1',
- 'leo-mistral-hessianai-7b-chat',
- 'neural-chat-7b-v3-1',
- 'zephyr-7b-beta']
 ```
 
 ### Using Google's Cloud AI API as backend
