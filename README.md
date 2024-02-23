@@ -109,7 +109,7 @@ For this, just install the openai backend as explained above (tested version: 1.
 ```
 bob.initialize(endpoint='ollama', model='codellama')
 ```
-* If you want to use blablado, which is free for German academics, just get an API key as explained on
+* If you want to use blablador, which is free for German academics, just get an API key as explained on
 [this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/) and store it int your environment as `BLABLADOR_API_KEY` variable.
 ```
 bob.initialize(
