@@ -23,20 +23,13 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             print("\nSystem prompt:", system_prompt)
             print_chat(chat_history)
 
-        if Context.endpoint is not None and Context.endpoint != 'blablador':
+        if Context.endpoint is not None:
             full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
                                                           base_url=Context.endpoint, api_key=Context.api_key)
         elif "gpt-" in model:
             full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
         elif "gemini-" in model:
             full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image)
-        elif Context.endpoint == 'blablador':
-            BLABLADOR_API_KEY = os.environ.get('BLABLADOR_API_KEY')
-            if BLABLADOR_API_KEY is not None:
-                full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
-                                                          base_url=BLABLADOR_BASE_URL, api_key=BLABLADOR_API_KEY)
-            else:
-                raise RuntimeError('The BLABLADOR_API_KEY environment variable is not set. Get one from https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/')
         else:
             raise RuntimeError(f"Unknown model API for {model}")
 
@@ -64,6 +57,13 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
     return code, text
 
 def split_response(text):
+    # hotfix modifications for not-so-capable models (e.g. ollama/codellama or blablador/Mistral-7B-Instruct-v0.2)
+    for item in ["Summary", "Plan", "Code"]:
+        text = "\n" + text
+        text = text.replace(f"\n# {item}", f"\n### {item}")
+        text = text.replace(f"\n## {item}", f"\n### {item}")
+        text = text.replace(f"\n### {item}:", f"\n### {item}")
+
     # Split the text based on three predefined Markdown headlines
     import re
     sections = re.split(r'### (Summary|Plan|Code)\s*', text)
@@ -431,10 +431,21 @@ def is_image(potential_image):
     return hasattr(potential_image, "shape") and hasattr(potential_image, "dtype")
 
 
+def correct_endpoint(endpoint, api_key):
+    import os
+    from ._machinery import BLABLADOR_BASE_URL, OLLAMA_BASE_URL
+    if endpoint == 'blablador':
+        endpoint = BLABLADOR_BASE_URL
+        if api_key is None:
+            api_key = os.environ.get('BLABLADOR_API_KEY')
+    elif endpoint == 'ollama':
+        endpoint = OLLAMA_BASE_URL
+    return endpoint, api_key
+
+
 def available_models(endpoint=None, api_key=None):
     """Returns a list of available model names"""
-    import os
-    from ._machinery import BLABLADOR_BASE_URL
+    endpoint, api_key = correct_endpoint(endpoint, api_key)
 
     models = []
     if endpoint is None or endpoint == 'openai':
@@ -455,16 +466,7 @@ def available_models(endpoint=None, api_key=None):
             print("Error while adding VertexAI models")
             pass
 
-    if endpoint is None or endpoint == 'blablador':
-        BLABLADOR_API_KEY = os.environ.get('BLABLADOR_API_KEY')
-        if BLABLADOR_API_KEY is not None:
-            from openai import OpenAI
-            client = OpenAI()
-            client.base_url = BLABLADOR_BASE_URL
-            client.api_key = BLABLADOR_API_KEY
-            models = models + [model.id for model in client.models.list().data]
-
-    if endpoint is not None and endpoint != 'blablador':
+    if endpoint is not None:
         from openai import OpenAI
         client = OpenAI()
         client.base_url = endpoint
