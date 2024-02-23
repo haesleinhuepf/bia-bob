@@ -2,7 +2,8 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
-    from ._machinery import Context
+    from ._machinery import Context, BLABLADOR_BASE_URL
+    import os
 
     text, plan, code = None, None, None
 
@@ -22,7 +23,10 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             print("\nSystem prompt:", system_prompt)
             print_chat(chat_history)
 
-        if "gpt-" in model:
+        if Context.endpoint is not None:
+            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                          base_url=Context.endpoint, api_key=Context.api_key)
+        elif "gpt-" in model:
             full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
         elif "gemini-" in model:
             full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image)
@@ -53,6 +57,13 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
     return code, text
 
 def split_response(text):
+    # hotfix modifications for not-so-capable models (e.g. ollama/codellama or blablador/Mistral-7B-Instruct-v0.2)
+    for item in ["Summary", "Plan", "Code"]:
+        text = "\n" + text
+        text = text.replace(f"\n# {item}", f"\n### {item}")
+        text = text.replace(f"\n## {item}", f"\n### {item}")
+        text = text.replace(f"\n### {item}:", f"\n### {item}")
+
     # Split the text based on three predefined Markdown headlines
     import re
     sections = re.split(r'### (Summary|Plan|Code)\s*', text)
@@ -264,7 +275,8 @@ def is_notebook() -> bool:
         return False      # Probably standard Python interpreter
 
 
-def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None):
+def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
+                                  base_url:str=None, api_key:str=None):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
@@ -295,6 +307,11 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     # init client
     if Context.client is None or not isinstance(Context.client, OpenAI):
         Context.client = OpenAI()
+
+    if api_key is not None:
+        Context.client.api_key = api_key
+    if base_url is not None:
+        Context.client.base_url = base_url
 
     # retrieve answer
     response = Context.client.chat.completions.create(
@@ -414,24 +431,47 @@ def is_image(potential_image):
     return hasattr(potential_image, "shape") and hasattr(potential_image, "dtype")
 
 
-def available_models():
+def correct_endpoint(endpoint, api_key):
+    import os
+    from ._machinery import BLABLADOR_BASE_URL, OLLAMA_BASE_URL
+    if endpoint == 'blablador':
+        endpoint = BLABLADOR_BASE_URL
+        if api_key is None:
+            api_key = os.environ.get('BLABLADOR_API_KEY')
+    elif endpoint == 'ollama':
+        endpoint = OLLAMA_BASE_URL
+    return endpoint, api_key
+
+
+def available_models(endpoint=None, api_key=None):
     """Returns a list of available model names"""
+    endpoint, api_key = correct_endpoint(endpoint, api_key)
+
     models = []
-    try:
+    if endpoint is None or endpoint == 'openai':
+        try:
+            from openai import OpenAI
+            client = OpenAI()
+            models = models + [model.id for model in client.models.list().data]
+        except:
+            print("Error while adding OpenAI models")
+            pass
+
+    if endpoint is None or endpoint == 'gemini':
+        try:
+            from vertexai.preview.generative_models import GenerativeModel
+            models.append("gemini-pro")
+            models.append("gemini-pro-vision")
+        except:
+            print("Error while adding VertexAI models")
+            pass
+
+    if endpoint is not None:
         from openai import OpenAI
         client = OpenAI()
+        client.base_url = endpoint
+        client.api_key = api_key
         models = models + [model.id for model in client.models.list().data]
-    except:
-        print("Error while adding OpenAI models")
-        pass
-
-    try:
-        from vertexai.preview.generative_models import GenerativeModel
-        models.append("gemini-pro")
-        models.append("gemini-pro-vision")
-    except:
-        print("Error while adding VertexAI models")
-        pass
 
     return sorted(models)
 

@@ -3,6 +3,8 @@ from ._utilities import keep_available_packages
 import warnings
 
 DEFAULT_MODEL = 'gpt-4-0125-preview'
+BLABLADOR_BASE_URL = 'https://helmholtz-blablador.fz-juelich.de:8000/v1'
+OLLAMA_BASE_URL = 'http://localhost:11434/v1'
 
 class Context:
     variables = None
@@ -14,6 +16,8 @@ class Context:
     plugins_enabled = True
     seed = None # openai only
     temperature = None # openai only
+    endpoint = None
+    api_key = None
 
     libraries = keep_available_packages([
         "scikit-image",
@@ -103,7 +107,7 @@ def combine_user_input(line, cell):
     return user_input
 
 
-def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None):
+def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None):
     """Initialises the assistant.
 
     Parameters
@@ -112,9 +116,10 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
     auto_execute: bool, optional (default: False) If True, the assistant will automatically execute the code it generates.
     variables: dict, optional (default: None) A dictionary of variables that should be available to the assistant.
                If None, it will use the global variables of the current namespace.
-
+    endpint: str Custom endpoint, e.g. 'blablador'
     """
     from IPython.core.getipython import get_ipython
+    from ._utilities import correct_endpoint
     Context.model = model
     Context.auto_execute = auto_execute
     Context.client = None
@@ -124,6 +129,11 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
         Context.variables = p.user_ns
     else:
         Context.variables = variables
+
+    endpoint, api_key = correct_endpoint(endpoint, api_key)
+
+    Context.endpoint = endpoint
+    Context.api_key = api_key
 
     if Context.verbose:
         print("Assistant initialised. You can now use it, e.g., copy and paste the"

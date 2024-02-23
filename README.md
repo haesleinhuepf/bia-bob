@@ -1,14 +1,16 @@
 # bia-bob
 
 BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code. 
-It can make use of [OpenAI's chatGPT API](https://openai.com/blog/openai-api) or [Google's Vertex AI API](https://cloud.google.com/vertex-ai?hl=en) and [Gemini](https://blog.google/technology/ai/google-gemini-ai/). 
-You need an OpenAI API account or a Google Cloud account to use it.
+It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
+You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
+Using it with Ollama is free but requires running an Ollama server locally.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/screencast.gif)
 
 > [!CAUTION]
-> When using the OpenAI or Google Gemini API via BiA-Bob, you are bound to the terms of service of these companies.
-> The prompts you enter are transferred to the servers of these companies and may be processed and stored there. 
+> When using the OpenAI, Google Gemini API or any other endpoint via BiA-Bob, you are bound to the terms of service 
+> of the respective companies or organizations.
+> The prompts you enter are transferred to their servers and may be processed and stored there. 
 > Make sure to not submit any sensitive, confidential or personal data. Also using these services may cost money.
 
 ## Usage
@@ -96,6 +98,31 @@ pip install bia-bob openai
 (Recommended openai version >= 1.2.0)
 
 Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+
+### Using custom backends
+
+Custom endpoints can be used as well if they support the OpenAI API. Examples are [blablador](https://login.helmholtz.de/oauth2-as/oauth2-authz-web-entry) and [ollama](https://ollama.com/).
+An example is shown in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/custom_endpoints.ipynb):
+
+For this, just install the openai backend as explained above (tested version: 1.5.0).
+* If you want to use ollama and e.g. the `codellama` model, you must run `ollama serve` from a separate terminal and then initialize bob like this:
+```
+bob.initialize(endpoint='ollama', model='codellama')
+```
+* If you want to use blablado, which is free for German academics, just get an API key as explained on
+[this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/) and store it int your environment as `BLABLADOR_API_KEY` variable.
+```
+bob.initialize(
+    endpoint='blablador', 
+    model='Mistral-7B-Instruct-v0.2')
+```
+* Custom end points can be used as well, for example like this:
+```
+bob.initialize(
+    endpoint='http://localhost:11434/v1', 
+    api_key='my_key',
+    model='codellama')
+```
 
 ### Using Google's Cloud AI API as backend
 
