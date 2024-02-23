@@ -1,8 +1,9 @@
 # bia-bob
 
 BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code. 
-It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/) and [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/). 
+It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
 You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
+Using it with Ollama is free but requires running an Ollama server locally.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/screencast.gif)
 
