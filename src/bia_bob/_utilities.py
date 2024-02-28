@@ -51,6 +51,9 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         if text is not None and plan is not None:
             break
 
+        if image is not None:
+            break
+
         print(f"There was an issue. Retrying ({attempt}/{max_number_attempts})...")
         Context.chat = chat_backup
 
@@ -290,7 +293,11 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     kwargs = {}
 
     if image is not None:
-        image_message = image_to_message(image)
+        if 'llava' in model:
+            image_message = image_to_message_llava(image, user_prompt)
+            user_message = []
+        else:
+            image_message = image_to_message(image)
 
     if model == "gpt-4-vision-preview":
         # this seems necessary according to the docs:
@@ -312,6 +319,9 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         Context.client.api_key = api_key
     if base_url is not None:
         Context.client.base_url = base_url
+
+    if Context.verbose:
+        print("messages=", system_message + chat_history + image_message + user_message)
 
     # retrieve answer
     response = Context.client.chat.completions.create(
@@ -424,6 +434,25 @@ def image_to_message(image):
         "type": "image_url",
         "image_url": f"data:image/jpeg;base64,{base64_image}",
     }]}]
+
+
+def image_to_message_llava(image, prompt):
+    import base64
+
+    from stackview._image_widget import _img_to_rgb
+    from darth_d._utilities import numpy_to_bytestream
+
+    rgb_image = _img_to_rgb(image)
+    byte_stream = numpy_to_bytestream(rgb_image)
+    base64_image = base64.b64encode(byte_stream).decode('utf-8')
+
+    return [{
+        'role': 'user',
+        'content': prompt,
+        'images': [base64_image]
+    }]
+
+
 
 
 def is_image(potential_image):
