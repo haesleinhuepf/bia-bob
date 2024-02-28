@@ -48,6 +48,9 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         # split response in text and code
         text, plan, code = split_response(full_response)
 
+        if text is None and code is None:
+            text = full_response
+
         if text is not None and plan is not None:
             break
 
