@@ -17,4 +17,6 @@ dependencies:
   - scipy
   - numpy
   - skan
+  - pyclesperanto-prototype
+
   
