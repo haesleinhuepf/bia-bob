@@ -325,7 +325,6 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         system_message = [{"role": "system", "content": vision_system_prompt}]
 
         if 'llava' in vision_model:
-            print("llava image")
             system_message = "" # llava crashes when the system prompt is too long
             image_message = image_to_message_llava(image, user_prompt)
             user_message = []
@@ -406,7 +405,6 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
         if Context.client is None or not isinstance(Context.client, ChatSession):
             gemini_model = GenerativeModel(model)
             Context.client = gemini_model.start_chat()
-            print("Starting new conversation with Vertex AI")
             system_result = Context.client.send_message(
                 system_prompt + "\n\nConfirm these general instructions by answering 'yes'.").text
 
@@ -423,7 +421,6 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
                    Remember: Your output should be 1) a summary, 2) a plan and 3) the code.
                    """
 
-        print("Model:", model)
         response = Context.client.send_message(prompt).text
 
     else: #if image is not None:
@@ -449,7 +446,6 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
 
         prompt = [image, prompt]
 
-        print("Model:", vision_model)
         response = Context.vision_client.generate_content(prompt).text
 
         # we need to add this information to the history.
