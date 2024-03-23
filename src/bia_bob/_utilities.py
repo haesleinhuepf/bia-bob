@@ -1,4 +1,4 @@
-def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3):
+def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3, system_prompt:str=None):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
@@ -10,9 +10,12 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
     chat_backup = [c for c in Context.chat]
 
     for attempt in range(1, max_number_attempts + 1):
-        system_prompt = create_system_prompt()
+        if system_prompt is None:
+            system_prompt = create_system_prompt()
         if additional_system_prompt is not None:
             system_prompt += "\n" + additional_system_prompt
+
+        vision_system_prompt = create_vision_system_prompt()
 
         # take the last n chat entries
         n = 10
@@ -25,11 +28,17 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
 
         if Context.endpoint is not None:
             full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
-                                                          base_url=Context.endpoint, api_key=Context.api_key)
+                                                          base_url=Context.endpoint, api_key=Context.api_key,
+                                                          vision_model=Context.vision_model,
+                                                          vision_system_prompt=vision_system_prompt)
         elif "gpt-" in model:
-            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image)
+            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                          vision_model=Context.vision_model,
+                                                          vision_system_prompt=vision_system_prompt)
         elif "gemini-" in model:
-            full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image)
+            full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image,
+                                                             vision_model=Context.vision_model,
+                                                             vision_system_prompt=vision_system_prompt)
         else:
             raise RuntimeError(f"Unknown model API for {model}")
 
@@ -50,6 +59,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
 
         if text is None and code is None:
             text = full_response
+            break
 
         if text is not None and plan is not None:
             break
@@ -216,6 +226,16 @@ def create_system_prompt(reusable_variables_block=None):
     return system_prompt
 
 
+def create_vision_system_prompt():
+    vision_system_prompt = """
+    Describe the given image. Assume it is a scientific image resulting from imaging devices such as microscope, clinical scanners or other kinds of detectors.
+    Consider describing the image's background (bright, dark, homogeneous, inhomogeneous) and forgreound (blobs, meshes, membranes, cells, subcellular structures, crystals, etc.)
+    Describe the image's quality (resolution, noise, artifacts, etc.)
+    Describe the image's content (how many objects, large, small objects, etc.)
+    """
+    return vision_system_prompt
+
+
 def create_reusable_variables_block():
     """Creates a block of text that explains which variables, functions and libraries are
     available to be used."""
@@ -282,7 +302,7 @@ def is_notebook() -> bool:
 
 
 def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
-                                  base_url:str=None, api_key:str=None):
+                                  base_url:str=None, api_key:str=None, vision_model:str = None, vision_system_prompt:str = None):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
@@ -290,37 +310,55 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     from ._machinery import Context
 
     # assemble prompt
-    system_message = [{"role": "system", "content": system_prompt}]
     user_message = [{"role": "user", "content": user_prompt}]
     image_message = []
     kwargs = {}
 
-    if image is not None:
-        image_message = image_to_message(image)
+    if image is None: # normal text-based prompt
+        system_message = [{"role": "system", "content": system_prompt}]
 
-    if model == "gpt-4-vision-preview":
+        # init client
+        if Context.client is None or not isinstance(Context.client, OpenAI):
+            Context.client = OpenAI()
+        client = Context.client
+    else:
+        system_message = [{"role": "system", "content": vision_system_prompt}]
+
+        if 'llava' in vision_model:
+            print("llava image")
+            system_message = "" # llava crashes when the system prompt is too long
+            image_message = image_to_message_llava(image, user_prompt)
+            user_message = []
+        else:
+            image_message = image_to_message(image)
+
+
         # this seems necessary according to the docs:
         # https://platform.openai.com/docs/guides/vision
         # if it is not provided, the response will be
         # cropped to half a sentence
         kwargs['max_tokens'] = 3000
 
+        if Context.vision_client is None or not isinstance(Context.vision_client, OpenAI):
+            Context.vision_client = OpenAI()
+        client = Context.vision_client
+        model = vision_model
+
     if Context.seed is not None:
         kwargs['seed'] = Context.seed
     if Context.temperature is not None:
         kwargs['temperature'] = Context.temperature
 
-    # init client
-    if Context.client is None or not isinstance(Context.client, OpenAI):
-        Context.client = OpenAI()
-
     if api_key is not None:
-        Context.client.api_key = api_key
+        client.api_key = api_key
     if base_url is not None:
-        Context.client.base_url = base_url
+        client.base_url = base_url
+
+    if Context.verbose:
+        print("messages=", system_message + chat_history + image_message + user_message)
 
     # retrieve answer
-    response = Context.client.chat.completions.create(
+    response = client.chat.completions.create(
         messages=system_message + chat_history + image_message + user_message,
         model=model,
         **kwargs
@@ -329,12 +367,19 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
 
     # store question and answer in chat history
     assistant_message = [{"role": "assistant", "content": reply}]
+
+    if image is not None:
+        # we need to add this information to the history.
+        generate_response_to_user(Context.model,
+                                  user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
+                                  system_prompt="")
+
     Context.chat += user_message + assistant_message
 
     return reply
 
 
-def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None):
+def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None, vision_model:str = None, vision_system_prompt:str = None):
     """A prompt helper function that sends a message to Google Vertex AI
     and returns only the text response.
 
@@ -353,65 +398,64 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
     )
 
 
-    if "vision" in Context.model:
+    # if "vision" in Context.model:
         # We need to do some special case here, because the vision model seems to not support chats (yet).
-        if Context.client is None or not isinstance(Context.client, GenerativeModel):
-            Context.client = GenerativeModel(Context.model)
 
-        if image is None:
-            prompt = f"""
-                       {system_prompt}
-                       
-                       # Task
-                       This is the task:
-                       {user_prompt}
-                       
-                       Remember: Your output should be 1) a summary, 2) a plan and 3) the code.
-                       """
-        if image is not None:
-            from stackview._image_widget import _img_to_rgb
-            from darth_d._utilities import numpy_to_bytestream
 
-            rgb_image = _img_to_rgb(image)
-            byte_stream = numpy_to_bytestream(rgb_image)
+    if image is None:
+        if Context.client is None or not isinstance(Context.client, ChatSession):
+            gemini_model = GenerativeModel(model)
+            Context.client = gemini_model.start_chat()
+            print("Starting new conversation with Vertex AI")
+            system_result = Context.client.send_message(
+                system_prompt + "\n\nConfirm these general instructions by answering 'yes'.").text
 
-            image = Image.from_bytes(byte_stream)
+        if len(system_prompt) > 0:
+            system_prompt = create_system_prompt(reusable_variables_block="")
 
-            prompt = f"""
+        prompt = f"""
                    {system_prompt}
-
+                   
                    # Task
                    This is the task:
                    {user_prompt}
-
-                   If the task is not explicitly about generating code, do not generate any code.
+                   
+                   Remember: Your output should be 1) a summary, 2) a plan and 3) the code.
                    """
 
-            prompt = [image, prompt]
-
-        response = Context.client.generate_content(prompt).text
-
-    else:
-
-        system_prompt = create_system_prompt(reusable_variables_block="")
-
-        if Context.client is None or not isinstance(Context.client, ChatSession):
-            model = GenerativeModel(Context.model)
-            Context.client = model.start_chat()
-            system_result = Context.client.send_message(system_prompt + "\n\nConfirm these general instructioons by answering 'yes'.").text
-
-        reusable_variables_block = create_reusable_variables_block()
-
-        prompt = f"""{reusable_variables_block}
-        
-        # Task
-        This is the task:
-        {user_prompt}
-        
-        Remember: Your output should be 1) a step-by-step plan and 2) code.
-        """
-
+        print("Model:", model)
         response = Context.client.send_message(prompt).text
+
+    else: #if image is not None:
+        if Context.client is None or not isinstance(Context.client, GenerativeModel):
+            Context.vision_client = GenerativeModel(vision_model)
+
+        from stackview._image_widget import _img_to_rgb
+        from darth_d._utilities import numpy_to_bytestream
+
+        rgb_image = _img_to_rgb(image)
+        byte_stream = numpy_to_bytestream(rgb_image)
+
+        image = Image.from_bytes(byte_stream)
+
+
+        prompt = f"""
+               {vision_system_prompt}
+
+               # Task
+               This is the task:
+               {user_prompt}
+               """
+
+        prompt = [image, prompt]
+
+        print("Model:", vision_model)
+        response = Context.vision_client.generate_content(prompt).text
+
+        # we need to add this information to the history.
+        generate_response_to_user(Context.model,
+                                  user_prompt=f"Assume there is an image. The image can be described like this: {response}. Just confirm this with 'ok'.",
+                                  system_prompt="")
 
     return response
 
@@ -430,6 +474,25 @@ def image_to_message(image):
         "type": "image_url",
         "image_url": f"data:image/jpeg;base64,{base64_image}",
     }]}]
+
+
+def image_to_message_llava(image, prompt):
+    import base64
+
+    from stackview._image_widget import _img_to_rgb
+    from darth_d._utilities import numpy_to_bytestream
+
+    rgb_image = _img_to_rgb(image)
+    byte_stream = numpy_to_bytestream(rgb_image)
+    base64_image = base64.b64encode(byte_stream).decode('utf-8')
+
+    return [{
+        'role': 'user',
+        'content': prompt,
+        'images': [base64_image]
+    }]
+
+
 
 
 def is_image(potential_image):
