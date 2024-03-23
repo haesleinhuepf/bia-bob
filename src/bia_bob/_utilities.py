@@ -57,8 +57,6 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         # split response in text and code
         text, plan, code = split_response(full_response)
 
-        print("TPC", len(text) if text is not None else 0, len(plan) if plan is not None else 0, len(code) if code is not None else 0)
-
         if text is None and code is None:
             text = full_response
             break
@@ -229,13 +227,12 @@ def create_system_prompt(reusable_variables_block=None):
 
 
 def create_vision_system_prompt():
-    #vision_system_prompt = """
-    #Describe the given image. Assume it is a scientific image resulting from imaging devices such as microscope, clinical scanners or other kinds of detectors.
-    #Consider describing the image's background (bright, dark, homogeneous, inhomogeneous) and forgreound (blobs, meshes, membranes, cells, subcellular structures, crystals, etc.)
-    #Describe the image's quality (resolution, noise, artifacts, etc.)
-    #Describe the image's content (how many objects, large, small objects, etc.)
-    #"""
-    vision_system_prompt = ""
+    vision_system_prompt = """
+    Describe the given image. Assume it is a scientific image resulting from imaging devices such as microscope, clinical scanners or other kinds of detectors.
+    Consider describing the image's background (bright, dark, homogeneous, inhomogeneous) and forgreound (blobs, meshes, membranes, cells, subcellular structures, crystals, etc.)
+    Describe the image's quality (resolution, noise, artifacts, etc.)
+    Describe the image's content (how many objects, large, small objects, etc.)
+    """
     return vision_system_prompt
 
 
@@ -329,6 +326,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
 
         if 'llava' in vision_model:
             print("llava image")
+            system_message = "" # llava crashes when the system prompt is too long
             image_message = image_to_message_llava(image, user_prompt)
             user_message = []
         else:
@@ -358,12 +356,6 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
 
     if Context.verbose:
         print("messages=", system_message + chat_history + image_message + user_message)
-
-    print("CHAT", chat_history)
-
-    print("messages", system_message + chat_history + image_message + user_message)
-
-    print("Model (c):", model)
 
     # retrieve answer
     response = client.chat.completions.create(
