@@ -331,12 +331,12 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         else:
             image_message = image_to_message(image)
 
-
-        # this seems necessary according to the docs:
-        # https://platform.openai.com/docs/guides/vision
-        # if it is not provided, the response will be
-        # cropped to half a sentence
-        kwargs['max_tokens'] = 3000
+        if vision_model == 'gpt-4-vision-preview':
+            # this seems necessary according to the docs:
+            # https://platform.openai.com/docs/guides/vision
+            # if it is not provided, the response will be
+            # cropped to half a sentence
+            kwargs['max_tokens'] = 3000
 
         if Context.vision_client is None or not isinstance(Context.vision_client, OpenAI):
             Context.vision_client = OpenAI()
@@ -468,7 +468,12 @@ def image_to_message(image):
 
     return [{"role": "user", "content": [{
         "type": "image_url",
-        "image_url": f"data:image/jpeg;base64,{base64_image}",
+        #"image_url": f"data:image/jpeg;base64,{base64_image}",
+        # from: https://platform.openai.com/docs/guides/vision
+        "image_url": {
+            "url": f"data:image/jpeg;base64,{base64_image}"
+        }
+
     }]}]
 
 
