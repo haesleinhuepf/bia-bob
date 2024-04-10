@@ -127,8 +127,13 @@ bob.initialize(
 ### Using Google's Cloud AI API as backend
 
 ```
-pip install bia-bob google-cloud-aiplatform
+pip install bia-bob google-generativeai
 ```
+
+Get an API Key [here](https://makersuite.google.com/app/apikey) and store it in the environment variable `GOOGLE_API_KEY`.
+
+
+
 (Recommended google-cloud-aiplatform version >= 1.38.1)
 
 To make use of the Google Cloud API, you need to create a Google Cloud account [here](https://console.cloud.google.com/welcome/) and

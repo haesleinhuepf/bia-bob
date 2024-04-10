@@ -232,6 +232,8 @@ def create_vision_system_prompt():
     Consider describing the image's background (bright, dark, homogeneous, inhomogeneous) and forgreound (blobs, meshes, membranes, cells, subcellular structures, crystals, etc.)
     Describe the image's quality (resolution, noise, artifacts, etc.)
     Describe the image's content (how many objects, large, small objects, etc.)
+    Do not respond with code.
+    Keep the answer short.
     """
     return vision_system_prompt
 
