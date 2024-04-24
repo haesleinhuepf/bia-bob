@@ -261,7 +261,7 @@ def create_reusable_variables_block():
     For python, you can only use those libraries: {",".join([str(v) for v in libraries])}.
     If you create images, show the results and save them in variables for later reuse.
     The following variables are available: {",".join([str(v) for v in variables])}
-    NEVER the values of the variables that are available.
+    NEVER overwrite the values of the variables that are available.
     
     The following functions are available: {",".join([str(v) for v in functions])}
     """
