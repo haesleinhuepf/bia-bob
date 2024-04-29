@@ -138,7 +138,7 @@ def create_system_prompt(reusable_variables_block=None):
 
     # if aicsimageio is installed, give hints how to use it
     aicsimageio_snippets = """
-    * Loading files with endings other than `.tif`, `.png` or `.jpg` works like this:
+    * Loading files with endings other than `.tif`, `,czi`, `.png` or `.jpg` works like this:
     ```
     from aicsimageio import AICSImage
     aics_image = AICSImage(image_filename)
@@ -147,6 +147,17 @@ def create_system_prompt(reusable_variables_block=None):
     """
     if "aicsimageio" not in Context.libraries:
         aicsimageio_snippets = ""
+
+    czifile_snippets = """
+    * Loading files ending with `.czi` works like this:
+    ```
+    import czifile
+    from pathlib import Path
+    image = czifile.imread(Path(filename))
+    ```
+    """
+    if "czifile" not in Context.libraries:
+        czifile_snippets = ""
 
     if reusable_variables_block is None:
         reusable_variables_block = create_reusable_variables_block()
@@ -192,6 +203,7 @@ def create_system_prompt(reusable_variables_block=None):
     If the user asks for those simple tasks, use these code snippets.
     {skimage_snippets}
     {aicsimageio_snippets}
+    {czifile_snippets}
     {additional_snippets}
     
     ## Todos
