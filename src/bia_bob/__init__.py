@@ -4,6 +4,7 @@ __all__ = (
 )
 
 from ._machinery import bob, init_assistant, enable_plugins
+from ._accelerate import acc
 from ._bug_fixing import fix
 from ._document import doc
 from ._utilities import available_models

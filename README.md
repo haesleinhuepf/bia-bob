@@ -43,6 +43,13 @@ Using the `%%doc` magic, you can generate documentation for a given code cell.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/documenting_mini.gif)
 
+### GPU-acceleration
+
+Using the `%%acc` magic, you can replace common image processing functions with GPU-accelerated functions. It is recommended to check if the image processing results remain the same. You can see an example in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/accelerate.ipynb).
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/accelerate.png)
+
+
 ### No-code custom Jupyter Kernel
 
 If installed, you can also choose the BiA-Bob from the Launcher in Jupyter lab:
