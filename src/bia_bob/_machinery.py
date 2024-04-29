@@ -51,6 +51,7 @@ class Context:
         "cudf",
         "cupy",
         "pyclesperanto",
+        "pathlib"
         # to add libraries here, add their pypi package names (not their import names)
     ])
 
