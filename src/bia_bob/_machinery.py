@@ -44,8 +44,13 @@ class Context:
         "napari-skimage-regionprops",
         "skan",
         "aicsimageio",
-        "os"
-
+        "os",
+        "dask",
+        "dask_image",
+        "czifile",
+        "cudf",
+        "cupy",
+        "pyclesperanto",
         # to add libraries here, add their pypi package names (not their import names)
     ])
 
