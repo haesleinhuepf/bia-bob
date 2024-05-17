@@ -325,13 +325,19 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     user_message = [{"role": "user", "content": user_prompt}]
     image_message = []
     kwargs = {}
+    model_init_kwargs = {}
+
+    if api_key is not None:
+        model_init_kwargs['api_key'] = api_key
+    if base_url is not None:
+        model_init_kwargs['base_url'] = base_url
 
     if image is None: # normal text-based prompt
         system_message = [{"role": "system", "content": system_prompt}]
 
         # init client
         if Context.client is None or not isinstance(Context.client, OpenAI):
-            Context.client = OpenAI()
+            Context.client = OpenAI(**model_init_kwargs)
         client = Context.client
     else:
         system_message = [{"role": "system", "content": vision_system_prompt}]
@@ -351,7 +357,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
             kwargs['max_tokens'] = 3000
 
         if Context.vision_client is None or not isinstance(Context.vision_client, OpenAI):
-            Context.vision_client = OpenAI()
+            Context.vision_client = OpenAI(**model_init_kwargs)
         client = Context.vision_client
         model = vision_model
 
@@ -359,11 +365,6 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         kwargs['seed'] = Context.seed
     if Context.temperature is not None:
         kwargs['temperature'] = Context.temperature
-
-    if api_key is not None:
-        client.api_key = api_key
-    if base_url is not None:
-        client.base_url = base_url
 
     if Context.verbose:
         print("messages=", system_message + chat_history + image_message + user_message)
