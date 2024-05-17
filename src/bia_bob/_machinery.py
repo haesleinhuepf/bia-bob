@@ -117,7 +117,7 @@ def combine_user_input(line, cell):
 
 
 def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None,
-                   vision_model=DEFAULT_VISION_MODEL):
+                   vision_model=DEFAULT_VISION_MODEL, keep_history:bool=False):
     """Initialises the assistant.
 
     Parameters
@@ -141,6 +141,9 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
         Context.variables = p.user_ns
     else:
         Context.variables = variables
+
+    if not keep_history:
+        Context.chat = []
 
     endpoint, api_key = correct_endpoint(endpoint, api_key)
 
