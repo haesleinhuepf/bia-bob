@@ -2,8 +2,8 @@ from IPython.core.magic import register_line_cell_magic
 from ._utilities import keep_available_packages
 import warnings
 
-DEFAULT_MODEL = 'gpt-4-turbo-2024-04-09'
-DEFAULT_VISION_MODEL = 'gpt-4-turbo-2024-04-09'
+DEFAULT_MODEL = 'gpt-4o-2024-05-13'
+DEFAULT_VISION_MODEL = 'gpt-4o-2024-05-13'
 BLABLADOR_BASE_URL = 'https://helmholtz-blablador.fz-juelich.de:8000/v1'
 OLLAMA_BASE_URL = 'http://localhost:11434/v1'
 
