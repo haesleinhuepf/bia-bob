@@ -440,7 +440,6 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
             Context.vision_client = GenerativeModel(vision_model)
 
         from stackview._image_widget import _img_to_rgb
-        from darth_d._utilities import numpy_to_bytestream
 
         rgb_image = _img_to_rgb(image)
         byte_stream = numpy_to_bytestream(rgb_image)
@@ -468,11 +467,30 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
     return response
 
 
+def numpy_to_bytestream(data):
+    """Turn a NumPy array into a bytestream"""
+    import numpy as np
+    from PIL import Image
+    import io
+
+    # Convert the NumPy array to a PIL Image
+    image = Image.fromarray(data.astype(np.uint8)).convert("RGBA")
+
+    # Create a BytesIO object
+    bytes_io = io.BytesIO()
+
+    # Save the PIL image to the BytesIO object as a PNG
+    image.save(bytes_io, format='PNG')
+
+    # return the beginning of the file as a bytestream
+    bytes_io.seek(0)
+    return bytes_io.read()
+
+
 def image_to_message(image):
     import base64
 
     from stackview._image_widget import _img_to_rgb
-    from darth_d._utilities import numpy_to_bytestream
 
     rgb_image = _img_to_rgb(image)
     byte_stream = numpy_to_bytestream(rgb_image)
