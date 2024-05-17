@@ -99,10 +99,6 @@ mamba activate bob_env
 ... and install `bia-bob`.
 
 ### Using OpenAI as backend
-```
-pip install bia-bob openai
-```
-(Recommended openai version >= 1.2.0)
 
 Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
