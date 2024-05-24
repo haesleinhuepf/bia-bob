@@ -4,6 +4,7 @@ import warnings
 
 DEFAULT_MODEL = 'gpt-4o-2024-05-13'
 DEFAULT_VISION_MODEL = 'gpt-4o-2024-05-13'
+DEFAULT_IMAGEN_MODEL = 'dall-e-3'
 BLABLADOR_BASE_URL = 'https://helmholtz-blablador.fz-juelich.de:8000/v1'
 OLLAMA_BASE_URL = 'http://localhost:11434/v1'
 
@@ -11,6 +12,7 @@ class Context:
     variables = None
     model = None
     vision_model = None
+    imagen_model = None
     verbose = False
     auto_execute = False
     chat = []
@@ -117,7 +119,8 @@ def combine_user_input(line, cell):
 
 
 def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None,
-                   vision_model=DEFAULT_VISION_MODEL, keep_history:bool=False):
+                   vision_model=DEFAULT_VISION_MODEL, keep_history:bool=False,
+                   imagen_model=DEFAULT_IMAGEN_MODEL):
     """Initialises the assistant.
 
     Parameters
@@ -132,6 +135,7 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
     from ._utilities import correct_endpoint
     Context.model = model
     Context.vision_model = vision_model
+    Context.imagen_model = imagen_model
     Context.auto_execute = auto_execute
     Context.client = None
     Context.vision_client = None
