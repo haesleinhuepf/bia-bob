@@ -13,7 +13,7 @@ dependencies:
   - jupyterlab
   - matplotlib
   - scikit-learn
-  - stackview
+  - stackview>=0.7.7
   - scipy
   - numpy
   - skan
