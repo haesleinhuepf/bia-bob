@@ -26,21 +26,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             print("\nSystem prompt:", system_prompt)
             print_chat(chat_history)
 
-        if Context.endpoint is not None:
-            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
-                                                          base_url=Context.endpoint, api_key=Context.api_key,
-                                                          vision_model=Context.vision_model,
-                                                          vision_system_prompt=vision_system_prompt)
-        elif "gpt-" in model:
-            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
-                                                          vision_model=Context.vision_model,
-                                                          vision_system_prompt=vision_system_prompt)
-        elif "gemini-" in model:
-            full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image,
-                                                             vision_model=Context.vision_model,
-                                                             vision_system_prompt=vision_system_prompt)
-        else:
-            raise RuntimeError(f"Unknown model API for {model}")
+        full_response = generate_response(chat_history, image, model, system_prompt, user_prompt, vision_system_prompt)
 
         if Context.verbose:
             print("\n\nFull response:\n", full_response)
@@ -71,6 +57,27 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         Context.chat = chat_backup
 
     return code, text
+
+
+def generate_response(chat_history, image, model, system_prompt, user_prompt, vision_system_prompt):
+    from ._machinery import Context
+    if Context.endpoint is not None:
+        full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                      base_url=Context.endpoint, api_key=Context.api_key,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+    elif "gpt-" in model:
+        full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+    elif "gemini-" in model:
+        full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image,
+                                                         vision_model=Context.vision_model,
+                                                         vision_system_prompt=vision_system_prompt)
+    else:
+        raise RuntimeError(f"Unknown model API for {model}")
+    return full_response
+
 
 def split_response(text):
     # hotfix modifications for not-so-capable models (e.g. ollama/codellama or blablador/Mistral-7B-Instruct-v0.2)
