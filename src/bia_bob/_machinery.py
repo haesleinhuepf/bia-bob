@@ -102,7 +102,6 @@ def bob(line: str = None, cell: str = None):
                                 user_prompt=task_selection_prompt,
                                 vision_system_prompt="")
     task_type = int(response.strip().strip("\n").split(".")[0])
-    print("Task type:", task_type)
 
     if task_type == TASK_TYPE_CODE_GENERATION or task_type == TASK_TYPE_TEXT_RESPONSE:
         code, text = generate_response_to_user(Context.model, user_input, image)
