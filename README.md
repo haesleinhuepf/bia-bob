@@ -31,6 +31,13 @@ It will then respond with a python code snippet that you can execute ([see full 
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
 
+### Notebook generation
+
+When asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code. You can then open it in Jupyter lab.
+
+![](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
+
+
 ### Bug fixing
 
 Bob can fix simple bugs in code you executed. Just add `%%fix` on top of the cell right after the error happened.
