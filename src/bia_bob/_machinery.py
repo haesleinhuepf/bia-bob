@@ -63,7 +63,8 @@ def bob(line: str = None, cell: str = None):
     """
     from IPython.core.getipython import get_ipython
     from IPython.display import display
-    from ._utilities import generate_response_to_user, output_text, is_image
+    from ._utilities import generate_response_to_user, output_text, is_image, generate_response
+    from ._notebook_generation import generate_notebook
 
     if Context.model is None:
         init_assistant()
@@ -79,8 +80,36 @@ def bob(line: str = None, cell: str = None):
         display("Please ask a question!")
         return
 
-    # generate the response
-    code, text = generate_response_to_user(Context.model, user_input, image)
+    TASK_TYPE_CODE_GENERATION = 1
+    TASK_TYPE_TEXT_RESPONSE = 2
+    TASK_TYPE_NOTEBOOK_GENERATION = 3
+
+    task_selection_prompt = f"""
+    Given the following prompt, decide which of the following types of tasks we need to perform:
+    {TASK_TYPE_CODE_GENERATION}. Code generation: The prompt asks for code to be generated.
+    {TASK_TYPE_TEXT_RESPONSE}. Text response: The prompt asks for a text response.
+    {TASK_TYPE_NOTEBOOK_GENERATION}. Notebook generation: The prompt asks explicitly for a notebook to be generated. Only choose this if the prompt explicitly asks for a notebook.
+    
+    This is the prompt:
+    {user_input}
+    
+    Now, write the number of the task type into the next cell. Print the number only.
+    """
+    response = generate_response(chat_history=[],
+                                image=None,
+                                model=Context.model,
+                                system_prompt="",
+                                user_prompt=task_selection_prompt,
+                                vision_system_prompt="")
+    task_type = int(response.strip().strip("\n").split(".")[0])
+    print("Task type:", task_type)
+
+    if task_type == TASK_TYPE_CODE_GENERATION or task_type == TASK_TYPE_TEXT_RESPONSE:
+        code, text = generate_response_to_user(Context.model, user_input, image)
+    else:
+        code = None
+        filename = generate_notebook(user_input)
+        text = f"A notebook has been saved as [{filename}]({filename})."
 
     # print out explanation
     if code is None or not Context.auto_execute:
