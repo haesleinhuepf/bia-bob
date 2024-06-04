@@ -33,10 +33,15 @@ It will then respond with a python code snippet that you can execute ([see full 
 
 ### Notebook generation
 
-When asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code. You can then open it in Jupyter lab.
+When asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/generate_notebooks.ipynb)). You can then open it in Jupyter lab.
 
 ![](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
 
+### Notebook modification
+
+You can also ask Bob to modify an existing notebook, e.g. to introduce explanatory markdown cells ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/modifying_notebooks/modifying_notebooks.ipynb)):
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/modify_notebook.png)
 
 ### Bug fixing
 
