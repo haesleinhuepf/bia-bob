@@ -519,7 +519,6 @@ def image_to_message_llava(image, prompt):
     import base64
 
     from stackview._image_widget import _img_to_rgb
-    from darth_d._utilities import numpy_to_bytestream
 
     rgb_image = _img_to_rgb(image)
     byte_stream = numpy_to_bytestream(rgb_image)
