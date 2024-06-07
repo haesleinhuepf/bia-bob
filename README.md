@@ -108,7 +108,11 @@ You can then activate this environment...
 mamba activate bob_env
 ```
 
-... and install `bia-bob`.
+... and install `bia-bob`:
+
+```
+pip install bia-bob
+```
 
 ### Using OpenAI as backend
 
@@ -119,7 +123,7 @@ Create an OpenAI API Key and add it to your environment variables as explained o
 Custom endpoints can be used as well if they support the OpenAI API. Examples are [blablador](https://login.helmholtz.de/oauth2-as/oauth2-authz-web-entry) and [ollama](https://ollama.com/).
 An example is shown in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/custom_endpoints.ipynb):
 
-For this, just install the openai backend as explained above (tested version: 1.5.0).
+For this, just install the openai backend as explained above (tested version: 1.30.1).
 * If you want to use ollama and e.g. the `codellama` model, you must run `ollama serve` from a separate terminal and then initialize bob like this:
 ```
 bob.initialize(endpoint='ollama', model='codellama')
@@ -137,6 +141,18 @@ bob.initialize(
     endpoint='http://localhost:11434/v1', 
     api_key='my_key',
     model='codellama')
+```
+
+### Using Google gemini 1.5 flash / pro
+
+Create a Google API key and store it in the environment variable `GOOGLE_API_KEY`.
+
+```
+mamba install google-generativeai>=0.6.0
+```
+
+```
+pip install bia-bob
 ```
 
 ### Using Google's Cloud AI API as backend

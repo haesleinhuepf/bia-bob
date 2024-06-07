@@ -103,7 +103,10 @@ def bob(line: str = None, cell: str = None):
                                 system_prompt="",
                                 user_prompt=task_selection_prompt,
                                 vision_system_prompt="")
-    task_type = int(response.strip().strip("\n").split(".")[0])
+    try:
+        task_type = int(response.strip().strip("\n").split(".")[0])
+    except:
+        task_type = 1
 
     if task_type == TASK_TYPE_NOTEBOOK_GENERATION:
         code = None

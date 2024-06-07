@@ -1,3 +1,6 @@
+import warnings
+
+
 def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3, system_prompt:str=None):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
@@ -70,8 +73,13 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
         full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
                                                       vision_model=Context.vision_model,
                                                       vision_system_prompt=vision_system_prompt)
-    elif "gemini-" in model:
+    elif model == "gemini" or model == "gemini-pro" or model == "gemini-pro-vision":
+        warnings.warn(f"The model {model} is deprecated. Consider using gemini-1.5-flash or gemini-1.5-pro instead.")
         full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image,
+                                                         vision_model=Context.vision_model,
+                                                         vision_system_prompt=vision_system_prompt)
+    elif "gemini" in model:
+        full_response = generate_response_from_google_ai(model, system_prompt, user_prompt, chat_history, image,
                                                          vision_model=Context.vision_model,
                                                          vision_system_prompt=vision_system_prompt)
     else:
@@ -466,6 +474,76 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
         prompt = [image, prompt]
 
         response = Context.vision_client.generate_content(prompt).text
+
+        # we need to add this information to the history.
+        generate_response_to_user(Context.model,
+                                  user_prompt=f"Assume there is an image. The image can be described like this: {response}. Just confirm this with 'ok'.",
+                                  system_prompt="")
+
+    return response
+
+
+def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
+                                     vision_model: str = None, vision_system_prompt: str = None):
+    """A prompt helper function that sends a message to Google AI
+    and returns only the text response.
+    """
+    from ._machinery import Context
+    from google import generativeai as genai
+
+    # if "vision" in Context.model:
+    # We need to do some special case here, because the vision model seems to not support chats (yet).
+
+    if image is None:
+        print("using googleai", user_prompt)
+
+        if Context.client is None or not isinstance(Context.client, genai.ChatSession):
+            gemini_model = genai.GenerativeModel(model)
+            Context.client = gemini_model.start_chat()
+            if system_prompt is not None and len(system_prompt) > 0:
+                Context.client.send_message(system_prompt)
+
+        if len(system_prompt) > 0:
+            system_prompt = create_system_prompt(reusable_variables_block="")
+
+        prompt = f"""
+                   {system_prompt}
+
+                   # Task
+                   This is the task:
+                   {user_prompt}
+
+                   Remember: Your output should be 1) a summary, 2) a plan and 3) the code.
+                   """
+
+        print("submitting", type(prompt))
+
+        response = Context.client.send_message(prompt).candidates[0].content.parts[0].text
+        print("response:", response)
+
+    else:  # if image is not None:
+        print("using googleai vision", user_prompt)
+
+        if Context.vision_client is None or not isinstance(Context.vision_client, genai.GenerativeModel):
+            Context.vision_client = genai.GenerativeModel(vision_model)
+
+        import numpy as np
+        from PIL import Image
+        pil_image = Image.fromarray(np.uint8(image))
+
+        prompt = f"""
+               {vision_system_prompt}
+
+               # Task
+               This is the task:
+               {user_prompt}
+               """
+
+        prompt = [pil_image, prompt]
+
+        response = Context.vision_client.generate_content(prompt).candidates[0].content.parts[0].text
+
+        print("Response was:", response)
 
         # we need to add this information to the history.
         generate_response_to_user(Context.model,
