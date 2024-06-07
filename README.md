@@ -1,11 +1,13 @@
 # bia-bob
 
-BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code. 
+BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code for Bio-Image Analysis (BIA). 
 It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
 You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
 Using it with Ollama is free but requires running an Ollama server locally.
 
-![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/screencast.gif)
+`bob` can write short Python code snippets and entire Jupyter notebooks. The default LLM (gpt-4 omni) has vision capabilities and thus, you can show images to `bob` and it will write code for segmenting the structures of interest - in case it recognizes them.
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
 
 > [!CAUTION]
 > When using the OpenAI, Google Gemini API or any other endpoint via BiA-Bob, you are bound to the terms of service 
@@ -33,9 +35,7 @@ It will then respond with a python code snippet that you can execute ([see full 
 
 ### Notebook generation
 
-When asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/generate_notebooks.ipynb)). You can then open it in Jupyter lab.
-
-![](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
+As shown above, when asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/generate_notebooks.ipynb)). You can then open it in Jupyter lab.
 
 ### Notebook modification
 
