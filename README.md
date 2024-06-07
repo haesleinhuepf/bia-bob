@@ -108,7 +108,12 @@ You can then activate this environment...
 mamba activate bob_env
 ```
 
-... and install `bia-bob`.
+... and install `bia-bob`:
+
+```
+pip install bia-bob 
+```
+
 
 ### Using OpenAI as backend
 
