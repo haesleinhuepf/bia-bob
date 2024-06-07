@@ -107,11 +107,11 @@ def bob(line: str = None, cell: str = None):
 
     if task_type == TASK_TYPE_NOTEBOOK_GENERATION:
         code = None
-        filename = generate_notebook(user_input)
+        filename = generate_notebook(user_input, image=image)
         text = f"A notebook has been saved as [{filename}]({filename})."
     elif task_type == TASK_TYPE_NOTEBOOK_MODIFICATION:
         code = None
-        filename = generate_notebook(user_input, modify_existing_notebook=True)
+        filename = generate_notebook(user_input, modify_existing_notebook=True, image=image)
         text = f"The modified notebook has been saved as [{filename}]({filename})."
     else:
         code, text = generate_response_to_user(Context.model, user_input, image)
