@@ -21,6 +21,7 @@ class Context:
     temperature = None # openai only
     endpoint = None
     api_key = None
+    hint_store = None
 
     libraries = keep_available_packages([
         "scikit-image",
