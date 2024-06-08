@@ -13,12 +13,10 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
     
     if Context.hint_store is not None:
         
-        prompt = """
+        prompt = f"""
         Split the following prompt into sub-tasks separated by two line breaks. Keep the text as it is otherwise:
 
-        Load blobs.tif using aicsimageio
-        segment the bright blobs
-        show the result
+        {user_prompt}
         """
 
         sub_tasks_text = generate_response(chat_history=[], image=None, model=Context.model, system_prompt="", user_prompt=prompt, vision_system_prompt="")
