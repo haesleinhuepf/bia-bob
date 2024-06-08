@@ -1,11 +1,13 @@
 # bia-bob
 
-BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code. 
+BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code for Bio-Image Analysis (BIA). 
 It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
 You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
 Using it with Ollama is free but requires running an Ollama server locally.
 
-![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/screencast.gif)
+`bob` can write short Python code snippets and entire Jupyter notebooks. The default LLM (gpt-4 omni) has vision capabilities and thus, you can show images to `bob` and it will write code for segmenting the structures of interest - in case it recognizes them.
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
 
 > [!CAUTION]
 > When using the OpenAI, Google Gemini API or any other endpoint via BiA-Bob, you are bound to the terms of service 
@@ -30,6 +32,16 @@ You can ask Bob to generate code like this:
 It will then respond with a python code snippet that you can execute ([see full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/analysis_workflow.ipynb)):
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
+
+### Notebook generation
+
+As shown above, when asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/generate_notebooks.ipynb)). You can then open it in Jupyter lab.
+
+### Notebook modification
+
+You can also ask Bob to modify an existing notebook, e.g. to introduce explanatory markdown cells ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/modifying_notebooks/modifying_notebooks.ipynb)):
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/modify_notebook.png)
 
 ### Bug fixing
 
@@ -99,10 +111,6 @@ mamba activate bob_env
 ... and install `bia-bob`.
 
 ### Using OpenAI as backend
-```
-pip install bia-bob openai
-```
-(Recommended openai version >= 1.2.0)
 
 Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 

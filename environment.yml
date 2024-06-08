@@ -18,5 +18,7 @@ dependencies:
   - numpy
   - skan
   - pyclesperanto-prototype
+  - pillow
+
 
   

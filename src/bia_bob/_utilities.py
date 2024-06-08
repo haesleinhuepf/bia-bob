@@ -26,21 +26,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             print("\nSystem prompt:", system_prompt)
             print_chat(chat_history)
 
-        if Context.endpoint is not None:
-            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
-                                                          base_url=Context.endpoint, api_key=Context.api_key,
-                                                          vision_model=Context.vision_model,
-                                                          vision_system_prompt=vision_system_prompt)
-        elif "gpt-" in model:
-            full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
-                                                          vision_model=Context.vision_model,
-                                                          vision_system_prompt=vision_system_prompt)
-        elif "gemini-" in model:
-            full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image,
-                                                             vision_model=Context.vision_model,
-                                                             vision_system_prompt=vision_system_prompt)
-        else:
-            raise RuntimeError(f"Unknown model API for {model}")
+        full_response = generate_response(chat_history, image, model, system_prompt, user_prompt, vision_system_prompt)
 
         if Context.verbose:
             print("\n\nFull response:\n", full_response)
@@ -71,6 +57,27 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         Context.chat = chat_backup
 
     return code, text
+
+
+def generate_response(chat_history, image, model, system_prompt, user_prompt, vision_system_prompt):
+    from ._machinery import Context
+    if Context.endpoint is not None:
+        full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                      base_url=Context.endpoint, api_key=Context.api_key,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+    elif "gpt-" in model:
+        full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+    elif "gemini-" in model:
+        full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image,
+                                                         vision_model=Context.vision_model,
+                                                         vision_system_prompt=vision_system_prompt)
+    else:
+        raise RuntimeError(f"Unknown model API for {model}")
+    return full_response
+
 
 def split_response(text):
     # hotfix modifications for not-so-capable models (e.g. ollama/codellama or blablador/Mistral-7B-Instruct-v0.2)
@@ -325,13 +332,19 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     user_message = [{"role": "user", "content": user_prompt}]
     image_message = []
     kwargs = {}
+    model_init_kwargs = {}
+
+    if api_key is not None:
+        model_init_kwargs['api_key'] = api_key
+    if base_url is not None:
+        model_init_kwargs['base_url'] = base_url
 
     if image is None: # normal text-based prompt
         system_message = [{"role": "system", "content": system_prompt}]
 
         # init client
         if Context.client is None or not isinstance(Context.client, OpenAI):
-            Context.client = OpenAI()
+            Context.client = OpenAI(**model_init_kwargs)
         client = Context.client
     else:
         system_message = [{"role": "system", "content": vision_system_prompt}]
@@ -351,7 +364,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
             kwargs['max_tokens'] = 3000
 
         if Context.vision_client is None or not isinstance(Context.vision_client, OpenAI):
-            Context.vision_client = OpenAI()
+            Context.vision_client = OpenAI(**model_init_kwargs)
         client = Context.vision_client
         model = vision_model
 
@@ -359,11 +372,6 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         kwargs['seed'] = Context.seed
     if Context.temperature is not None:
         kwargs['temperature'] = Context.temperature
-
-    if api_key is not None:
-        client.api_key = api_key
-    if base_url is not None:
-        client.base_url = base_url
 
     if Context.verbose:
         print("messages=", system_message + chat_history + image_message + user_message)
@@ -440,7 +448,6 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
             Context.vision_client = GenerativeModel(vision_model)
 
         from stackview._image_widget import _img_to_rgb
-        from darth_d._utilities import numpy_to_bytestream
 
         rgb_image = _img_to_rgb(image)
         byte_stream = numpy_to_bytestream(rgb_image)
@@ -468,11 +475,30 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
     return response
 
 
+def numpy_to_bytestream(data):
+    """Turn a NumPy array into a bytestream"""
+    import numpy as np
+    from PIL import Image
+    import io
+
+    # Convert the NumPy array to a PIL Image
+    image = Image.fromarray(data.astype(np.uint8)).convert("RGBA")
+
+    # Create a BytesIO object
+    bytes_io = io.BytesIO()
+
+    # Save the PIL image to the BytesIO object as a PNG
+    image.save(bytes_io, format='PNG')
+
+    # return the beginning of the file as a bytestream
+    bytes_io.seek(0)
+    return bytes_io.read()
+
+
 def image_to_message(image):
     import base64
 
     from stackview._image_widget import _img_to_rgb
-    from darth_d._utilities import numpy_to_bytestream
 
     rgb_image = _img_to_rgb(image)
     byte_stream = numpy_to_bytestream(rgb_image)
@@ -493,7 +519,6 @@ def image_to_message_llava(image, prompt):
     import base64
 
     from stackview._image_widget import _img_to_rgb
-    from darth_d._utilities import numpy_to_bytestream
 
     rgb_image = _img_to_rgb(image)
     byte_stream = numpy_to_bytestream(rgb_image)

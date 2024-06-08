@@ -2,8 +2,8 @@ from IPython.core.magic import register_line_cell_magic
 from ._utilities import keep_available_packages
 import warnings
 
-DEFAULT_MODEL = 'gpt-4-turbo-2024-04-09'
-DEFAULT_VISION_MODEL = 'gpt-4-turbo-2024-04-09'
+DEFAULT_MODEL = 'gpt-4o-2024-05-13'
+DEFAULT_VISION_MODEL = 'gpt-4o-2024-05-13'
 BLABLADOR_BASE_URL = 'https://helmholtz-blablador.fz-juelich.de:8000/v1'
 OLLAMA_BASE_URL = 'http://localhost:11434/v1'
 
@@ -63,7 +63,8 @@ def bob(line: str = None, cell: str = None):
     """
     from IPython.core.getipython import get_ipython
     from IPython.display import display
-    from ._utilities import generate_response_to_user, output_text, is_image
+    from ._utilities import generate_response_to_user, output_text, is_image, generate_response
+    from ._notebook_generation import generate_notebook
 
     if Context.model is None:
         init_assistant()
@@ -79,8 +80,41 @@ def bob(line: str = None, cell: str = None):
         display("Please ask a question!")
         return
 
-    # generate the response
-    code, text = generate_response_to_user(Context.model, user_input, image)
+    TASK_TYPE_CODE_GENERATION = 1
+    TASK_TYPE_TEXT_RESPONSE = 2
+    TASK_TYPE_NOTEBOOK_GENERATION = 3
+    TASK_TYPE_NOTEBOOK_MODIFICATION = 4
+
+    task_selection_prompt = f"""
+    Given the following prompt, decide which of the following types of tasks we need to perform:
+    {TASK_TYPE_CODE_GENERATION}. Code generation: The prompt asks for code to be generated.
+    {TASK_TYPE_TEXT_RESPONSE}. Text response: The prompt asks for a text response.    
+    {TASK_TYPE_NOTEBOOK_GENERATION}. Notebook generation: The prompt asks explicitly for a notebook to be generated. Only choose this if the prompt explicitly asks for creating a new notebook.
+    {TASK_TYPE_NOTEBOOK_MODIFICATION}. Notebook modification: The prompt asks for a modification of an existing notebook. Only choose this if the prompt explicitly asks for modifying an existing notebook and a notebook filename is given.
+    
+    This is the prompt:
+    {user_input}
+    
+    Now, write the number of the task type into the next cell. Print the number only.
+    """
+    response = generate_response(chat_history=[],
+                                image=None,
+                                model=Context.model,
+                                system_prompt="",
+                                user_prompt=task_selection_prompt,
+                                vision_system_prompt="")
+    task_type = int(response.strip().strip("\n").split(".")[0])
+
+    if task_type == TASK_TYPE_NOTEBOOK_GENERATION:
+        code = None
+        filename = generate_notebook(user_input, image=image)
+        text = f"A notebook has been saved as [{filename}]({filename})."
+    elif task_type == TASK_TYPE_NOTEBOOK_MODIFICATION:
+        code = None
+        filename = generate_notebook(user_input, modify_existing_notebook=True, image=image)
+        text = f"The modified notebook has been saved as [{filename}]({filename})."
+    else:
+        code, text = generate_response_to_user(Context.model, user_input, image)
 
     # print out explanation
     if code is None or not Context.auto_execute:
@@ -117,7 +151,7 @@ def combine_user_input(line, cell):
 
 
 def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None,
-                   vision_model=DEFAULT_VISION_MODEL):
+                   vision_model=DEFAULT_VISION_MODEL, keep_history:bool=False):
     """Initialises the assistant.
 
     Parameters
@@ -141,6 +175,9 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
         Context.variables = p.user_ns
     else:
         Context.variables = variables
+
+    if not keep_history:
+        Context.chat = []
 
     endpoint, api_key = correct_endpoint(endpoint, api_key)
 

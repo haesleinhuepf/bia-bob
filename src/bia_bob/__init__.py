@@ -1,4 +1,4 @@
-__version__ = "0.12.1"
+__version__ = "0.16.0"
 
 __all__ = (
 )
@@ -8,6 +8,7 @@ from ._accelerate import acc
 from ._bug_fixing import fix
 from ._document import doc
 from ._utilities import available_models
+from ._notebook_generation import generate_notebook
 
 bob.initialize = init_assistant
 bob.__version__ = __version__
