@@ -1,7 +1,7 @@
 # bia-bob
 
 BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code for Bio-Image Analysis (BIA). 
-It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
+It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Anthropic's Claude](https://www.anthropic.com/api), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
 You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
 Using it with Ollama is free but requires running an Ollama server locally.
 
@@ -117,7 +117,15 @@ pip install bia-bob
 
 ### Using OpenAI as backend
 
-Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+Create an OpenAI API Key and add it to your environment variables named `OPENAI_API_KEY` as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+
+### Using Anthropic / claude
+
+Create an Anthropic API Key and add it to your environment variables named `ANTHROPIC_API_KEY`. Also install this package:
+
+```
+pip install anthropic 
+```
 
 ### Using custom endpoints
 
