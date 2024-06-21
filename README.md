@@ -10,7 +10,7 @@ Using it with Ollama is free but requires running an Ollama server locally.
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
 
 > [!CAUTION]
-> When using the OpenAI, Google Gemini API or any other endpoint via BiA-Bob, you are bound to the terms of service 
+> When using the OpenAI, Google Gemini, Anthropic or any other endpoint via BiA-Bob, you are bound to the terms of service 
 > of the respective companies or organizations.
 > The prompts you enter are transferred to their servers and may be processed and stored there. 
 > Make sure to not submit any sensitive, confidential or personal data. Also using these services may cost money.
