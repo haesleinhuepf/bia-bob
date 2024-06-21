@@ -174,11 +174,14 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
     Context.client = None
     Context.vision_client = None
 
-    if variables is None:
-        p = get_ipython()
-        Context.variables = p.user_ns
-    else:
-        Context.variables = variables
+    try:
+        if variables is None:
+            p = get_ipython()
+            Context.variables = p.user_ns
+        else:
+            Context.variables = variables
+    except:
+        Context.variables = {}
 
     if not keep_history:
         Context.chat = []
