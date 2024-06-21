@@ -151,7 +151,7 @@ def combine_user_input(line, cell):
 
 
 def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None,
-                   vision_model=DEFAULT_VISION_MODEL, keep_history:bool=False):
+                   vision_model=DEFAULT_VISION_MODEL, keep_history:bool=False, silent:bool=False):
     """Initialises the assistant.
 
     Parameters
@@ -161,6 +161,10 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
     variables: dict, optional (default: None) A dictionary of variables that should be available to the assistant.
                If None, it will use the global variables of the current namespace.
     endpint: str Custom endpoint, e.g. 'blablador'
+    api_key: str API key for the custom endpoint
+    vision_model: str, optional (default: 'gpt-4o-2024-05-13') The vision model to use.
+    keep_history: bool, optional (default: False) If True, the chat history will be kept.
+    silent: bool, optional (default: False) If True, the assistant will not print any messages after initializing.
     """
     from IPython.core.getipython import get_ipython
     from ._utilities import correct_endpoint
@@ -189,6 +193,14 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
           "below two lines into the next cell and execute it."
           "\n\n%%bob"
           "\nplease generate a noisy grayscale image containing 10 blurry blobs with a diameter of 20 pixels each.")
+
+    if not silent:
+        from bia_bob import __version__ as version
+        from IPython.display import display, HTML
+        from ._utilities import version_string
+
+        display(HTML(version_string(model, vision_model, endpoint, version)))
+
 
 def enable_plugins(enabled: bool = True):
     Context.plugins_enabled = enabled
