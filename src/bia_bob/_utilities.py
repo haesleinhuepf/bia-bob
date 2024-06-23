@@ -336,7 +336,7 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
 
     if image is None:
         if Context.client is None or not isinstance(Context.client, Anthropic):
-            Context.client = Anthropic()
+            Context.client = Anthropic(base_url=base_url, api_key=api_key)
         system_message = system_prompt
         user_message = [{
                     "role": "user",
@@ -345,10 +345,11 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
         client = Context.client
     else:
         if Context.vision_client is None or not isinstance(Context.vision_client, Anthropic):
-            Context.vision_client = Anthropic()
+            Context.vision_client = Anthropic(base_url=base_url, api_key=api_key)
         system_message = vision_system_prompt
         user_message = image_to_message_claude(image, user_prompt)
         client = Context.vision_client
+        model = vision_model
 
     response = client.messages.create(
         messages=chat_history + user_message,
