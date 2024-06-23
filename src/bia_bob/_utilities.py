@@ -80,7 +80,7 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
                                                          vision_system_prompt=vision_system_prompt)
     elif model.startswith("claude"):
         full_response = generate_response_from_anthropic(model, system_prompt, user_prompt, chat_history, image,
-                                                      vision_model=vision_system_prompt,
+                                                      vision_model=Context.vision_model,
                                                       vision_system_prompt=vision_system_prompt)
     else:
         raise RuntimeError(f"Unknown model API for {model}")
