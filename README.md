@@ -1,7 +1,7 @@
 # bia-bob
 
 BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code for Bio-Image Analysis (BIA). 
-It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
+It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Anthropic's Claude](https://www.anthropic.com/api), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
 You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
 Using it with Ollama is free but requires running an Ollama server locally.
 
@@ -10,7 +10,7 @@ Using it with Ollama is free but requires running an Ollama server locally.
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
 
 > [!CAUTION]
-> When using the OpenAI, Google Gemini API or any other endpoint via BiA-Bob, you are bound to the terms of service 
+> When using the OpenAI, Google Gemini, Anthropic or any other endpoint via BiA-Bob, you are bound to the terms of service 
 > of the respective companies or organizations.
 > The prompts you enter are transferred to their servers and may be processed and stored there. 
 > Make sure to not submit any sensitive, confidential or personal data. Also using these services may cost money.
@@ -116,7 +116,15 @@ pip install bia-bob
 
 ### Using OpenAI as backend
 
-Create an OpenAI API Key and add it to your environment variables as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+Create an OpenAI API Key and add it to your environment variables named `OPENAI_API_KEY` as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+
+### Using Anthropic / claude
+
+Create an Anthropic API Key and add it to your environment variables named `ANTHROPIC_API_KEY`. Also install this package:
+
+```
+pip install anthropic 
+```
 
 ### Using custom endpoints
 

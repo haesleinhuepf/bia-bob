@@ -46,6 +46,10 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         # split response in text and code
         text, plan, code = split_response(full_response)
 
+        if text is not None and plan is not None and code is None:
+            text = text + "\n\n" + plan
+            break
+
         if text is None and code is None:
             text = full_response
             break
@@ -82,6 +86,10 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
         full_response = generate_response_from_google_ai(model, system_prompt, user_prompt, chat_history, image,
                                                          vision_model=Context.vision_model,
                                                          vision_system_prompt=vision_system_prompt)
+    elif model.startswith("claude"):
+        full_response = generate_response_from_anthropic(model, system_prompt, user_prompt, chat_history, image,
+                                                      vision_model=vision_system_prompt,
+                                                      vision_system_prompt=vision_system_prompt)
     else:
         raise RuntimeError(f"Unknown model API for {model}")
     return full_response
@@ -328,6 +336,49 @@ def is_notebook() -> bool:
         return False      # Probably standard Python interpreter
 
 
+def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
+                                  base_url:str=None, api_key:str=None, vision_model:str = None, vision_system_prompt:str = None):
+    # e.g. claude-3-5-sonnet-20240620 or claude-3-opus-20240229
+    from anthropic import Anthropic
+    from ._machinery import Context
+
+    if image is None:
+        if Context.client is None or not isinstance(Context.client, Anthropic):
+            Context.client = Anthropic()
+        system_message = system_prompt
+        user_message = [{
+                    "role": "user",
+                    "content": user_prompt,
+                }]
+        client = Context.client
+    else:
+        if Context.vision_client is None or not isinstance(Context.vision_client, Anthropic):
+            Context.vision_client = Anthropic()
+        system_message = vision_system_prompt
+        user_message = image_to_message_claude(image, user_prompt)
+        client = Context.vision_client
+
+    response = client.messages.create(
+        messages=chat_history + user_message,
+        system=system_message,
+        model=model,
+        max_tokens=4096,
+    )
+    reply = response.content[0].text
+
+    assistant_message = [{"role": "assistant", "content": reply}]
+
+    if image is not None:
+        # we need to add this information to the history.
+        generate_response_to_user(Context.model,
+                                  user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
+                                  system_prompt="")
+
+    Context.chat += user_message + assistant_message
+
+    return reply
+
+
 def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
                                   base_url:str=None, api_key:str=None, vision_model:str = None, vision_system_prompt:str = None):
     """A prompt helper function that sends a message to openAI
@@ -499,9 +550,12 @@ def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt
 
         if Context.client is None or not isinstance(Context.client, genai.ChatSession):
             gemini_model = genai.GenerativeModel(model)
+            print("Starting chat")
             Context.client = gemini_model.start_chat()
             if system_prompt is not None and len(system_prompt) > 0:
                 Context.client.send_message(system_prompt)
+
+        print("history", Context.client.history)
 
         if len(system_prompt) > 0:
             system_prompt = create_system_prompt(reusable_variables_block="")
@@ -545,9 +599,12 @@ def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt
 
         print("Response was:", response)
 
+        image_name = image.__name__
+        print("image name:", image_name)
+
         # we need to add this information to the history.
         generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {response}. Just confirm this with 'ok'.",
+                                  user_prompt=f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {response}. Just confirm this with 'ok'.",
                                   system_prompt="")
 
     return response
@@ -609,6 +666,22 @@ def image_to_message_llava(image, prompt):
     }]
 
 
+def image_to_message_claude(image, prompt):
+    import base64
+
+    from stackview._image_widget import _img_to_rgb
+
+    rgb_image = _img_to_rgb(image)
+    byte_stream = numpy_to_bytestream(rgb_image)
+    base64_image = base64.b64encode(byte_stream).decode('utf-8')
+
+    return [{
+            "role": 'user',
+            "content": [
+                {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": base64_image}},
+                {"type": "text", "text": prompt}
+            ]
+        }]
 
 
 def is_image(potential_image):
@@ -679,3 +752,16 @@ def keep_available_packages(libraries):
 
     return result
 
+
+def version_string(model, vision_model, endpoint, version):
+    return f"""
+            <div style="font-size:7pt">
+            This notebook may contain text, code and images generated by artificial intelligence.
+            Used model: {model},
+            vision model: {vision_model},
+            endpoint: {endpoint},
+            bia-bob version: {version}.
+            It is good scientific practice to check the code and results it produces carefully.
+            <a href="https://github.com/haesleinhuepf/bia-bob">Read more about code generation using bia-bob</a>.
+            </div>
+            """
