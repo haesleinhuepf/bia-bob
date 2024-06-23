@@ -368,11 +368,11 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
 
     assistant_message = [{"role": "assistant", "content": reply}]
 
-    if image is not None:
-        # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
-                                  system_prompt="")
+    #if image is not None:
+    #    # we need to add this information to the history.
+    #    generate_response_to_user(Context.model,
+    #                              user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
+    #                              system_prompt="")
 
     Context.chat += user_message + assistant_message
 
@@ -446,11 +446,11 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     # store question and answer in chat history
     assistant_message = [{"role": "assistant", "content": reply}]
 
-    if image is not None:
-        # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
-                                  system_prompt="")
+    #if image is not None:
+    #    # we need to add this information to the history.
+    #    generate_response_to_user(Context.model,
+    #                              user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
+    #                              system_prompt="")
 
     Context.chat += user_message + assistant_message
 
@@ -527,9 +527,9 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
         response = Context.vision_client.generate_content(prompt).text
 
         # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {response}. Just confirm this with 'ok'.",
-                                  system_prompt="")
+        #generate_response_to_user(Context.model,
+        #                          user_prompt=f"Assume there is an image. The image can be described like this: {response}. Just confirm this with 'ok'.",
+        #                          system_prompt="")
 
     return response
 
@@ -549,30 +549,29 @@ def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt
         print("using googleai", user_prompt)
 
         if Context.client is None or not isinstance(Context.client, genai.ChatSession):
-            gemini_model = genai.GenerativeModel(model)
-            print("Starting chat")
-            Context.client = gemini_model.start_chat()
-            if system_prompt is not None and len(system_prompt) > 0:
-                Context.client.send_message(system_prompt)
-
-        print("history", Context.client.history)
+            Context.client = genai.GenerativeModel(model)
+            #gemini_model = genai.GenerativeModel(model)
+            #print("Starting chat")
+            #Context.client = gemini_model.start_chat()
+            #if system_prompt is not None and len(system_prompt) > 0:
+            #    Context.client.send_message(system_prompt)
 
         if len(system_prompt) > 0:
-            system_prompt = create_system_prompt(reusable_variables_block="")
+            system_prompt = [{"role": "system", "content": create_system_prompt(reusable_variables_block="")}]
+        else:
+            system_prompt = []
 
-        prompt = f"""
-                   {system_prompt}
-
-                   # Task
+        prompt = [{"role": "user", "content": f"""# Task
                    This is the task:
                    {user_prompt}
 
                    Remember: Your output should be 1) a summary, 2) a plan and 3) the code.
-                   """
+                   """}]
 
         print("submitting", type(prompt))
 
-        response = Context.client.send_message(prompt).candidates[0].content.parts[0].text
+        response = Context.client.generate_content(chat_history + system_prompt + prompt).candidates[0].content.parts[0].text
+        #response = Context.client.send_message(prompt).candidates[0].content.parts[0].text
         print("response:", response)
 
     else:  # if image is not None:
@@ -587,7 +586,7 @@ def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt
 
         prompt = f"""
                {vision_system_prompt}
-
+                   
                # Task
                This is the task:
                {user_prompt}
@@ -595,17 +594,11 @@ def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt
 
         prompt = [pil_image, prompt]
 
-        response = Context.vision_client.generate_content(prompt).candidates[0].content.parts[0].text
+        response = Context.vision_client.generate_content(Context.chat_history + prompt).candidates[0].content.parts[0].text
 
         print("Response was:", response)
 
-        image_name = image.__name__
-        print("image name:", image_name)
 
-        # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {response}. Just confirm this with 'ok'.",
-                                  system_prompt="")
 
     return response
 
