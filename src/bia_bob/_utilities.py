@@ -360,11 +360,11 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
 
     assistant_message = [{"role": "assistant", "content": reply}]
 
-    if image is not None:
-        # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
-                                  system_prompt="")
+    #if image is not None:
+    #    # we need to add this information to the history.
+    #    generate_response_to_user(Context.model,
+    #                              user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
+    #                              system_prompt="")
 
     Context.chat += user_message + assistant_message
 
@@ -438,11 +438,11 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     # store question and answer in chat history
     assistant_message = [{"role": "assistant", "content": reply}]
 
-    if image is not None:
-        # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
-                                  system_prompt="")
+    #if image is not None:
+    #    # we need to add this information to the history.
+    #    generate_response_to_user(Context.model,
+    #                              user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
+    #                              system_prompt="")
 
     Context.chat += user_message + assistant_message
 
@@ -519,9 +519,9 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
         response = Context.vision_client.generate_content(prompt).text
 
         # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {response}. Just confirm this with 'ok'.",
-                                  system_prompt="")
+        #generate_response_to_user(Context.model,
+        #                          user_prompt=f"Assume there is an image. The image can be described like this: {response}. Just confirm this with 'ok'.",
+        #                          system_prompt="")
 
     return response
 
