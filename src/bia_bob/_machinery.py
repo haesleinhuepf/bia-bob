@@ -71,6 +71,7 @@ def bob(line: str = None, cell: str = None):
 
     if line in Context.variables and is_image(Context.variables[line]):
         image = Context.variables[line]
+        image_name = line
     else:
         image = None
 
@@ -116,6 +117,12 @@ def bob(line: str = None, cell: str = None):
     else:
         code, text = generate_response_to_user(Context.model, user_input, image)
 
+        if image is not None:
+            # we need to add this information to the history.
+            generate_response_to_user(Context.model,
+                                      user_prompt=f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {response}. Just confirm this with 'ok'.",
+                                      system_prompt="")
+
     # print out explanation
     if code is None or not Context.auto_execute:
         output_text(text)
@@ -150,8 +157,8 @@ def combine_user_input(line, cell):
     return user_input
 
 
-def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None,
-                   vision_model=DEFAULT_VISION_MODEL, keep_history:bool=False, silent:bool=False):
+def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None,
+                   vision_model=None, keep_history:bool=False, silent:bool=False):
     """Initialises the assistant.
 
     Parameters
@@ -168,6 +175,36 @@ def init_assistant(model=DEFAULT_MODEL, auto_execute:bool = False, variables:dic
     """
     from IPython.core.getipython import get_ipython
     from ._utilities import correct_endpoint
+    import os
+    import yaml
+    from bia_bob import __version__ as version
+
+    # setup default config
+    config = {
+        "model": DEFAULT_MODEL,
+        "vision_model": DEFAULT_VISION_MODEL,
+    }
+
+    # load config from disk
+    home_dir = os.path.expanduser('~')
+    config_filename = os.path.join(home_dir, ".cache", "bia-bob", f"config_bia_bob_{version}.yaml")
+    os.makedirs(os.path.dirname(config_filename), exist_ok=True)
+    if os.path.exists(config_filename):
+        with open(config_filename, mode="rt", encoding="utf-8") as test_df_to_yaml:
+            config = yaml.full_load(test_df_to_yaml)
+
+    # change default config if parameters are given
+    if model is None:
+        model = config["model"]
+    if vision_model is None:
+        vision_model = config["vision_model"]
+
+    # store config to disk
+    config["model"] = model
+    config["vision_model"] = vision_model
+    with open(config_filename, 'w') as file:
+        yaml.dump(config, file, default_flow_style=False)
+
     Context.model = model
     Context.vision_model = vision_model
     Context.auto_execute = auto_execute
