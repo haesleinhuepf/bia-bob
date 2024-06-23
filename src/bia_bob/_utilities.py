@@ -409,7 +409,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         system_message = [{"role": "system", "content": vision_system_prompt}]
 
         if 'llava' in vision_model:
-            system_message = "" # llava crashes when the system prompt is too long
+            system_message = [""] # llava crashes when the system prompt is too long
             image_message = image_to_message_llava(image, user_prompt)
             user_message = []
         else:
