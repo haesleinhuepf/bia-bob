@@ -80,7 +80,7 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
                                                          vision_system_prompt=vision_system_prompt)
     elif model.startswith("claude"):
         full_response = generate_response_from_anthropic(model, system_prompt, user_prompt, chat_history, image,
-                                                      vision_model=vision_system_prompt,
+                                                      vision_model=Context.vision_model,
                                                       vision_system_prompt=vision_system_prompt)
     else:
         raise RuntimeError(f"Unknown model API for {model}")
@@ -336,7 +336,7 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
 
     if image is None:
         if Context.client is None or not isinstance(Context.client, Anthropic):
-            Context.client = Anthropic()
+            Context.client = Anthropic(base_url=base_url, api_key=api_key)
         system_message = system_prompt
         user_message = [{
                     "role": "user",
@@ -345,10 +345,11 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
         client = Context.client
     else:
         if Context.vision_client is None or not isinstance(Context.vision_client, Anthropic):
-            Context.vision_client = Anthropic()
+            Context.vision_client = Anthropic(base_url=base_url, api_key=api_key)
         system_message = vision_system_prompt
         user_message = image_to_message_claude(image, user_prompt)
         client = Context.vision_client
+        model = vision_model
 
     response = client.messages.create(
         messages=chat_history + user_message,
@@ -359,12 +360,6 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
     reply = response.content[0].text
 
     assistant_message = [{"role": "assistant", "content": reply}]
-
-    if image is not None:
-        # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
-                                  system_prompt="")
 
     Context.chat += user_message + assistant_message
 
@@ -437,12 +432,6 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
 
     # store question and answer in chat history
     assistant_message = [{"role": "assistant", "content": reply}]
-
-    if image is not None:
-        # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {reply}. Just confirm this with 'ok'.",
-                                  system_prompt="")
 
     Context.chat += user_message + assistant_message
 
@@ -517,11 +506,6 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
         prompt = [image, prompt]
 
         response = Context.vision_client.generate_content(prompt).text
-
-        # we need to add this information to the history.
-        generate_response_to_user(Context.model,
-                                  user_prompt=f"Assume there is an image. The image can be described like this: {response}. Just confirm this with 'ok'.",
-                                  system_prompt="")
 
     return response
 
