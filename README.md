@@ -43,6 +43,11 @@ You can also ask Bob to modify an existing notebook, e.g. to introduce explanato
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/modify_notebook.png)
 
+Furthermore, one can translate Jupyter notebooks to other languages, e.g. by prompting ´%bob translate the filename.ipynb to <language>´.
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/translate.png)
+
+
 ### Bug fixing
 
 Bob can fix simple bugs in code you executed. Just add `%%fix` on top of the cell right after the error happened.
