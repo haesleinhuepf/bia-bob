@@ -8,10 +8,27 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
     text, plan, code = None, None, None
 
     chat_backup = [c for c in Context.chat]
+    
+    hints = None
+    
+    if Context.hint_store is not None:
+        
+        prompt = f"""
+        Split the following prompt into sub-tasks separated by two line breaks. Keep the text as it is otherwise:
+
+        {user_prompt}
+        """
+
+        sub_tasks_text = generate_response(chat_history=[], image=None, model=Context.model, system_prompt="", user_prompt=prompt, vision_system_prompt="")
+
+        sub_tasks = [s.strip("\n") for s in sub_tasks_text.split("\n\n")]
+        
+        hints = "\n\n".join(["\n\n".join(Context.hint_store.search(s)) for s in sub_tasks])
+    
 
     for attempt in range(1, max_number_attempts + 1):
         if system_prompt is None:
-            system_prompt = create_system_prompt()
+            system_prompt = create_system_prompt(hints=hints)
         if additional_system_prompt is not None:
             system_prompt += "\n" + additional_system_prompt
 
@@ -124,10 +141,10 @@ def split_response(text):
     return summary, plan, code
 
 
-def create_system_prompt(reusable_variables_block=None):
+def create_system_prompt(reusable_variables_block=None, hints=None):
     """Creates a system prompt that contains instructions of general interest, available functions and variables."""
     # determine useful variables and functions in context
-
+    
     # if scikit-image is installed, give hints how to use it
     from ._machinery import Context
 
@@ -137,11 +154,13 @@ def create_system_prompt(reusable_variables_block=None):
     from skimage.io import imread
     image = imread(filename)
     ```
+    
     * Expanding labels by a given radius in a label image works like this:
     ```
     from skimage.segmentation import expand_labels
     expanded_labels = expand_labels(label_image, distance=10)
     ```
+    
     * Measure properties of labels with respect to an image works like this:
     ```
     from skimage.measure import regionprops
@@ -205,6 +224,19 @@ def create_system_prompt(reusable_variables_block=None):
     else:
         additional_snippets = ""
 
+    if hints is None:
+        hints = f"""
+        ## Python specific code snippets
+
+        If the user asks for those simple tasks, use these code snippets.
+        {skimage_snippets}
+        {aicsimageio_snippets}
+        {czifile_snippets}
+        {additional_snippets}
+        """
+    
+    print("Hint lines in System prompt:", len(hints.split("\n")))  
+ 
     system_prompt = f"""
     You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
     If the request entails writing code, write concise professional bioimage analysis high-quality code.
@@ -213,13 +245,7 @@ def create_system_prompt(reusable_variables_block=None):
     
     {reusable_variables_block}
     
-    ## Python specific code snippets
-    
-    If the user asks for those simple tasks, use these code snippets.
-    {skimage_snippets}
-    {aicsimageio_snippets}
-    {czifile_snippets}
-    {additional_snippets}
+    {hints}
     
     ## Todos
     
