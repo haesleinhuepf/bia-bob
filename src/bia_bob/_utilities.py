@@ -215,9 +215,7 @@ def create_system_prompt(reusable_variables_block=None):
 
     system_prompt = f"""
     You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
-    If the request entails writing code, write concise professional bioimage analysis high-quality code.
     If there are several ways to solve the task, chose the option with the least amount of code.    
-    If there is no specific programming language required, write python code and follow the below instructions.
     
     {reusable_variables_block}
     
