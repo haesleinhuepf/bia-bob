@@ -1,3 +1,6 @@
+from functools import lru_cache
+
+
 def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3, system_prompt:str=None):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
@@ -124,58 +127,53 @@ def split_response(text):
     return summary, plan, code
 
 
-def create_system_prompt(reusable_variables_block=None):
-    """Creates a system prompt that contains instructions of general interest, available functions and variables."""
-    # determine useful variables and functions in context
-
+@lru_cache(maxsize=1)
+def generate_code_samples():
     # if scikit-image is installed, give hints how to use it
     from ._machinery import Context
 
     skimage_snippets = """
-    * Load an image file from disc and store it in a variable:
-    ```
-    from skimage.io import imread
-    image = imread(filename)
-    ```
-    * Expanding labels by a given radius in a label image works like this:
-    ```
-    from skimage.segmentation import expand_labels
-    expanded_labels = expand_labels(label_image, distance=10)
-    ```
-    * Measure properties of labels with respect to an image works like this:
-    ```
-    from skimage.measure import regionprops
-    properties = regionprops(label_image, image)
-    ```
-    """
+        * Load an image file from disc and store it in a variable:
+        ```
+        from skimage.io import imread
+        image = imread(filename)
+        ```
+        * Expanding labels by a given radius in a label image works like this:
+        ```
+        from skimage.segmentation import expand_labels
+        expanded_labels = expand_labels(label_image, distance=10)
+        ```
+        * Measure properties of labels with respect to an image works like this:
+        ```
+        from skimage.measure import regionprops
+        properties = regionprops(label_image, image)
+        ```
+        """
     if "scikit-image" not in Context.libraries:
         skimage_snippets = ""
 
     # if aicsimageio is installed, give hints how to use it
     aicsimageio_snippets = """
-    * Loading files with endings other than `.tif`, `,czi`, `.png` or `.jpg` works like this:
-    ```
-    from aicsimageio import AICSImage
-    aics_image = AICSImage(image_filename)
-    image = aics_image.get_image_data("ZYX")
-    ```
-    """
+        * Loading files with endings other than `.tif`, `,czi`, `.png` or `.jpg` works like this:
+        ```
+        from aicsimageio import AICSImage
+        aics_image = AICSImage(image_filename)
+        image = aics_image.get_image_data("ZYX")
+        ```
+        """
     if "aicsimageio" not in Context.libraries:
         aicsimageio_snippets = ""
 
     czifile_snippets = """
-    * Loading files ending with `.czi` works like this:
-    ```
-    import czifile
-    from pathlib import Path
-    image = czifile.imread(Path(filename))
-    ```
-    """
+        * Loading files ending with `.czi` works like this:
+        ```
+        import czifile
+        from pathlib import Path
+        image = czifile.imread(Path(filename))
+        ```
+        """
     if "czifile" not in Context.libraries:
         czifile_snippets = ""
-
-    if reusable_variables_block is None:
-        reusable_variables_block = create_reusable_variables_block()
 
     if Context.plugins_enabled:
         from importlib.metadata import entry_points
@@ -204,6 +202,16 @@ def create_system_prompt(reusable_variables_block=None):
         additional_snippets = "\n".join(additional_instructions)
     else:
         additional_snippets = ""
+
+    return skimage_snippets, aicsimageio_snippets, czifile_snippets, additional_snippets
+
+def create_system_prompt(reusable_variables_block=None):
+    """Creates a system prompt that contains instructions of general interest, available functions and variables."""
+    # determine useful variables and functions in context
+    if reusable_variables_block is None:
+        reusable_variables_block = create_reusable_variables_block()
+
+    skimage_snippets, aicsimageio_snippets, czifile_snippets, additional_snippets = generate_code_samples()
 
     system_prompt = f"""
     You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
