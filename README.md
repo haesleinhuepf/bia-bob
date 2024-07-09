@@ -66,28 +66,9 @@ Using the `%%acc` magic, you can replace common image processing functions with 
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/accelerate.png)
 
-
-### No-code custom Jupyter Kernel
-
-If installed, you can also choose the BiA-Bob from the Launcher in Jupyter lab:
-
-![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia-bob-custom-kernel.png)
-
-This will give you a Jupyter kernel that allows you to type in English language instead of code:
-
-![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/bia-bob-custom-kernel3.png)
-
 ### Example notebooks
 
-* [Basic demo](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/basic_demo.ipynb)
-* [Bio-image analysis workflow](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/analysis_workflow.ipynb)
-* [Choosing a model](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/choose_model.ipynb)
-* [Using Gemini and chatGPT altenating](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/gemini.ipynb)
-* [Interpreting images](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/vision.ipynb)
-* [Documenting code](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/documenting_code.ipynb)
-* [Fixing bugs](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/bug_fixing.ipynb)
-* [Graphical user interfaces](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/gui_plots.ipynb)
-* [Exploring tabular data](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/videogame_sales.ipynb)
+* [Examples](https://github.com/haesleinhuepf/bia-bob/tree/main/demo
 
 ## Known issues
 
@@ -171,26 +152,6 @@ gcloud auth application-default login
 Follow the instructions in the browser. Enter your Project ID (not the name). If it worked the terminal should approximately look like this:
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/gcloud_auth.png)
-
-### BiA-Bob Jupyter kernel (optional)
-
-If you want to use the BiA-Bob Jupyter kernel, please run additionally this command:
-
-```
-python -m bia_bob install
-```
-
-You can check if it's installed by printing out the list of installed kernels:
-
-```
-jupyter kernelspec list
-```
-
-And you can uninstall them using this command:
-
-```
-jupyter kernelspec uninstall bia-bob
-```
 
 ## Development
 
