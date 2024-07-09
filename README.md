@@ -113,7 +113,7 @@ You can then activate this environment...
 mamba activate bob_env
 ```
 
-... and install `bia-bob`:
+Alternatively, you can install `bia-bob` using pip:
 
 ```
 pip install bia-bob 
@@ -126,11 +126,7 @@ Create an OpenAI API Key and add it to your environment variables named `OPENAI_
 
 ### Using Anthropic / claude
 
-Create an Anthropic API Key and add it to your environment variables named `ANTHROPIC_API_KEY`. Also install this package:
-
-```
-pip install anthropic 
-```
+Create an Anthropic API Key and add it to your environment variables named `ANTHROPIC_API_KEY`.
 
 ### Using custom endpoints
 
