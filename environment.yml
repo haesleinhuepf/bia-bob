@@ -23,6 +23,8 @@ dependencies:
   - openai
   - pip:
     - bia-bob
+    - pooch
+
 
 
   
