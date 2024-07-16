@@ -64,7 +64,7 @@ def bob(line: str = None, cell: str = None):
     from IPython.core.getipython import get_ipython
     from IPython.display import display
     from ._utilities import generate_response_to_user, output_text, is_image, generate_response
-    from ._notebook_generation import generate_notebook
+    from ._notebook_generation import generate_notebook, generate_file
 
     if Context.model is None:
         init_assistant()
@@ -81,10 +81,12 @@ def bob(line: str = None, cell: str = None):
         display("Please ask a question!")
         return
 
+    TASK_TYPE_OTHER = 1
     TASK_TYPE_CODE_GENERATION = 1
     TASK_TYPE_TEXT_RESPONSE = 2
     TASK_TYPE_NOTEBOOK_GENERATION = 3
     TASK_TYPE_NOTEBOOK_MODIFICATION = 4
+    TASK_TYPE_FILE_GENERATION = 5
 
     task_selection_prompt = f"""
     Given the following prompt, decide which of the following types of tasks we need to perform:
@@ -92,7 +94,9 @@ def bob(line: str = None, cell: str = None):
     {TASK_TYPE_TEXT_RESPONSE}. Text response: The prompt asks for a text response.    
     {TASK_TYPE_NOTEBOOK_GENERATION}. Notebook generation: The prompt asks explicitly for a notebook to be generated. Only choose this if the prompt explicitly asks for creating a new notebook.
     {TASK_TYPE_NOTEBOOK_MODIFICATION}. Notebook modification: The prompt asks for a modification of an existing notebook. Only choose this if the prompt explicitly asks for modifying an existing notebook and a) a notebook filename is given or b) the current notebook is mentioned.
-   
+    {TASK_TYPE_FILE_GENERATION}. File generation: The prompt asks for a file to be generated. Only choose this if the prompt explicitly asks for creating a new file with ending ".md", ".txt", ".csv", ".yml", ".yaml", ".json" or ".py".
+    {TASK_TYPE_OTHER}. Other: If you're not sure or if the prompt does not fit into any of the above categories.
+    
     This is the prompt:
     {user_input}
     
@@ -114,6 +118,10 @@ def bob(line: str = None, cell: str = None):
         code = None
         filename = generate_notebook(user_input, modify_existing_notebook=True, image=image)
         text = f"The modified notebook has been saved as [{filename}]({filename})."
+    elif task_type == TASK_TYPE_FILE_GENERATION:
+        code = None
+        filename = generate_file(user_input, image=image)
+        text = f"The file has been saved as [{filename}]({filename})."
     else:
         code, text = generate_response_to_user(Context.model, user_input, image)
 
