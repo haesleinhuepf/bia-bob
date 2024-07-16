@@ -39,6 +39,10 @@ It will then respond with a python code snippet that you can execute ([see full 
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
 
+Use `%bob`if you want to write in the same line and `%%bob` if you want to write below.
+
+If you want to continue using a variable in the next code cell, you need to specify the name of the variable in the following prompt.
+
 ### Notebook generation
 
 As shown above, when asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/generate_notebooks.ipynb)). You can then open it in Jupyter lab.
@@ -91,19 +95,13 @@ You can install `bia-bob` using pip. it is recommended to install it into via co
 It is recommended to install `bia-bob` in a conda-environment together with useful tools for bio-image analysis. 
 
 ```
-mamba env create -f https://github.com/haesleinhuepf/bia-bob/raw/main/environment.yml
+conda env create -f https://github.com/haesleinhuepf/bia-bob/raw/main/environment.yml
 ```
 
 You can then activate this environment...
 
 ```
-mamba activate bob_env
-```
-
-Alternatively, you can install `bia-bob` using pip:
-
-```
-pip install bia-bob 
+conda activate bob_env
 ```
 
 
