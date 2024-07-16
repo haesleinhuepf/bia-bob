@@ -1,13 +1,13 @@
-name: bob_env
+name: bob-env
 
 channels:
   - conda-forge
 
 dependencies:
-  - python=3.9
+  - python=3.11
   - aicsimageio
   - bioformats_jar
-  - scikit-image=0.19.3
+  - scikit-image
   - pandas
   - seaborn
   - jupyterlab
@@ -19,6 +19,12 @@ dependencies:
   - skan
   - pyclesperanto-prototype
   - pillow
+  - anthropic
+  - openai
+  - pip:
+    - bia-bob
+    - pooch
+
 
 
   
