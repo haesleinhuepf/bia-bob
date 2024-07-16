@@ -91,8 +91,8 @@ def bob(line: str = None, cell: str = None):
     {TASK_TYPE_CODE_GENERATION}. Code generation: The prompt asks for code to be generated.
     {TASK_TYPE_TEXT_RESPONSE}. Text response: The prompt asks for a text response.    
     {TASK_TYPE_NOTEBOOK_GENERATION}. Notebook generation: The prompt asks explicitly for a notebook to be generated. Only choose this if the prompt explicitly asks for creating a new notebook.
-    {TASK_TYPE_NOTEBOOK_MODIFICATION}. Notebook modification: The prompt asks for a modification of an existing notebook. Only choose this if the prompt explicitly asks for modifying an existing notebook and a notebook filename is given.
-    
+    {TASK_TYPE_NOTEBOOK_MODIFICATION}. Notebook modification: The prompt asks for a modification of an existing notebook. Only choose this if the prompt explicitly asks for modifying an existing notebook and a) a notebook filename is given or b) the current notebook is mentioned.
+   
     This is the prompt:
     {user_input}
     
