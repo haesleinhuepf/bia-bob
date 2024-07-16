@@ -48,12 +48,17 @@ def generate_notebook(prompt, filename=None, image=None, modify_existing_noteboo
     
     for attempt in range(1, max_number_attempts + 1):
         if modify_existing_notebook:
+            import ipynbname
+            current_notebook_filename = ipynbname.name()
+
             filename_extraction_prompt = f"""
             Extract the filename of the notebook that should be modified from the following prompt:
     
             ```json
             {prompt}
             ```
+            
+            If the prompt mentions the current notebook, respond with '{current_notebook_filename}.ipynb'.
     
             Respond with the filename and nothing else.
             """
