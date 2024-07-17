@@ -12,7 +12,6 @@ class Context:
     model = None
     vision_model = None
     verbose = False
-    auto_execute = False
     chat = []
     client = None
     vision_client = None
@@ -141,19 +140,14 @@ def bob(line: str = None, cell: str = None):
                                       system_prompt="")
 
     # print out explanation
-    if code is None or not Context.auto_execute:
+    if code is None:
         output_text(text)
 
     if code is not None:
         p = get_ipython()
-        if Context.auto_execute:
-            # replace the current cell that contained the prompt
-            p.set_next_input(code, replace=True)
-            # execute it
-            p.run_cell(code)
-        else:
-            # put a new cell below the current cell
-            p.set_next_input(code, replace=False)
+
+        # put a new cell below the current cell
+        p.set_next_input(code, replace=False)
 
 
 try:
@@ -224,7 +218,6 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
 
     Context.model = model
     Context.vision_model = vision_model
-    Context.auto_execute = auto_execute
     Context.client = None
     Context.vision_client = None
 
