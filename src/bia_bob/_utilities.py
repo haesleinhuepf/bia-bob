@@ -660,10 +660,4 @@ def keep_available_packages(libraries):
 
 
 def version_string(model, vision_model, endpoint, version):
-    return f"""            
-            Used model: {model},
-            vision model: {vision_model},
-            endpoint: {endpoint},
-            bia-bob version: {version}.
-            It is good scientific practice to check the code and results it produces carefully.
-            """
+    return f"""Used model: {model}, vision model: {vision_model}, endpoint: {endpoint}, bia-bob version: {version}."""

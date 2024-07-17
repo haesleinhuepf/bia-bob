@@ -80,6 +80,20 @@ Using the `%%acc` magic, you can replace common image processing functions with 
 
 * [Examples](https://github.com/haesleinhuepf/bia-bob/tree/main/demo
 
+### Command line interface
+
+You can use `bia-bob` from the terminal. This is recommended for creating notebooks for example like this:
+```
+bia-bob Please create a Jupyter Notebook that opens blobs.tif, segments the bright objects and shows the resulting label image on top of the original image with a curtain.
+```
+
+![img_1.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/cli_create_notebooks.png)
+
+This can also be used to create other files, e.g. CSV files.
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/cli_csv_files.png)
+
+
 ## Known issues
 
 If you want to ask `bob` a question, you need to put a space before the `?`.
