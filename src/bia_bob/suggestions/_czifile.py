@@ -1,5 +1,7 @@
 def suggestions():
     return """
+    ### Working with CZI files using czifile
+    
      * Loading files ending with `.czi` works like this:
     ```
     import czifile

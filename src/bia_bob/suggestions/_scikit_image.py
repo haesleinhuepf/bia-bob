@@ -1,5 +1,7 @@
 def suggestions():
     return """
+    ### Processing images with scikit-image
+    
     * Load an image file from disc and store it in a variable:
     ```
     from skimage.io import imread
