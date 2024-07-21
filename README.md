@@ -57,6 +57,13 @@ Furthermore, one can translate Jupyter notebooks to other languages, e.g. by pro
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/translate.png)
 
+### Writing prompts
+
+You can also ask Bob to write a prompt for you. This can be useful to explore potential strategies for analysing image data.
+Note: It might be necessary to modify those prompts, especially when suggested analysis workflows are long and complicated.
+Shorten suggested prompts the the minimal necessary steps to answer your scientific question. ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/modifying_notebooks/writing_prompts.ipynb)).
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/writing_prompts.png)
 
 ### Prompt augmentation
 
