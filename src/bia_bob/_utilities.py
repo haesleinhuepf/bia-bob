@@ -199,10 +199,14 @@ def generate_code_samples():
         additional_instructions = []
         # Iterate over discovered entry points and load them
         for ep in bia_bob_plugins:
-            func = ep.load()
+            try:
+                func = ep.load()
 
-            # load instructions from a plugin
-            instructions = func()
+                # load instructions from a plugin
+                instructions = func()
+            except:
+                # do not crash if plugins are crashing
+                pass
             # special treatment for code snippets from stackview, as it won't work with the custom kernel
             if "stackview" not in instructions or "stackview" in Context.libraries:
                 additional_instructions.append(instructions)
