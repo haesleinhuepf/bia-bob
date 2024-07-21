@@ -145,8 +145,11 @@ def generate_code_samples():
         ```
         * Measure properties of labels with respect to an image works like this:
         ```
+        import pandas as pd
         from skimage.measure import regionprops
-        properties = regionprops(label_image, image)
+        properties = ['label', 'area', 'mean_intensity'] # add more properties if needed
+        measurements = regionprops_table(label_image, intensity_image=image, properties=properties)
+        df = pd.DataFrame(measurements)
         ```
         """
     if "scikit-image" not in Context.libraries:
