@@ -68,6 +68,10 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
 
 def generate_response(chat_history, image, model, system_prompt, user_prompt, vision_system_prompt):
     from ._machinery import Context
+    from .endpoints._openai import generate_response_from_openai
+    from .endpoints._google import generate_response_from_vertex_ai, generate_response_from_google_ai
+    from .endpoints._anthropic import generate_response_from_anthropic
+
     if Context.endpoint is not None:
         full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
                                                       base_url=Context.endpoint, api_key=Context.api_key,
@@ -77,8 +81,14 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
         full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
                                                       vision_model=Context.vision_model,
                                                       vision_system_prompt=vision_system_prompt)
-    elif "gemini-" in model:
+    elif model == "gemini" or model == "gemini-pro" or model == "gemini-pro-vision":
+        import warnings
+        warnings.warn(f"The model {model} is deprecated. Consider using gemini-1.5-flash or gemini-1.5-pro instead.")
         full_response = generate_response_from_vertex_ai(model, system_prompt, user_prompt, chat_history, image,
+                                                         vision_model=Context.vision_model,
+                                                         vision_system_prompt=vision_system_prompt)
+    elif "gemini" in model:
+        full_response = generate_response_from_google_ai(model, system_prompt, user_prompt, chat_history, image,
                                                          vision_model=Context.vision_model,
                                                          vision_system_prompt=vision_system_prompt)
     elif model.startswith("claude"):

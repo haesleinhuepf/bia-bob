@@ -181,7 +181,17 @@ bob.initialize(
     model='codellama')
 ```
 
+### Using Google gemini 1.5 flash / pro
+
+Create a Google API key and store it in the environment variable `GOOGLE_API_KEY`.
+
+```
+mamba install google-generativeai>=0.6.0
+```
+
 ### Using Google's Cloud AI API as backend
+
+Note: This method is deprecated. Use gemini 1.5 as shown above. 
 
 ```
 pip install bia-bob google-cloud-aiplatform
@@ -199,6 +209,7 @@ gcloud auth application-default login
 Follow the instructions in the browser. Enter your Project ID (not the name). If it worked the terminal should approximately look like this:
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/gcloud_auth.png)
+
 
 ## Development
 
