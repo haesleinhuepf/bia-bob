@@ -82,7 +82,10 @@ def bob(line: str = None, cell: str = None):
         return
 
     # replace {variable} with variable content
-    user_input = user_input.format(**Context.variables)
+    try:
+        user_input = user_input.format(**Context.variables)
+    except:
+        pass
 
     TASK_TYPE_OTHER = 1
     TASK_TYPE_CODE_GENERATION = 1
