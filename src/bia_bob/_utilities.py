@@ -199,8 +199,9 @@ def create_system_prompt(reusable_variables_block=None):
     ## Python specific code snippets
     
     If the user asks for those simple tasks, use these code snippets.
-    {snippets}
+    
     {additional_snippets}
+    {snippets}
     
     ## Todos
     
