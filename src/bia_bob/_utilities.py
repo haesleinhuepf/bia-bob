@@ -476,11 +476,10 @@ def refine_code(code):
     * Modules which are available already, are not imported.
     * Make sure all variables are defined.
     * In case the code uses variables that are not defined, define them with example data, before using them.
-      Add a comment such as "Example data, todo: Replace these with your data"
     * Do not overwrite variables, if the are in the list of defined variables.
     * Take care that only common python libraries are imported. Do not make up modules.
-    * Avoid `import cle`. Use `import pyclesperanto_prototype as cle` instead.
-    * Avoid `from stackview import stackview`. Use `import stackview` instead.
+    * Avoid `import cle`. If you see something like this, `import pyclesperanto_prototype as cle` instead.
+    * Avoid `from stackview import stackview`. If you see something like this, `import stackview` instead.
     * Do not import modules or aliases which were already imported before.
     
     Return the code only.
