@@ -106,12 +106,21 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
 def split_response(text):
     text = text \
         .replace("```python", "```") \
+        .replace("```Python", "```") \
         .replace("```nextflow", "```") \
         .replace("```java", "```") \
         .replace("```javascript", "```") \
         .replace("```macro", "```") \
         .replace("```groovy", "```") \
-        .replace("```jython", "```")
+        .replace("```jython", "```") \
+        .replace("```md", "```") \
+        .replace("```markdown", "```") \
+        .replace("```txt", "```") \
+        .replace("```csv", "```") \
+        .replace("```yml", "```") \
+        .replace("```yaml", "```") \
+        .replace("```json", "```") \
+        .replace("```py", "```")
 
     # hotfix modifications for not-so-capable models (e.g. ollama/codellama or blablador/Mistral-7B-Instruct-v0.2)
     for item in ["Summary", "Plan", "Code"]:
@@ -437,20 +446,15 @@ def version_string(model, vision_model, endpoint, version):
     return f"""Used model: {model}, vision model: {vision_model}, endpoint: {endpoint}, bia-bob version: {version}."""
 
 
-def remove_outer_markdown_annotation(text):
-    """In case the response is wrapped in markdown annotations / code quotations, remove them."""
-    text = text.strip().strip("\n").strip()
+def remove_outer_markdown_annotation(code):
+    """In case code is wrapped in markdown annotations / code quotations, remove them. Returns the code only"""
+    for subheader in ["Code", "Plan", "Summary"]:
+        if "#" + subheader not in code:
+            code = code + f"\n\n### {subheader}\n" + code
 
-    for prefix in ["```python", "```Python", "```md", "```txt", "```md", "```csv", "```yml", "```yaml", "```json", "```py", "```"]:
-        if text.startswith(prefix):
-            text = text[len(prefix):]
+    _, _, new_code = split_response(code)
 
-    if text.endswith("```"):
-        text = text[:-3]
-
-    text = text.strip().strip("\n").strip()
-
-    return text
+    return new_code
 
 
 def refine_code(code):
@@ -482,16 +486,4 @@ def refine_code(code):
     Return the code only.
     """)
 
-    temp = f"""
-    ### Summary
-    
-    ### Plan
-    
-    ### Code
-    
-    {refined_code}
-    """
-
-    _, _, new_code = split_response(temp)
-
-    return new_code
+    return remove_outer_markdown_annotation(refined_code)
