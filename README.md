@@ -186,7 +186,7 @@ bob.initialize(
 Create a Google API key and store it in the environment variable `GOOGLE_API_KEY`.
 
 ```
-mamba install google-generativeai>=0.6.0
+pip install google-generativeai>=0.7.2
 ```
 
 ### Using Google's Cloud AI API as backend
@@ -194,7 +194,7 @@ mamba install google-generativeai>=0.6.0
 Note: This method is deprecated. Use gemini 1.5 as shown above. 
 
 ```
-pip install bia-bob google-cloud-aiplatform
+pip install google-cloud-aiplatform
 ```
 (Recommended google-cloud-aiplatform version >= 1.38.1)
 
