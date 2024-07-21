@@ -63,7 +63,7 @@ def bob(line: str = None, cell: str = None):
     """
     from IPython.core.getipython import get_ipython
     from IPython.display import display
-    from ._utilities import generate_response_to_user, output_text, is_image, generate_response
+    from ._utilities import generate_response_to_user, output_text, is_image, ask_llm, refine_code
     from ._notebook_generation import generate_notebook, generate_file
 
     if Context.model is None:
@@ -105,12 +105,8 @@ def bob(line: str = None, cell: str = None):
     
     Now, write the number of the task type into the next cell. Print the number only.
     """
-    response = generate_response(chat_history=[],
-                                image=None,
-                                model=Context.model,
-                                system_prompt="",
-                                user_prompt=task_selection_prompt,
-                                vision_system_prompt="")
+    response = ask_llm(task_selection_prompt)
+
     try:
         task_type = int(response.strip().strip("\n").split(".")[0])
     except:
@@ -154,6 +150,8 @@ def bob(line: str = None, cell: str = None):
     # print out explanation
     if code is None:
         output_text(text)
+    else:
+        code = refine_code(code)
 
     if code is not None:
         p = get_ipython()

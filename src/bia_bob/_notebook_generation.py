@@ -19,7 +19,7 @@ def generate_notebook(prompt, filename=None, image=None, modify_existing_noteboo
     -------
     filename
     """
-    from ._utilities import create_system_prompt, generate_response
+    from ._utilities import create_system_prompt, generate_response, remove_outer_markdown_annotation
     from ._machinery import Context, init_assistant
     import os
     import json
@@ -144,20 +144,7 @@ def generate_notebook(prompt, filename=None, image=None, modify_existing_noteboo
         return filename
 
 
-def remove_outer_markdown_annotation(text):
-    """In case the response is wrapped in markdown annotations / code quotations, remove them."""
-    text = text.strip().strip("\n").strip()
 
-    for prefix in ["```python", "```Python", "```md", "```txt", "```md", "```csv", "```yml", "```yaml", "```json", "```py", "```"]:
-        if text.startswith(prefix):
-            text = text[len(prefix):]
-
-    if text.endswith("```"):
-        text = text[:-3]
-
-    text = text.strip().strip("\n").strip()
-
-    return text
 
 
 def generate_file(prompt, filename=None, image=None, max_number_attempts=3):
@@ -179,7 +166,7 @@ def generate_file(prompt, filename=None, image=None, max_number_attempts=3):
     -------
     filename
     """
-    from ._utilities import generate_response
+    from ._utilities import generate_response, remove_outer_markdown_annotation
     from ._machinery import Context, init_assistant
 
     if Context.model is None:

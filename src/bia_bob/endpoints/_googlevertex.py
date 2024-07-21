@@ -83,7 +83,7 @@ def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt
             Context.client = genai.GenerativeModel(model)
 
         if len(system_prompt) > 0:
-            system_prompt = [{"role": "system", "content": create_system_prompt(reusable_variables_block="") +
+            system_prompt = [{"role": "system", "content": create_system_prompt() +
                               "\n\nConfirm these general instructions by answering 'ok'."},
                              {"role": "user", "content": "ok"}]
         else:

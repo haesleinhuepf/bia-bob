@@ -1,4 +1,16 @@
+import warnings
 from functools import lru_cache
+
+def ask_llm(prompt, image=None, chat_history=[]):
+    """Ask the language model a simple question and return the response."""
+    from ._machinery import Context
+    return generate_response(chat_history=chat_history,
+                      image=image,
+                      model=Context.model,
+                      system_prompt="",
+                      user_prompt=prompt,
+                      vision_system_prompt="")
+
 
 def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3, system_prompt:str=None):
     """Generates code and text respond for a specific user input.
@@ -32,14 +44,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         if Context.verbose:
             print("\n\nFull response:\n", full_response)
 
-        full_response = full_response\
-                        .replace("```python", "```")\
-                        .replace("```nextflow", "```")\
-                        .replace("```java", "```")\
-                        .replace("```javascript", "```")\
-                        .replace("```macro", "```")\
-                        .replace("```groovy", "```")\
-                        .replace("```jython", "```")
+
 
         # split response in text and code
         text, plan, code = split_response(full_response)
@@ -99,6 +104,15 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
 
 
 def split_response(text):
+    text = text \
+        .replace("```python", "```") \
+        .replace("```nextflow", "```") \
+        .replace("```java", "```") \
+        .replace("```javascript", "```") \
+        .replace("```macro", "```") \
+        .replace("```groovy", "```") \
+        .replace("```jython", "```")
+
     # hotfix modifications for not-so-capable models (e.g. ollama/codellama or blablador/Mistral-7B-Instruct-v0.2)
     for item in ["Summary", "Plan", "Code"]:
         text = "\n" + text
@@ -193,17 +207,27 @@ def generate_code_samples():
 
 def create_system_prompt(reusable_variables_block=None):
     """Creates a system prompt that contains instructions of general interest, available functions and variables."""
+    from ._machinery import Context
+
     # determine useful variables and functions in context
     if reusable_variables_block is None:
         reusable_variables_block = create_reusable_variables_block()
+    else:
+        warnings.warn("Deprecated use of create_system_prompt with reusable_variables_block. Do not pass this parameter to make your code work mid/long-term.")
 
     snippets, additional_snippets = generate_code_samples()
+    libraries = Context.libraries
 
     system_prompt = f"""
     You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
     If there are several ways to solve the task, chose the option with the least amount of code.    
     
+    ## Python specific instructions
+    
+    When writing python code, you can only use those libraries: {",".join([str(v) for v in libraries])}.
+    If you create images, show the results and save them in variables for later reuse.
     {reusable_variables_block}
+    NEVER overwrite the values of the variables and functions that are available.
     
     ## Python specific code snippets
     
@@ -259,29 +283,29 @@ def create_reusable_variables_block():
     available to be used."""
     variables = []
     functions = []
+    modules = []
     from ._machinery import Context
+    import types
 
     # figure out which variables are not private
     for key, value in Context.variables.items():
         if key.startswith("_"):
             continue
         if callable(value):
-            if key not in ["quit", "exit"]:
+            if key not in ["quit", "exit", "get_ipython"]:
                 functions.append(key)
+            continue
+        if isinstance(value, types.ModuleType):
+            modules.append(key)
+            continue
+        if key in ["In", "Out"]:
             continue
         variables.append(key)
 
-    libraries = Context.libraries
-
     return f"""
-    ## Python specific instructions
-    
-    For python, you can only use those libraries: {",".join([str(v) for v in libraries])}.
-    If you create images, show the results and save them in variables for later reuse.
-    The following variables are available: {",".join([str(v) for v in variables])}
-    NEVER overwrite the values of the variables that are available.
-    
-    The following functions are available: {",".join([str(v) for v in functions])}
+    The following variables are defined: {",".join([str(v) for v in variables])}    
+    The following functions are defined: {",".join([str(v) for v in functions])}    
+    The following modules or aliases are imported: {",".join([str(v) for v in modules])}
     """
 
 
@@ -411,3 +435,63 @@ def keep_available_packages(libraries):
 
 def version_string(model, vision_model, endpoint, version):
     return f"""Used model: {model}, vision model: {vision_model}, endpoint: {endpoint}, bia-bob version: {version}."""
+
+
+def remove_outer_markdown_annotation(text):
+    """In case the response is wrapped in markdown annotations / code quotations, remove them."""
+    text = text.strip().strip("\n").strip()
+
+    for prefix in ["```python", "```Python", "```md", "```txt", "```md", "```csv", "```yml", "```yaml", "```json", "```py", "```"]:
+        if text.startswith(prefix):
+            text = text[len(prefix):]
+
+    if text.endswith("```"):
+        text = text[:-3]
+
+    text = text.strip().strip("\n").strip()
+
+    return text
+
+
+def refine_code(code):
+    """Uses reflection to figure out which variables are available and imports are missing.
+    The LLM is asked to refine the code accordingly."""
+    reusable_variables_block = create_reusable_variables_block()
+    refined_code = ask_llm(f"""
+    
+    Given a list of available variables, functions and modules:
+    {reusable_variables_block}
+    
+    Modify the following code:
+    ```python
+    {code}
+    ```
+    
+    Make sure the following conditions are met:
+    * The code imports all functions and modules, that are not mentioned aboove.
+    * Modules which are available already, are not imported.
+    * Make sure all variables are defined.
+    * In case the code uses variables that are not defined, define them with example data, before using them.
+      Add a comment such as "Example data, todo: Replace these with your data"
+    * Do not overwrite variables, if the are in the list of defined variables.
+    * Take care that only common python libraries are imported. Do not make up modules.
+    * Avoid `import cle`. Use `import pyclesperanto_prototype as cle` instead.
+    * Avoid `from stackview import stackview`. Use `import stackview` instead.
+    * Do not import modules or aliases which were already imported before.
+    
+    Return the code only.
+    """)
+
+    temp = f"""
+    ### Summary
+    
+    ### Plan
+    
+    ### Code
+    
+    {refined_code}
+    """
+
+    _, _, new_code = split_response(temp)
+
+    return new_code
