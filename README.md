@@ -19,7 +19,7 @@ Using it with Ollama is free but requires running an Ollama server locally.
 
 `bia-bob` is a research project aiming at streamlining the design of image analysis workflows. Under the hood it uses
 artificial intelligence / large language models to generate text and code fulfilling the user's requests. 
-Users are responsible to verify the generated code according to good-scientific practice. Some general advice:
+Users are responsible to verify the generated code according to good scientific practice. Some general advice:
 * If you do not understand what a generated code snippet does, ask `%%bob explain this code in detail to a Python beginner:` before executing the code.
 * After Bob generated a data analysis workflow for you, ask `%%bob How could I verify this analysis workflow?`. It is good scientific practice to measure the quality of segmentation results for example, or to measure the difference of automated quantitative measurements, in comparison to manual analysis.
 * If you are not sure if an image analysis workflow is valid, consider asking human experts. E.g. reach out via https://image.sc .
