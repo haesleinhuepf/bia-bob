@@ -129,55 +129,29 @@ def split_response(text):
 
 @lru_cache(maxsize=1)
 def generate_code_samples():
-    # if scikit-image is installed, give hints how to use it
+    """Load code snippets from built-in suggestions and plugins."""
     from ._machinery import Context
+    import importlib
+    import os
 
-    skimage_snippets = """
-        * Load an image file from disc and store it in a variable:
-        ```
-        from skimage.io import imread
-        image = imread(filename)
-        ```
-        * Expanding labels by a given radius in a label image works like this:
-        ```
-        from skimage.segmentation import expand_labels
-        expanded_labels = expand_labels(label_image, distance=10)
-        ```
-        * Measure properties of labels with respect to an image works like this:
-        ```
-        import pandas as pd
-        from skimage.measure import regionprops
-        properties = ['label', 'area', 'mean_intensity'] # add more properties if needed
-        measurements = regionprops_table(label_image, intensity_image=image, properties=properties)
-        df = pd.DataFrame(measurements)
-        ```
-        """
-    if "scikit-image" not in Context.libraries:
-        skimage_snippets = ""
+    snippets = []
 
-    # if aicsimageio is installed, give hints how to use it
-    aicsimageio_snippets = """
-        * Loading files with endings other than `.tif`, `,czi`, `.png` or `.jpg` works like this:
-        ```
-        from aicsimageio import AICSImage
-        aics_image = AICSImage(image_filename)
-        image = aics_image.get_image_data("ZYX")
-        ```
-        """
-    if "aicsimageio" not in Context.libraries:
-        aicsimageio_snippets = ""
+    # load built-in suggestions:
+    for filename in os.listdir(os.path.join(os.path.dirname(__file__), "suggestions")):
+        if filename.startswith("_") and filename.endswith(".py"):
+            module = filename[1:-3]
+            original_module_name = module
+            if module in Context.libraries or module.replace("_", "-") in Context.libraries:
+                pass
+            else:
+                continue
 
-    czifile_snippets = """
-        * Loading files ending with `.czi` works like this:
-        ```
-        import czifile
-        from pathlib import Path
-        image = czifile.imread(Path(filename))
-        ```
-        """
-    if "czifile" not in Context.libraries:
-        czifile_snippets = ""
+            loaded_module = importlib.import_module(f"bia_bob.suggestions._{original_module_name}")
+            func = getattr(loaded_module, f"suggestions")
+            snippets.append(func())
+    snippets = "\n".join(snippets)
 
+    # load plugin suggestions
     if Context.plugins_enabled:
         from importlib.metadata import entry_points
 
@@ -206,7 +180,7 @@ def generate_code_samples():
     else:
         additional_snippets = ""
 
-    return skimage_snippets, aicsimageio_snippets, czifile_snippets, additional_snippets
+    return snippets, additional_snippets
 
 def create_system_prompt(reusable_variables_block=None):
     """Creates a system prompt that contains instructions of general interest, available functions and variables."""
@@ -214,7 +188,7 @@ def create_system_prompt(reusable_variables_block=None):
     if reusable_variables_block is None:
         reusable_variables_block = create_reusable_variables_block()
 
-    skimage_snippets, aicsimageio_snippets, czifile_snippets, additional_snippets = generate_code_samples()
+    snippets, additional_snippets = generate_code_samples()
 
     system_prompt = f"""
     You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
@@ -225,9 +199,7 @@ def create_system_prompt(reusable_variables_block=None):
     ## Python specific code snippets
     
     If the user asks for those simple tasks, use these code snippets.
-    {skimage_snippets}
-    {aicsimageio_snippets}
-    {czifile_snippets}
+    {snippets}
     {additional_snippets}
     
     ## Todos
