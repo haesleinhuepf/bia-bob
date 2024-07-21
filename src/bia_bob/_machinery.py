@@ -1,11 +1,11 @@
 from IPython.core.magic import register_line_cell_magic
 from ._utilities import keep_available_packages, is_notebook
-import warnings
 
 DEFAULT_MODEL = 'gpt-4o-2024-05-13'
 DEFAULT_VISION_MODEL = 'gpt-4o-2024-05-13'
 BLABLADOR_BASE_URL = 'https://helmholtz-blablador.fz-juelich.de:8000/v1'
 OLLAMA_BASE_URL = 'http://localhost:11434/v1'
+
 
 class Context:
     variables = None
@@ -274,8 +274,10 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
             print("bia-bob is using artificial intelligence to generate text, code and images.")
             print(remark)
 
+
 def disclaimer():
     return "Do not enter sensitive or private information and verify generated contents according to good scientific practice. Read more: https://github.com/haesleinhuepf/bia-bob#disclaimer"
+
 
 def enable_plugins(enabled: bool = True):
     Context.plugins_enabled = enabled

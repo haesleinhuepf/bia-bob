@@ -1,12 +1,10 @@
 from functools import lru_cache
 
-
 def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3, system_prompt:str=None):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
-    from ._machinery import Context, BLABLADOR_BASE_URL
-    import os
+    from ._machinery import Context
 
     text, plan, code = None, None, None
 
@@ -192,6 +190,7 @@ def generate_code_samples():
 
     return snippets, additional_snippets
 
+
 def create_system_prompt(reusable_variables_block=None):
     """Creates a system prompt that contains instructions of general interest, available functions and variables."""
     # determine useful variables and functions in context
@@ -284,6 +283,7 @@ def create_reusable_variables_block():
     
     The following functions are available: {",".join([str(v) for v in functions])}
     """
+
 
 def print_chat(chat):
     print("\nChat history:")

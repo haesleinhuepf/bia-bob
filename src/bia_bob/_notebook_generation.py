@@ -6,8 +6,8 @@ def generate_notebook(prompt, filename=None, image=None, modify_existing_noteboo
 
     Parameters
     ----------
-    prompt
-    filename, optional
+    prompt: str
+    filename: str, optional
     image: ndarray, optional
         can be considered for generating the notebook if the used model has vision capabilities.
     modify_existing_notebook: bool, optional
@@ -145,6 +145,7 @@ def generate_notebook(prompt, filename=None, image=None, modify_existing_noteboo
 
 
 def remove_outer_markdown_annotation(text):
+    """In case the response is wrapped in markdown annotations / code quotations, remove them."""
     text = text.strip().strip("\n").strip()
 
     for prefix in ["```python", "```Python", "```md", "```txt", "```md", "```csv", "```yml", "```yaml", "```json", "```py", "```"]:
@@ -157,6 +158,7 @@ def remove_outer_markdown_annotation(text):
     text = text.strip().strip("\n").strip()
 
     return text
+
 
 def generate_file(prompt, filename=None, image=None, max_number_attempts=3):
     """
@@ -177,10 +179,8 @@ def generate_file(prompt, filename=None, image=None, max_number_attempts=3):
     -------
     filename
     """
-    from ._utilities import create_system_prompt, generate_response
+    from ._utilities import generate_response
     from ._machinery import Context, init_assistant
-    import os
-    import json
 
     if Context.model is None:
         init_assistant()
@@ -234,7 +234,9 @@ def generate_file(prompt, filename=None, image=None, max_number_attempts=3):
 
         return filename
 
+
 def not_existing_filename(original_filename):
+    """Checks if a given filename exists and if so, adds a number to the filename."""
     import os
     filename = original_filename
     if os.path.exists(filename):
