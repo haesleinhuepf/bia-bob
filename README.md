@@ -266,6 +266,7 @@ There are similar projects:
 * [bioimageio-chatbot](https://github.com/bioimage-io/bioimageio-chatbot)
 * [Claude Engineer](https://github.com/Doriandarko/claude-engineer)
 * [BioChatter](https://github.com/biocypher/biochatter)
+* [aider](https://github.com/paul-gauthier/aider)
 
 ## Issues
 
