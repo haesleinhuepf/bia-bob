@@ -15,6 +15,15 @@ Using it with Ollama is free but requires running an Ollama server locally.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
 
+## Disclaimer
+
+`bia-bob` is a research project aiming at streamlining the design of image analysis workflows. Under the hood it uses
+artificial intelligence / large language models to generate text and code fulfilling the user's requests. 
+Users are responsible to verify the generated code according to good-scientific practice. Some general advice:
+* If you do not understand what a generated code snippet does, ask `%%bob explain this code in detail to a Python beginner:` before executing the code.
+* After Bob generated a data analysis workflow for you, ask `%%bob How could I verify this analysis workflow?`. It is good scientific practice to measure the quality of segmentation results for example, or to measure the difference of automated quantitative measurements, in comparison to manual analysis.
+* If you are not sure if an image analysis workflow is valid, consider asking human experts. E.g. reach out via https://image.sc .
+
 > [!CAUTION]
 > When using the OpenAI, Google Gemini, Anthropic or any other endpoint via BiA-Bob, you are bound to the terms of service 
 > of the respective companies or organizations.
@@ -72,6 +81,11 @@ With this, the content of the variable will become part of the prompt ([full exa
 
 ![](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/augmenting_prompts.png)
 
+### Explaining code
+
+If you are not sure what generated code does, you can ask Bob to explain it to you: 
+
+![](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/explain_code.png)
 
 ### Bug fixing
 

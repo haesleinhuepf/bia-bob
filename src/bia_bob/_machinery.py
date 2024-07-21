@@ -253,7 +253,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
         from IPython.display import display, HTML
         from ._utilities import version_string
 
-        remark = version_string(model, vision_model, endpoint, version)
+        remark = version_string(model, vision_model, endpoint, version) + ". " + disclaimer()
         if is_notebook():
             display(HTML(f"""
             <div style="font-size:7pt">
@@ -263,9 +263,11 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
             </div>
             """))
         else:
-            print("bia-bob is using artificial intelligence to generate text, code and images. Read more: https://github.com/haesleinhuepf/bia-bob")
+            print("bia-bob is using artificial intelligence to generate text, code and images.")
             print(remark)
 
+def disclaimer():
+    return "Do not enter sensitive or private information and verify generated contents according to good scientific practice. Read more: https://github.com/haesleinhuepf/bia-bob#disclaimer"
 
 def enable_plugins(enabled: bool = True):
     Context.plugins_enabled = enabled
