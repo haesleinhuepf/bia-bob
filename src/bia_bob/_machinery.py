@@ -80,6 +80,9 @@ def bob(line: str = None, cell: str = None):
         display("Please ask a question!")
         return
 
+    # replace {variable} with variable content
+    user_input = user_input.format(**Context.variables)
+
     TASK_TYPE_OTHER = 1
     TASK_TYPE_CODE_GENERATION = 1
     TASK_TYPE_TEXT_RESPONSE = 2

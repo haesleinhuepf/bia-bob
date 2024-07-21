@@ -58,6 +58,14 @@ Furthermore, one can translate Jupyter notebooks to other languages, e.g. by pro
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/translate.png)
 
 
+### Prompt augmentation
+
+You can add additional information from given Python variables into your prompt using the `{variable_name}` syntax. 
+With this, the content of the variable will become part of the prompt ([full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/modifying_notebooks/augmenting_prompts.ipynb)).
+
+![](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/augmenting_prompts.png)
+
+
 ### Bug fixing
 
 Bob can fix simple bugs in code you executed. Just add `%%fix` on top of the cell right after the error happened.
