@@ -111,7 +111,10 @@ def bob(line: str = None, cell: str = None):
                                 system_prompt="",
                                 user_prompt=task_selection_prompt,
                                 vision_system_prompt="")
-    task_type = int(response.strip().strip("\n").split(".")[0])
+    try:
+        task_type = int(response.strip().strip("\n").split(".")[0])
+    except:
+        task_type = 1
 
     if task_type == TASK_TYPE_NOTEBOOK_GENERATION:
         code = None
@@ -139,9 +142,14 @@ def bob(line: str = None, cell: str = None):
 
         if image is not None:
             # we need to add this information to the history.
-            generate_response_to_user(Context.model,
-                                      user_prompt=f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {response}. Just confirm this with 'ok'.",
-                                      system_prompt="")
+            Context.chat.append({
+                "role": "user",
+                "content": f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {response}. Just confirm this with 'ok'."
+            })
+            Context.chat.append({
+                "role": "assistant",
+                "content": "ok"
+            })
 
     # print out explanation
     if code is None:
