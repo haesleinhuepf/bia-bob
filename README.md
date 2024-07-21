@@ -226,6 +226,7 @@ There are similar projects:
 * [napari-chatGPT](https://github.com/royerlab/napari-chatgpt)
 * [bioimageio-chatbot](https://github.com/bioimage-io/bioimageio-chatbot)
 * [Claude Engineer](https://github.com/Doriandarko/claude-engineer)
+* [BioChatter](https://github.com/biocypher/biochatter)
 
 ## Issues
 
