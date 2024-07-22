@@ -11,9 +11,9 @@ It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Goog
 You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
 Using it with Ollama is free but requires running an Ollama server locally.
 
-`bob` can write short Python code snippets and entire Jupyter notebooks. The default LLM (gpt-4 omni) has vision capabilities and thus, you can show images to `bob` and it will write code for segmenting the structures of interest - in case it recognizes them.
+`bob` can write short Python code snippets and entire Jupyter notebooks for your image / data analysis workflow.
 
-![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/banner.png)
 
 ## Disclaimer
 
@@ -54,7 +54,10 @@ If you want to continue using a variable in the next code cell, you need to spec
 
 ### Notebook generation
 
-As shown above, when asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/generate_notebooks.ipynb)). You can then open it in Jupyter lab.
+When asking Bob explicitly to generate a notebook, it will put a new notebook file in the current directory with the generated code ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/generate_notebooks.ipynb)). You can then open it in Jupyter lab.
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/generate_notebook.gif)
+
 
 ### Notebook modification
 
