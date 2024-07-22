@@ -9,6 +9,7 @@ from ._bug_fixing import fix
 from ._document import doc
 from ._utilities import available_models
 from ._notebook_generation import generate_notebook
+from ._utilities import ask_llm
 
 bob.initialize = init_assistant
 bob.__version__ = __version__
