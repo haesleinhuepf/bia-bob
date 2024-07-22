@@ -267,6 +267,8 @@ There are similar projects:
 * [Claude Engineer](https://github.com/Doriandarko/claude-engineer)
 * [BioChatter](https://github.com/biocypher/biochatter)
 * [aider](https://github.com/paul-gauthier/aider)
+* [OpenDevin](https://github.com/OpenDevin/OpenDevin)
+* [Devika](https://github.com/stitionai/devika)
 
 ## Issues
 
