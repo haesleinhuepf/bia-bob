@@ -464,6 +464,10 @@ def remove_outer_markdown_annotation(code):
 def refine_code(code):
     """Uses reflection to figure out which variables are available and imports are missing.
     The LLM is asked to refine the code accordingly."""
+    if "%bob" in code:
+        # task was to write a prompt
+        return code
+
     reusable_variables_block = create_reusable_variables_block()
     refined_code = ask_llm(f"""
     
