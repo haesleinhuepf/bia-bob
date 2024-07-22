@@ -476,13 +476,14 @@ def refine_code(code):
     ```
     
     Make sure the following conditions are met:
-    * The code imports all functions and modules, that are not mentioned aboove.
+    * The code imports all functions and modules, that are not mentioned above.
     * Modules which are available already, are not imported.
     * Do not overwrite variables, if the arey in the list of defined variables.
     * Take care that only common python libraries are imported. Do not make up modules.
     * Avoid `import cle`. If you see something like this, `import pyclesperanto_prototype as cle` instead.
     * Avoid `from stackview import stackview`. If you see something like this, `import stackview` instead.
     * Do not import modules or aliases which were already imported before.
+    * Do NOT replace values such as filenames with variables.
     
     Return the code only.
     """)
