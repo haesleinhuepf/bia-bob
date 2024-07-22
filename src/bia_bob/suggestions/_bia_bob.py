@@ -10,11 +10,11 @@ def suggestions():
     * by the end, show the result.
     ```
     
-    If you explicitly wish to do this with Python code, you can do it like this:
-    
+    You can also submit a prompt without system prompts to the LLM and retrieve the response as string like this:
+    (Note that the image parameter is optional)
     ```python
-    from bia_bob import bob
-    code = bob("Do this, that and by the end, show the result.")
+    from bia_bob import ask_llm
+    code = ask_llm("Do this, that and by the end, show the result.", image=image)
     exec(code)
     ```
     """
