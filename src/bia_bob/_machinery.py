@@ -16,6 +16,7 @@ class Context:
     client = None
     vision_client = None
     plugins_enabled = True
+    use_reflection = True
     seed = None # openai only
     temperature = None # openai only
     endpoint = None
@@ -154,7 +155,8 @@ def bob(line: str = None, cell: str = None):
     if code is None:
         output_text(text)
     else:
-        code = refine_code(code)
+        if Context.use_reflection:
+            code = refine_code(code)
 
     if code is not None:
         p = get_ipython()
@@ -182,7 +184,7 @@ def combine_user_input(line, cell):
 
 
 def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None,
-                   vision_model=None, keep_history:bool=False, silent:bool=False):
+                   vision_model=None, keep_history:bool=False, silent:bool=False, use_reflection=True):
     """Initialises the assistant.
 
     Parameters
@@ -250,6 +252,8 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
 
     Context.endpoint = endpoint
     Context.api_key = api_key
+
+    Context.use_reflection = use_reflection
 
     if Context.verbose:
         print("Assistant initialised. You can now use it, e.g., copy and paste the"
