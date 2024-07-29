@@ -74,6 +74,7 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
     from .endpoints._openai import generate_response_from_openai
     from .endpoints._googlevertex import generate_response_from_vertex_ai, generate_response_from_google_ai
     from .endpoints._anthropic import generate_response_from_anthropic
+    from .endpoints._huggingface import generate_response_from_huggingface
 
     if Context.endpoint is not None:
         full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
@@ -96,6 +97,10 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
                                                          vision_system_prompt=vision_system_prompt)
     elif model.startswith("claude"):
         full_response = generate_response_from_anthropic(model, system_prompt, user_prompt, chat_history, image,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+    elif "/" in model: # huggingface
+        full_response = generate_response_from_huggingface(model, system_prompt, user_prompt, chat_history, image,
                                                       vision_model=Context.vision_model,
                                                       vision_system_prompt=vision_system_prompt)
     else:
