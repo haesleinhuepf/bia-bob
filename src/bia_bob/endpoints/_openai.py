@@ -1,4 +1,3 @@
-
 def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
                                   base_url:str=None, api_key:str=None, vision_model:str = None, vision_system_prompt:str = None):
     """A prompt helper function that sends a message to openAI
@@ -107,5 +106,3 @@ def image_to_message_llava(image, prompt):
         'content': prompt,
         'images': [base64_image]
     }]
-
-
