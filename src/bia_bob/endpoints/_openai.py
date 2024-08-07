@@ -24,7 +24,6 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         if Context.client is None or not isinstance(Context.client, OpenAI):
             Context.client = OpenAI(**model_init_kwargs)
         client = Context.client
-        model = model or DEFAULT_MODEL
     else:
         system_message = [{"role": "system", "content": vision_system_prompt}]
 
