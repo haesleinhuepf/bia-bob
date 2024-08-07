@@ -1,11 +1,10 @@
-
 def generate_response_from_openai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
                                   base_url:str=None, api_key:str=None, vision_model:str = None, vision_system_prompt:str = None):
     """A prompt helper function that sends a message to openAI
     and returns only the text response.
     """
     from openai import OpenAI
-    from .._machinery import Context
+    from .._machinery import Context, DEFAULT_MODEL, DEFAULT_VISION_MODEL
 
     # assemble prompt
     user_message = [{"role": "user", "content": user_prompt}]
@@ -25,6 +24,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         if Context.client is None or not isinstance(Context.client, OpenAI):
             Context.client = OpenAI(**model_init_kwargs)
         client = Context.client
+        model = model or DEFAULT_MODEL
     else:
         system_message = [{"role": "system", "content": vision_system_prompt}]
 
@@ -35,7 +35,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         else:
             image_message = image_to_message(image)
 
-        if vision_model == 'gpt-4-vision-preview':
+        if vision_model == DEFAULT_VISION_MODEL:
             # this seems necessary according to the docs:
             # https://platform.openai.com/docs/guides/vision
             # if it is not provided, the response will be
@@ -45,7 +45,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         if Context.vision_client is None or not isinstance(Context.vision_client, OpenAI):
             Context.vision_client = OpenAI(**model_init_kwargs)
         client = Context.vision_client
-        model = vision_model
+        model = vision_model or DEFAULT_VISION_MODEL
 
     if Context.seed is not None:
         kwargs['seed'] = Context.seed
@@ -107,5 +107,3 @@ def image_to_message_llava(image, prompt):
         'content': prompt,
         'images': [base64_image]
     }]
-
-
