@@ -6,7 +6,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/haesleinhuepf/bia-bob?style=social)](https://github.com/haesleinhuepf/bia-bob/)
 [![License](https://img.shields.io/pypi/l/bia-bob.svg?color=green)](https://github.com/haesleinhuepf/bia-bob/raw/main/LICENSE)
 
-BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate python code for Bio-Image Analysis (BIA). 
+BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate Python code for Bio-Image Analysis (BIA). 
 It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Anthropic's Claude](https://www.anthropic.com/api), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
 You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
 Using it with Ollama is free but requires running an Ollama server locally.
@@ -44,11 +44,11 @@ You can ask Bob to generate code like this:
 %bob Load blobs.tif and show it
 ```
 
-It will then respond with a python code snippet that you can execute ([see full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/analysis_workflow.ipynb)):
+It will then respond with a Python code snippet that you can execute ([see full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/analysis_workflow.ipynb)):
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
 
-Use `%bob`if you want to write in the same line and `%%bob` if you want to write below.
+Use `%bob` if you want to write in the same line and `%%bob` if you want to write below.
 
 If you want to continue using a variable in the next code cell, you need to specify the name of the variable in the following prompt.
 
@@ -71,9 +71,9 @@ Furthermore, one can translate Jupyter notebooks to other languages, e.g. by pro
 
 ### Writing prompts
 
-You can also ask Bob to write a prompt for you. This can be useful to explore potential strategies for analysing image data.
+You can also ask Bob to write a prompt for you. This can be useful to explore potential strategies for analyzing image data.
 Note: It might be necessary to modify those prompts, especially when suggested analysis workflows are long and complicated.
-Shorten suggested prompts the the minimal necessary steps to answer your scientific question. ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/modifying_notebooks/writing_prompts.ipynb)).
+Shorten suggested prompts to the minimal necessary steps to answer your scientific question. ([See full example](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/modifying_notebooks/writing_prompts.ipynb)).
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/writing_prompts.png)
 
@@ -110,7 +110,7 @@ Using the `%%acc` magic, you can replace common image processing functions with 
 
 ### Example notebooks
 
-* [Examples](https://github.com/haesleinhuepf/bia-bob/tree/main/demo
+* [Examples](https://github.com/haesleinhuepf/bia-bob/tree/main/demo)
 
 ### Command line interface
 
@@ -136,7 +136,7 @@ If you want to ask `bob` a question, you need to put a space before the `?`.
 
 ## Installation
 
-You can install `bia-bob` using pip. it is recommended to install it into via conda/mamba environment. If you have never used conda before, please [read this guide first](https://biapol.github.io/blog/mara_lampert/getting_started_with_mambaforge_and_python/readme.html).  
+You can install `bia-bob` using pip. It is recommended to install it into a conda/mamba environment. If you have never used conda before, please [read this guide first](https://biapol.github.io/blog/mara_lampert/getting_started_with_mambaforge_and_python/readme.html).  
 
 It is recommended to install `bia-bob` in a conda-environment together with useful tools for bio-image analysis. 
 
@@ -170,7 +170,7 @@ For this, just install the openai backend as explained above (tested version: 1.
 bob.initialize(endpoint='ollama', model='codellama')
 ```
 * If you want to use blablador, which is free for German academics, just get an API key as explained on
-[this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/) and store it int your environment as `BLABLADOR_API_KEY` variable.
+[this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/) and store it in your environment as `BLABLADOR_API_KEY` variable.
 ```
 bob.initialize(
     endpoint='blablador', 
@@ -204,7 +204,7 @@ pip install google-cloud-aiplatform
 To make use of the Google Cloud API, you need to create a Google Cloud account [here](https://console.cloud.google.com/welcome/) and
 a project within the Google cloud (for billing) [here](https://console.cloud.google.com/projectcreate). 
 You need to store authentication details locally as explained [here](https://cloud.google.com/docs/authentication/provide-credentials-adc#local-dev). 
-This requires installing [Google Cloud CLI](https://cloud.google.com/sdk/docs/install). In very short: run the installer and when asked, activate the "Run gcloud init' checkbox. Or run 'gcloud init' from the terminal yourself. Restart the terminal window.
+This requires installing [Google Cloud CLI](https://cloud.google.com/sdk/docs/install). In very short: run the installer and when asked, activate the "Run gcloud init" checkbox. Or run 'gcloud init' from the terminal yourself. Restart the terminal window.
 After installing Google Cloud CLI, start a terminal and authenticate using: 
 ```
 gcloud auth application-default login
@@ -234,7 +234,7 @@ bia_bob_plugins =
 
 ```
 
-In the above mentioned `_bia_bob_plugins.py` define this function (and feel to rename the function and the Python file):
+In the above mentioned `_bia_bob_plugins.py` define this function (and feel free to rename the function and the Python file):
 ```
 def list_bia_bob_plugins():
     """List of function hints for bia_bob"""
@@ -276,8 +276,3 @@ There are similar projects:
 ## Issues
 
 If you encounter any problems or want to provide feedback or suggestions, please create a thread on [image.sc](https://image.sc) along with a detailed description and tag @haesleinhuepf .
-
-
-
-
-
