@@ -4,7 +4,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     and returns only the text response.
     """
     from openai import OpenAI
-    from .._machinery import Context, DEFAULT_MODEL, DEFAULT_VISION_MODEL
+    from .._machinery import Context
 
     # assemble prompt
     user_message = [{"role": "user", "content": user_prompt}]
