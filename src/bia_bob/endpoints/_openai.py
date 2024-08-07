@@ -44,7 +44,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         if Context.vision_client is None or not isinstance(Context.vision_client, OpenAI):
             Context.vision_client = OpenAI(**model_init_kwargs)
         client = Context.vision_client
-        model = vision_model or DEFAULT_VISION_MODEL
+        model = vision_model
 
     if Context.seed is not None:
         kwargs['seed'] = Context.seed
