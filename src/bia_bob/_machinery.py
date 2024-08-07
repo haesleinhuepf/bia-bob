@@ -1,8 +1,8 @@
 from IPython.core.magic import register_line_cell_magic
 from ._utilities import keep_available_packages, is_notebook
 
-DEFAULT_MODEL = 'gpt-4o-2024-05-13'
-DEFAULT_VISION_MODEL = 'gpt-4o-2024-05-13'
+DEFAULT_MODEL = 'gpt-4o-2024-08-06'
+DEFAULT_VISION_MODEL = 'gpt-4o-2024-08-06'
 BLABLADOR_BASE_URL = 'https://helmholtz-blablador.fz-juelich.de:8000/v1'
 OLLAMA_BASE_URL = 'http://localhost:11434/v1'
 
@@ -193,7 +193,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
                If None, it will use the global variables of the current namespace.
     endpint: str Custom endpoint, e.g. 'blablador'
     api_key: str API key for the custom endpoint
-    vision_model: str, optional (default: 'gpt-4o-2024-05-13') The vision model to use.
+    vision_model: str, optional (default: 'gpt-4o-2024-08-06') The vision model to use.
     keep_history: bool, optional (default: False) If True, the chat history will be kept.
     silent: bool, optional (default: False) If True, the assistant will not print any messages after initializing.
     """
