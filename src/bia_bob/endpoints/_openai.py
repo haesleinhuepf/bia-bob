@@ -34,7 +34,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         else:
             image_message = image_to_message(image)
 
-        if vision_model == DEFAULT_VISION_MODEL:
+        if vision_model == 'gpt-4-vision-preview':
             # this seems necessary according to the docs:
             # https://platform.openai.com/docs/guides/vision
             # if it is not provided, the response will be
