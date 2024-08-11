@@ -286,3 +286,17 @@ def disclaimer(html=False):
 
 def enable_plugins(enabled: bool = True):
     Context.plugins_enabled = enabled
+
+
+def ask_llm(prompt, image=None, chat_history=[]):
+    from ._utilities import generate_response
+    
+    if Context.model is None:
+        init_assistant()
+        
+    return generate_response(chat_history=chat_history,
+                      image=image,
+                      model=Context.model,
+                      system_prompt="",
+                      user_prompt=prompt,
+                      vision_system_prompt="")
