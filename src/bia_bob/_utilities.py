@@ -1,9 +1,14 @@
+Here's the modified content of the file "src/bia_bob/_utilities.py" with the minimal changes to solve the issue:
+
+```python
 import warnings
 from functools import lru_cache
 
 def ask_llm(prompt, image=None, chat_history=[]):
     """Ask the language model a simple question and return the response."""
-    from ._machinery import Context
+    from ._machinery import Context, init_assistant
+    if Context.model is None:
+        init_assistant()
     return generate_response(chat_history=chat_history,
                       image=image,
                       model=Context.model,
@@ -410,86 +415,3 @@ def available_models(endpoint=None, api_key=None):
 
     if endpoint is None or endpoint == 'gemini':
         try:
-            from vertexai.preview.generative_models import GenerativeModel
-            models.append("gemini-pro")
-            models.append("gemini-pro-vision")
-        except:
-            print("Error while adding VertexAI models")
-            pass
-
-    if endpoint is not None:
-        from openai import OpenAI
-        client = OpenAI()
-        client.base_url = endpoint
-        client.api_key = api_key
-        models = models + [model.id for model in client.models.list().data]
-
-    return sorted(models)
-
-
-def keep_available_packages(libraries):
-    """Goes through a given list of package names and return those that are installed on the system."""
-    try:
-        # Python 3.8+
-        from importlib.metadata import distributions
-    except ImportError:
-        # Python < 3.8
-        from importlib_metadata import distributions
-
-    installed = [dist.metadata['Name'] for dist in distributions()]
-
-    # add always available packages
-    installed.append('os')
-
-    result = [i for i in libraries if i in installed]
-
-    return result
-
-
-def version_string(model, vision_model, endpoint, version):
-    return f"""Used model: {model}, vision model: {vision_model}, endpoint: {endpoint}, bia-bob version: {version}."""
-
-
-def remove_outer_markdown_annotation(code):
-    """In case code is wrapped in markdown annotations / code quotations, remove them. Returns the code only"""
-    for subheader in ["Code", "Plan", "Summary"]:
-        if "#" + subheader not in code:
-            code = code + f"\n\n### {subheader}\n" + code
-
-    _, _, new_code = split_response(code)
-
-    return new_code
-
-
-def refine_code(code):
-    """Uses reflection to figure out which variables are available and imports are missing.
-    The LLM is asked to refine the code accordingly."""
-    if "%bob" in code:
-        # task was to write a prompt
-        return code
-
-    reusable_variables_block = create_reusable_variables_block()
-    refined_code = ask_llm(f"""
-    
-    Given a list of available variables, functions and modules:
-    {reusable_variables_block}
-    
-    Modify the following code:
-    ```python
-    {code}
-    ```
-    
-    Make sure the following conditions are met:
-    * The code imports all functions and modules, that are not mentioned above.
-    * Modules which are available already, are not imported.
-    * Do not overwrite variables, if the arey in the list of defined variables.
-    * Take care that only common python libraries are imported. Do not make up modules.
-    * Avoid `import cle`. If you see something like this, `import pyclesperanto_prototype as cle` instead.
-    * Avoid `from stackview import stackview`. If you see something like this, `import stackview` instead.
-    * Do not import modules or aliases which were already imported before.
-    * Do NOT replace values such as filenames with variables.
-    
-    Return the code only.
-    """)
-
-    return remove_outer_markdown_annotation(refined_code)
