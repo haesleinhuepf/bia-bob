@@ -3,7 +3,9 @@ from functools import lru_cache
 
 def ask_llm(prompt, image=None, chat_history=[]):
     """Ask the language model a simple question and return the response."""
-    from ._machinery import Context
+    from ._machinery import Context, init_assistant
+    if Context.model is None:
+        init_assistant()
     return generate_response(chat_history=chat_history,
                       image=image,
                       model=Context.model,
