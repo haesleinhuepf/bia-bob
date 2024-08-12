@@ -201,6 +201,7 @@ def generate_code_samples():
         additional_instructions = []
         # Iterate over discovered entry points and load them
         for ep in bia_bob_plugins:
+            instructions = ""
             try:
                 func = ep.load()
 
