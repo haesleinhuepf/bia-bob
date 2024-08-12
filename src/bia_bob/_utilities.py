@@ -205,6 +205,7 @@ def generate_code_samples():
                 func = ep.load()
 
                 # load instructions from a plugin
+                instructions = ""
                 instructions = func()
             except:
                 # do not crash if plugins are crashing
