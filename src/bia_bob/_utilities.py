@@ -1,11 +1,15 @@
 import warnings
 from functools import lru_cache
 
-def ask_llm(prompt, image=None, chat_history=[]):
+def ask_llm(prompt, image=None, chat_history=None):
     """Ask the language model a simple question and return the response."""
     from ._machinery import Context, init_assistant
     if Context.model is None:
         init_assistant()
+
+    if chat_history is None:
+        chat_history = []
+
     return generate_response(chat_history=chat_history,
                       image=image,
                       model=Context.model,
@@ -42,6 +46,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             print_chat(chat_history)
 
         full_response = generate_response(chat_history, image, model, system_prompt, user_prompt, vision_system_prompt)
+        Context.chat = chat_history
 
         if Context.verbose:
             print("\n\nFull response:\n", full_response)

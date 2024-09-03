@@ -21,8 +21,16 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
         client = Context.vision_client
         model = vision_model
 
+    messages = [c for c in chat_history]
+    messages.append(user_message[0])
+
+
+    if Context.verbose:
+        for i, m in enumerate(messages):
+            print(f"\n\nMESSAGE {i}: {m}")
+
     response = client.messages.create(
-        messages=chat_history + user_message,
+        messages=messages,
         system=system_message,
         model=model,
         max_tokens=4096,
@@ -31,7 +39,10 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
 
     assistant_message = [{"role": "assistant", "content": reply}]
 
-    Context.chat += user_message + assistant_message
+    #Context.chat += user_message + assistant_message
+    if image is None:
+        chat_history.append(user_message[0])
+        chat_history.append(assistant_message[0])
 
     return reply
 

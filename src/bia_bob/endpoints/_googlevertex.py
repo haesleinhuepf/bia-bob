@@ -1,3 +1,4 @@
+
 def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
                                      vision_model: str = None, vision_system_prompt: str = None):
     """A prompt helper function that sends a message to Google Vertex AI
@@ -91,7 +92,12 @@ def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt
 
         prompt = [{"role": "user", "content":user_prompt}]
 
-        response = Context.client.generate_content(messages_to_google_messages(chat_history + system_prompt + prompt)).candidates[0].content.parts[
+        messages = system_prompt
+        for m in chat_history:
+            messages.append(m)
+        messages.append(prompt[0])
+
+        response = Context.client.generate_content(messages_to_google_messages(messages)).candidates[0].content.parts[
             0].text
 
     else:  # if image is not None:
@@ -111,14 +117,19 @@ def generate_response_from_google_ai(model: str, system_prompt: str, user_prompt
 
         prompt = [{"role": "user", "content": [pil_image, user_prompt]}]
 
-        response = Context.vision_client.generate_content(messages_to_google_messages(system_prompt + chat_history + prompt)).candidates[0].content.parts[
+        messages = system_prompt
+        for m in chat_history:
+            messages.append(m)
+        messages.append(prompt[0])
+
+        response = Context.vision_client.generate_content(messages_to_google_messages(messages)).candidates[0].content.parts[
             0].text
 
-    Context.chat.append({
+    chat_history.append({
         "role": "user",
         "content": user_prompt
     })
-    Context.chat.append({
+    chat_history.append({
         "role": "assistant",
         "content": response
     })
