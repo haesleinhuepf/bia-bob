@@ -26,13 +26,7 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         client = Context.client
     else:
         system_message = [{"role": "system", "content": vision_system_prompt}]
-
-        if 'llava' in vision_model:
-            system_message = [""] # llava crashes when the system prompt is too long
-            image_message = image_to_message_llava(image, user_prompt)
-            user_message = []
-        else:
-            image_message = image_to_message(image)
+        image_message = image_to_message(image)
 
         if vision_model == 'gpt-4-vision-preview':
             # this seems necessary according to the docs:
@@ -51,12 +45,20 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     if Context.temperature is not None:
         kwargs['temperature'] = Context.temperature
 
-    if Context.verbose:
-        print("messages=", system_message + chat_history + image_message + user_message)
-
     # retrieve answer
+    messages = system_message
+    for m in chat_history:
+        messages.append(m)
+    for m in image_message:
+        messages.append(m)
+    messages.append(user_message[0])
+
+    if Context.verbose:
+        for i, m in enumerate(messages):
+            print(f"\n\nMESSAGE {i}: {m}")
+
     response = client.chat.completions.create(
-        messages=system_message + chat_history + image_message + user_message,
+        messages=messages,
         model=model,
         **kwargs
     )  # stream=True would be nice
@@ -65,7 +67,9 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     # store question and answer in chat history
     assistant_message = [{"role": "assistant", "content": reply}]
 
-    Context.chat += user_message + assistant_message
+    #Context.chat += user_message + assistant_message
+    chat_history.append(user_message[0])
+    chat_history.append(assistant_message[0])
 
     return reply
 

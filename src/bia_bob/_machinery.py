@@ -143,7 +143,7 @@ def bob(line: str = None, cell: str = None):
             # we need to add this information to the history.
             Context.chat.append({
                 "role": "user",
-                "content": f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {response}. Just confirm this with 'ok'."
+                "content": f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {text}. Just confirm this with 'ok'."
             })
             Context.chat.append({
                 "role": "assistant",
