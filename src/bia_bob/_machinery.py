@@ -229,6 +229,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
     # store config to disk
     config["model"] = model
     config["vision_model"] = vision_model
+    config["endpoint"] = endpoint
     with open(config_filename, 'w') as file:
         yaml.dump(config, file, default_flow_style=False)
 
