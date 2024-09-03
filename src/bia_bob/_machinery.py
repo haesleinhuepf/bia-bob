@@ -207,6 +207,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
     config = {
         "model": DEFAULT_MODEL,
         "vision_model": DEFAULT_VISION_MODEL,
+        "endpoint": None,
     }
 
     # load config from disk
@@ -222,6 +223,8 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
         model = config["model"]
     if vision_model is None:
         vision_model = config["vision_model"]
+    if endpoint is None:
+        endpoint = config["endpoint"]
 
     # store config to disk
     config["model"] = model
