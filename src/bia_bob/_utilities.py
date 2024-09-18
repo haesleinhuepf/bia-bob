@@ -313,11 +313,12 @@ def create_reusable_variables_block():
         if key.startswith("_"):
             continue
         if callable(value):
-            if key not in ["quit", "exit", "get_ipython"]:
+            if key not in ["quit", "exit", "get_ipython", "open", "bob"]:
                 functions.append(key)
             continue
         if isinstance(value, types.ModuleType):
-            modules.append(key)
+            if key != "bia_bob":
+                modules.append(key)
             continue
         if key in ["In", "Out"]:
             continue
