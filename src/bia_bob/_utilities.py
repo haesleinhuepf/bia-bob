@@ -82,12 +82,19 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
     from .endpoints._googlevertex import generate_response_from_vertex_ai, generate_response_from_google_ai
     from .endpoints._anthropic import generate_response_from_anthropic
     from .endpoints._azure import generate_response_from_azure
+    from .endpoints._mistral import generate_response_from_mistral
 
-    if (Context.endpoint == "github_models" or Context.endpoint == "azure") and "gpt-" not in model and "o1-" not in model:
+    if (Context.endpoint == "github_models" or Context.endpoint == "azure") and "gpt-" not in model and "o1-" not in model and "mistral" not in model:
         full_response = generate_response_from_azure(model, system_prompt, user_prompt, chat_history, image,
                                                       base_url=Context.endpoint, api_key=Context.api_key,
                                                       vision_model=Context.vision_model,
                                                       vision_system_prompt=vision_system_prompt)
+    elif "mistral" in model:
+        full_response = generate_response_from_mistral(model, system_prompt, user_prompt, chat_history, image,
+                                                      base_url=Context.endpoint, api_key=Context.api_key,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+
     elif Context.endpoint is not None:
         full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
                                                       base_url=Context.endpoint, api_key=Context.api_key,
@@ -117,6 +124,7 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
 
 
 def split_response(text):
+    backup_text = text
     text = text \
         .replace("```python", "```") \
         .replace("```Python", "```") \
@@ -156,6 +164,17 @@ def split_response(text):
             plan = sections[i + 1]
         elif sections[i] == 'Code':
             code = sections[i + 1]
+
+    #print("sum,plan,code", summary is None, plan is None, code is None)
+    if summary is None and plan is None and code is None and "```python" in backup_text:
+        #print("Plan B")
+        # second attempt
+        pattern = r"```python\n(.*?)\n```"
+        code_blocks = re.findall(pattern, backup_text, re.DOTALL)
+        code = "\n".join(code_blocks)
+        summary = backup_text.split("```python")[0]
+        plan = ""
+        return summary, plan, code
 
     if code is not None:
         parts = code.split("```")
