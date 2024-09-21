@@ -31,7 +31,7 @@ def generate_response_from_huggingface(model: str, system_prompt: str, user_prom
         )
     reply = Context.model(system_prompt + "\n\n" + user_prompt, max_new_tokens=4096)[0]["generated_text"]
 
-    user_message = [{"role": "usser", "content": user_prompt}]
+    user_message = [{"role": "user", "content": user_prompt}]
     assistant_message = [{"role": "assistant", "content": reply}]
 
     Context.chat += user_message + assistant_message
