@@ -170,6 +170,17 @@ bob.initialize(
     model='Phi-3.5-mini-instruct')
 ```
 
+### Using Azure
+
+If you are using the models hosted on [Microsoft Azure](https://azure.microsoft.com/), please store your API key for accessing the models in an environment variable named `AZURE_API_KEY`.
+
+You can then access the models like this:
+```
+bob.initialize(
+    endpoint='azure', 
+    model='Phi-3.5-mini-instruct')
+```
+
 ### Using custom endpoints
 
 Custom endpoints can be used as well if they support the OpenAI API. Examples are [blablador](https://login.helmholtz.de/oauth2-as/oauth2-authz-web-entry) and [ollama](https://ollama.com/).
