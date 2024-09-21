@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/pypi/l/bia-bob.svg?color=green)](https://github.com/haesleinhuepf/bia-bob/raw/main/LICENSE)
 
 BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate Python code for Bio-Image Analysis (BIA). 
-It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Anthropic's Claude](https://www.anthropic.com/api), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
+It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Anthropic's Claude](https://www.anthropic.com/api), [Github Models Marketplace](https://github.com/marketplace/models), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
 You need an OpenAI API account or a Google Cloud account or a Helmholtz ID account to use it.
 Using it with Ollama is free but requires running an Ollama server locally.
 
@@ -25,7 +25,7 @@ Users are responsible to verify the generated code according to good scientific 
 * If you are not sure if an image analysis workflow is valid, consider asking human experts. E.g. reach out via https://image.sc .
 
 > [!CAUTION]
-> When using the OpenAI, Google Gemini, Anthropic or any other endpoint via BiA-Bob, you are bound to the terms of service 
+> When using the OpenAI, Google Gemini, Anthropic, Github Models or any other endpoint via BiA-Bob, you are bound to the terms of service 
 > of the respective companies or organizations.
 > The prompts you enter are transferred to their servers and may be processed and stored there. 
 > Make sure to not submit any sensitive, confidential or personal data. Also using these services may cost money.
@@ -158,6 +158,36 @@ Create an OpenAI API Key and add it to your environment variables named `OPENAI_
 ### Using Anthropic / claude
 
 Create an Anthropic API Key and add it to your environment variables named `ANTHROPIC_API_KEY`.
+
+### Using Github Models Marketplace
+
+If you are using the models from [Github Models Marketplace](https://github.com/marketplace/models), please store your GITHUB API key for accessing the models in an environment variable named `GH_MODELS_API_KEY`.
+
+You can then access the models like this:
+```
+bob.initialize(
+    endpoint='github_models', 
+    model='Phi-3.5-mini-instruct')
+```
+
+### Using Azure
+
+If you are using the models hosted on [Microsoft Azure](https://azure.microsoft.com/), please store your API key for accessing the models in an environment variable named `AZURE_API_KEY`.
+
+You can then access the models like this:
+```
+bob.initialize(
+    endpoint='azure', 
+    model='Phi-3.5-mini-instruct')
+```
+
+Alternatively, you can specify the endpoint directly, too:
+```
+bob.initialize(
+    endpoint='https://models.inference.ai.azure.com', 
+    model='Phi-3.5-mini-instruct')
+```
+
 
 ### Using custom endpoints
 

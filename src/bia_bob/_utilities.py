@@ -81,8 +81,21 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
     from .endpoints._openai import generate_response_from_openai
     from .endpoints._googlevertex import generate_response_from_vertex_ai, generate_response_from_google_ai
     from .endpoints._anthropic import generate_response_from_anthropic
+    from .endpoints._azure import generate_response_from_azure
+    from .endpoints._mistral import generate_response_from_mistral
 
-    if Context.endpoint is not None:
+    if (Context.endpoint == "github_models" or Context.endpoint == "azure") and "gpt-" not in model and "o1-" not in model and "mistral" not in model:
+        full_response = generate_response_from_azure(model, system_prompt, user_prompt, chat_history, image,
+                                                      base_url=Context.endpoint, api_key=Context.api_key,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+    elif "mistral" in model:
+        full_response = generate_response_from_mistral(model, system_prompt, user_prompt, chat_history, image,
+                                                      base_url=Context.endpoint, api_key=Context.api_key,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+
+    elif Context.endpoint is not None:
         full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
                                                       base_url=Context.endpoint, api_key=Context.api_key,
                                                       vision_model=Context.vision_model,
@@ -111,6 +124,7 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
 
 
 def split_response(text):
+    backup_text = text
     text = text \
         .replace("```python", "```") \
         .replace("```Python", "```") \
@@ -151,7 +165,17 @@ def split_response(text):
         elif sections[i] == 'Code':
             code = sections[i + 1]
 
+    if summary is None and plan is None and code is None and "```python" in backup_text:
+        # second attempt
+        pattern = r"```python\n(.*?)\n```"
+        code_blocks = re.findall(pattern, backup_text, re.DOTALL)
+        code = "\n".join(code_blocks)
+        summary = backup_text.split("```python")[0]
+        plan = ""
+        return summary, plan, code
+
     if code is not None:
+        original_code = code
         parts = code.split("```")
         if len(parts) == 1:
             code = None
@@ -161,6 +185,9 @@ def split_response(text):
             for t, c in zip(parts[::2], parts[1::2]):
                 code = code + c
             code = code.strip("\n")
+
+        if code is None or len(code) == 0:
+            code = original_code
 
     return summary, plan, code
 
@@ -386,6 +413,16 @@ def numpy_to_bytestream(data):
     return bytes_io.read()
 
 
+def image_to_url(image):
+    import base64
+    from stackview._image_widget import _img_to_rgb
+
+    rgb_image = _img_to_rgb(image)
+    byte_stream = numpy_to_bytestream(rgb_image)
+    base64_image = base64.b64encode(byte_stream).decode('utf-8')
+    return f"data:image/png;base64,{base64_image}"
+
+
 def is_image(potential_image):
     """Returns true if the given object is a numpy-compatible image/array."""
     return hasattr(potential_image, "shape") and hasattr(potential_image, "dtype")
@@ -393,13 +430,23 @@ def is_image(potential_image):
 
 def correct_endpoint(endpoint, api_key):
     import os
-    from ._machinery import BLABLADOR_BASE_URL, OLLAMA_BASE_URL
+    from ._machinery import BLABLADOR_BASE_URL, OLLAMA_BASE_URL, AZURE_BASE_URL
     if endpoint == 'blablador':
         endpoint = BLABLADOR_BASE_URL
         if api_key is None:
             api_key = os.environ.get('BLABLADOR_API_KEY')
     elif endpoint == 'ollama':
         endpoint = OLLAMA_BASE_URL
+    elif endpoint == "azure":
+        endpoint = AZURE_BASE_URL
+        if api_key is None:
+            api_key = os.environ.get('AZURE_API_KEY')
+
+    elif endpoint == "github_models":
+        endpoint = AZURE_BASE_URL
+        if api_key is None:
+            api_key = os.environ.get('GH_MODELS_API_KEY')
+
     return endpoint, api_key
 
 
@@ -476,6 +523,7 @@ def refine_code(code):
     if "%bob" in code:
         # task was to write a prompt
         return code
+    original_code = code
 
     reusable_variables_block = create_reusable_variables_block()
     refined_code = ask_llm(f"""
@@ -501,4 +549,7 @@ def refine_code(code):
     Return the code only.
     """)
 
-    return remove_outer_markdown_annotation(refined_code)
+    result = remove_outer_markdown_annotation(refined_code)
+    if result is None:
+        return original_code
+    return result
