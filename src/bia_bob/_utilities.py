@@ -165,9 +165,7 @@ def split_response(text):
         elif sections[i] == 'Code':
             code = sections[i + 1]
 
-    #print("sum,plan,code", summary is None, plan is None, code is None)
     if summary is None and plan is None and code is None and "```python" in backup_text:
-        #print("Plan B")
         # second attempt
         pattern = r"```python\n(.*?)\n```"
         code_blocks = re.findall(pattern, backup_text, re.DOTALL)
@@ -177,6 +175,7 @@ def split_response(text):
         return summary, plan, code
 
     if code is not None:
+        original_code = code
         parts = code.split("```")
         if len(parts) == 1:
             code = None
@@ -186,6 +185,9 @@ def split_response(text):
             for t, c in zip(parts[::2], parts[1::2]):
                 code = code + c
             code = code.strip("\n")
+
+        if code is None or len(code) == 0:
+            code = original_code
 
     return summary, plan, code
 
@@ -521,6 +523,7 @@ def refine_code(code):
     if "%bob" in code:
         # task was to write a prompt
         return code
+    original_code = code
 
     reusable_variables_block = create_reusable_variables_block()
     refined_code = ask_llm(f"""
@@ -546,4 +549,7 @@ def refine_code(code):
     Return the code only.
     """)
 
-    return remove_outer_markdown_annotation(refined_code)
+    result = remove_outer_markdown_annotation(refined_code)
+    if result is None:
+        return original_code
+    return result

@@ -23,7 +23,7 @@ base_url:str = None, api_key:str = None, vision_model:str = None, vision_system_
         model=model,
         messages=messages,
         temperature=1.0,
-        max_tokens=1000,
+        max_tokens=4096,
         top_p=1.0
     ).choices[0].message.content
 
