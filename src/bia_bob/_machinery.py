@@ -1,8 +1,8 @@
 from IPython.core.magic import register_line_cell_magic
 from ._utilities import keep_available_packages, is_notebook
 
-DEFAULT_MODEL = 'gpt-4o-2024-05-13'
-DEFAULT_VISION_MODEL = 'gpt-4o-2024-05-13'
+DEFAULT_MODEL = 'gpt-4o-2024-08-06'
+DEFAULT_VISION_MODEL = 'gpt-4o-2024-08-06'
 BLABLADOR_BASE_URL = 'https://helmholtz-blablador.fz-juelich.de:8000/v1'
 OLLAMA_BASE_URL = 'http://localhost:11434/v1'
 
@@ -143,7 +143,7 @@ def bob(line: str = None, cell: str = None):
             # we need to add this information to the history.
             Context.chat.append({
                 "role": "user",
-                "content": f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {response}. Just confirm this with 'ok'."
+                "content": f"Assume there is an image stored in variable `{image_name}`. The image can be described like this: {text}. Just confirm this with 'ok'."
             })
             Context.chat.append({
                 "role": "assistant",
@@ -193,7 +193,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
                If None, it will use the global variables of the current namespace.
     endpint: str Custom endpoint, e.g. 'blablador'
     api_key: str API key for the custom endpoint
-    vision_model: str, optional (default: 'gpt-4o-2024-05-13') The vision model to use.
+    vision_model: str, optional (default: 'gpt-4o-2024-08-06') The vision model to use.
     keep_history: bool, optional (default: False) If True, the chat history will be kept.
     silent: bool, optional (default: False) If True, the assistant will not print any messages after initializing.
     """
@@ -207,6 +207,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
     config = {
         "model": DEFAULT_MODEL,
         "vision_model": DEFAULT_VISION_MODEL,
+        "endpoint": None,
     }
 
     # load config from disk
@@ -222,10 +223,13 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
         model = config["model"]
     if vision_model is None:
         vision_model = config["vision_model"]
+    if endpoint is None:
+        endpoint = config["endpoint"]
 
     # store config to disk
     config["model"] = model
     config["vision_model"] = vision_model
+    config["endpoint"] = endpoint
     with open(config_filename, 'w') as file:
         yaml.dump(config, file, default_flow_style=False)
 
