@@ -238,10 +238,9 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
             config = yaml.full_load(test_df_to_yaml)
 
     # change to default config if parameters are not given
-    if model is None and vision_model is None:
+    if model is None and vision_model is None and endpoint is None:
         model = config["model"]
         vision_model = config["vision_model"]
-    if endpoint is None:
         endpoint = config["endpoint"]
 
     # store config to disk
