@@ -181,6 +181,14 @@ bob.initialize(
     model='Phi-3.5-mini-instruct')
 ```
 
+Alternatively, you can specify the endpoint directly, too:
+```
+bob.initialize(
+    endpoint='https://models.inference.ai.azure.com', 
+    model='Phi-3.5-mini-instruct')
+```
+
+
 ### Using custom endpoints
 
 Custom endpoints can be used as well if they support the OpenAI API. Examples are [blablador](https://login.helmholtz.de/oauth2-as/oauth2-authz-web-entry) and [ollama](https://ollama.com/).
