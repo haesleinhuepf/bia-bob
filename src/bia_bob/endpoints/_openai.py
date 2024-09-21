@@ -75,24 +75,19 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
 
 
 def image_to_message(image):
-    import base64
+    from .._utilities import image_to_url
 
-    from stackview._image_widget import _img_to_rgb
-    from .._utilities import numpy_to_bytestream
-
-    rgb_image = _img_to_rgb(image)
-    byte_stream = numpy_to_bytestream(rgb_image)
-    base64_image = base64.b64encode(byte_stream).decode('utf-8')
 
     return [{"role": "user", "content": [{
         "type": "image_url",
         #"image_url": f"data:image/jpeg;base64,{base64_image}",
         # from: https://platform.openai.com/docs/guides/vision
         "image_url": {
-            "url": f"data:image/jpeg;base64,{base64_image}"
+            "url": image_to_url(image)
         }
 
     }]}]
+
 
 
 def image_to_message_llava(image, prompt):
