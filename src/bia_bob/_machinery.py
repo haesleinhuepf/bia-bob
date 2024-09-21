@@ -95,13 +95,15 @@ def bob(line: str = None, cell: str = None):
     TASK_TYPE_NOTEBOOK_MODIFICATION = 4
     TASK_TYPE_FILE_GENERATION = 5
 
+    supported_file_types_for_generation = [".md", ".txt", ".csv", ".yml", ".yaml", ".json", ".py"]
+
     task_selection_prompt = f"""
     Given the following prompt, decide which of the following types of tasks we need to perform:
     {TASK_TYPE_CODE_GENERATION}. Code generation: The prompt asks for code to be generated.
     {TASK_TYPE_TEXT_RESPONSE}. Text response: The prompt asks for a text response.    
     {TASK_TYPE_NOTEBOOK_GENERATION}. Notebook generation: The prompt asks explicitly for a notebook to be generated. Only choose this if the prompt explicitly asks for creating a new notebook.
     {TASK_TYPE_NOTEBOOK_MODIFICATION}. Notebook modification: The prompt asks for a modification of an existing notebook. Only choose this if the prompt explicitly asks for modifying an existing notebook and a) a notebook filename is given or b) the current notebook is mentioned.
-    {TASK_TYPE_FILE_GENERATION}. File generation: The prompt asks for a file to be generated. Only choose this if the prompt explicitly asks for creating a new file with ending ".md", ".txt", ".csv", ".yml", ".yaml", ".json" or ".py".
+    {TASK_TYPE_FILE_GENERATION}. File generation: The prompt asks for a file to be generated. Only choose this if the prompt explicitly asks for creating a new file ending with any of those extensions: {",".join(supported_file_types_for_generation)}.
     {TASK_TYPE_OTHER}. Other: If you're not sure or if the prompt does not fit into any of the above categories.
     
     This is the prompt:
@@ -114,7 +116,23 @@ def bob(line: str = None, cell: str = None):
     try:
         task_type = int(response.strip().strip("\n").split(".")[0])
     except:
-        task_type = 1
+        task_type = TASK_TYPE_OTHER
+
+    if task_type == TASK_TYPE_FILE_GENERATION:
+        task_type = TASK_TYPE_OTHER
+        # make sure only supported file formats
+        for ending in supported_file_types_for_generation:
+            if ending in user_input:
+                task_type = TASK_TYPE_FILE_GENERATION
+                break
+    if task_type == TASK_TYPE_FILE_GENERATION:
+        task_type = TASK_TYPE_OTHER
+        keywords = ["write", "generate", "create"]
+        for keyword in keywords:
+            if keyword in user_input.lower():
+                task_type = TASK_TYPE_FILE_GENERATION
+                break
+
 
     if task_type == TASK_TYPE_NOTEBOOK_GENERATION:
         code = None
@@ -219,10 +237,9 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
         with open(config_filename, mode="rt", encoding="utf-8") as test_df_to_yaml:
             config = yaml.full_load(test_df_to_yaml)
 
-    # change default config if parameters are given
-    if model is None:
+    # change to default config if parameters are not given
+    if model is None and vision_model is None:
         model = config["model"]
-    if vision_model is None:
         vision_model = config["vision_model"]
     if endpoint is None:
         endpoint = config["endpoint"]
