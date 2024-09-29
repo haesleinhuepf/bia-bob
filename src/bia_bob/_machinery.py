@@ -56,6 +56,11 @@ class Context:
         # to add libraries here, add their pypi package names (not their import names)
     ])
 
+# special case for pyclesperanto, replacing pyclesperanto_prototype:
+if "pyclesperanto" in Context.libraries and "pyclesperanto_prototype" in Context.libraries:
+    Context.libraries.remove("pyclesperanto_prototype")
+if "pyclesperanto" in Context.libraries and "pyclesperanto-prototype" in Context.libraries:
+    Context.libraries.remove("pyclesperanto-prototype")
 
 def bob(line: str = None, cell: str = None):
     """Sends a prompt to openAI

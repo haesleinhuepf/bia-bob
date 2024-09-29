@@ -242,6 +242,7 @@ def generate_code_samples():
             except:
                 # do not crash if plugins are crashing
                 pass
+
             # special treatment for code snippets from stackview, as it won't work with the custom kernel
             if "stackview" not in instructions or "stackview" in Context.libraries:
                 additional_instructions.append(instructions)
@@ -525,6 +526,12 @@ def refine_code(code):
         return code
     original_code = code
 
+    try:
+        import pyclesperanto
+        prototype = ""
+    except:
+        prototype = "_prototype"
+
     reusable_variables_block = create_reusable_variables_block()
     refined_code = ask_llm(f"""
     
@@ -541,7 +548,7 @@ def refine_code(code):
     * Modules which are available already, are not imported.
     * Do not overwrite variables, if the arey in the list of defined variables.
     * Take care that only common python libraries are imported. Do not make up modules.
-    * Avoid `import cle`. If you see something like this, `import pyclesperanto_prototype as cle` instead.
+    * Avoid `import cle`. If you see something like this, `import pyclesperanto{prototype} as cle` instead.
     * Avoid `from stackview import stackview`. If you see something like this, `import stackview` instead.
     * Do not import modules or aliases which were already imported before.
     * Do NOT replace values such as filenames with variables.
