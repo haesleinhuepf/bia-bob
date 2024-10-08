@@ -161,7 +161,7 @@ Create an Anthropic API Key and add it to your environment variables named `ANTH
 
 ### Using Github Models Marketplace
 
-If you are using the models from [Github Models Marketplace](https://github.com/marketplace/models), please store your GITHUB API key for accessing the models in an environment variable named `GH_MODELS_API_KEY`.
+If you are using the models from [Github Models Marketplace](https://github.com/marketplace/models), please [create an GITHUB API key (with default settings)](https://github.com/settings/personal-access-tokens/new) and store it for accessing the models in an environment variable named `GH_MODELS_API_KEY`.
 
 You can then access the models like this:
 ```
