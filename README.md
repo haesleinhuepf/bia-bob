@@ -152,7 +152,10 @@ conda activate bob_env
 
 ## Setting API keys
 
-For using LLMs from remote service providers, you need to set an API key. After obtaining the key (see below), you need to add it to the enviroment variables of your computer. 
+For using LLMs from remote service providers, you need to set an [API key](https://en.wikipedia.org/wiki/API_key). 
+API Keys are short cryptic texts such as "proj_sk_asdasdasd" which allow you to log into a remote service without entering your username and password. Many online serives require using API keys for billing; others enable you to use their free services only after obtaining an API key.
+In the following sections, you find links to a couple of LLM services providers that are compatible with bia-bob.
+After obtaining the key, you need to add it to the enviroment variables of your computer. 
 On Windows, you can do this by 1) searching for "env" in the start menu, 2) clicking on "Edit the system environment variables", 
 3) clicking on "Environment Variables", 4) clicking on "New" in the "System variables" section and adding a new variable with the name specified below (e.g. `OPENAI_API_KEY`) and the value of your API key.
 
