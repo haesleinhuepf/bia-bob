@@ -172,9 +172,22 @@ See also further instructions on [this page](https://help.openai.com/en/articles
 
 Create an [OpenAI API Key](https://openai.com/blog/openai-api) and add it to your environment variables named `OPENAI_API_KEY` as explained on 
 
+You can then initialize Bob like this (optional, as that's default):
+```
+from bia_bob import bob
+bob.initialize("gpt-4o-2024-08-06", vision_model="gpt-4o-2024-08-06")
+```
+
 ### Using Anthropic / Claude
 
-Create an [Anthropic API Key](https://www.anthropic.com/api) and add it to your environment variables named `ANTHROPIC_API_KEY`.
+Create an [Anthropic API Key](https://www.anthropic.com/api) and add it to your environment variables named `ANTHROPIC_API_KEY`. 
+
+You can then initialize Bob like this:
+```
+from bia_bob import bob
+bob.initialize(model="claude-3-5-sonnet-20240620", vision_model="claude-3-5-sonnet-20240620")
+```
+
 
 ### Using Github Models Marketplace
 
@@ -237,6 +250,12 @@ Create a [Google API key](https://ai.google.dev/gemini-api/docs/api-key) and sto
 
 ```
 pip install google-generativeai>=0.7.2
+```
+
+You can then initialize Bob like this:
+```
+from bia_bob import bob
+bob.initialize("gemini-1.5-pro-002")
 ```
 
 ### Using Google's Cloud AI API as backend
