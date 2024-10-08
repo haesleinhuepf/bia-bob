@@ -198,6 +198,16 @@ from bia_bob import bob
 bob.initialize(model="claude-3-5-sonnet-20240620", vision_model="claude-3-5-sonnet-20240620")
 ```
 
+### Using KISSKI / Academic Cloud
+
+You can also [apply for an API Key](https://services.kisski.de/services/en/service/?service=2-02-llm-service.json) from the German Artificial Intelligence Service Center for Sensible and Critical Infrastructures who operates the [ChatAI](https://kisski.gwdg.de/leistungen/2-02-llm-service/) service.
+
+You can store it in an environment variable named `OPENAI_API_KEY` and use initialize bob like this:
+```
+from bia_bob import bob
+bob.initialize(endpoint="https://chat-ai.academiccloud.de/v1", 
+               model="meta-llama-3.1-70b-instruct")
+```
 
 ### Using Github Models Marketplace
 
@@ -250,7 +260,6 @@ bob.initialize(
 ```
 bob.initialize(
     endpoint='http://localhost:11434/v1', 
-    api_key='my_key',
     model='codellama')
 ```
 
