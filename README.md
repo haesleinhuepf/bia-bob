@@ -150,14 +150,31 @@ You can then activate this environment...
 conda activate bob_env
 ```
 
+## Setting API keys
 
-### Using OpenAI as backend
+For using LLMs from remote service providers, you need to set an API key. After obtaining the key (see below), you need to add it to the enviroment variables of your computer. 
+On Windows, you can do this by 1) searching for "env" in the start menu, 2) clicking on "Edit the system environment variables", 
+3) clicking on "Environment Variables", 4) clicking on "New" in the "System variables" section and adding a new variable with the name specified below (e.g. `OPENAI_API_KEY`) and the value of your API key.
 
-Create an OpenAI API Key and add it to your environment variables named `OPENAI_API_KEY` as explained on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/api_keys.png)
 
-### Using Anthropic / claude
+On Linux and MacOS, this is typically done by modifying a hidden `.bashrc` or `.zshrc` file in the home directory, e.g. like this:
 
-Create an Anthropic API Key and add it to your environment variables named `ANTHROPIC_API_KEY`.
+```
+echo "export OPENAI_API_KEY='yourkey'" >> ~/.zshrc
+```
+
+Note: After setting the environment variables, you need to restart your terminal and/or Jupyter Lab to make them work.
+
+See also further instructions on [this page](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
+
+### Using OpenAI / ChatGPT as backend
+
+Create an [OpenAI API Key](https://openai.com/blog/openai-api) and add it to your environment variables named `OPENAI_API_KEY` as explained on 
+
+### Using Anthropic / Claude
+
+Create an [Anthropic API Key](https://www.anthropic.com/api) and add it to your environment variables named `ANTHROPIC_API_KEY`.
 
 ### Using Github Models Marketplace
 
@@ -216,7 +233,7 @@ bob.initialize(
 
 ### Using Google gemini 1.5 flash / pro
 
-Create a Google API key and store it in the environment variable `GOOGLE_API_KEY`.
+Create a [Google API key](https://ai.google.dev/gemini-api/docs/api-key) and store it in the environment variable `GOOGLE_API_KEY`.
 
 ```
 pip install google-generativeai>=0.7.2
