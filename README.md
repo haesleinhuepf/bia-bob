@@ -136,7 +136,7 @@ If you want to ask `bob` a question, you need to put a space before the `?`.
 
 ## Installation
 
-You can install `bia-bob` using pip. It is recommended to install it into a conda/mamba environment. If you have never used conda before, please [read this guide first](https://biapol.github.io/blog/mara_lampert/getting_started_with_mambaforge_and_python/readme.html).  
+You can install `bia-bob` using conda/pip. It is recommended to install it into a conda/mamba environment. If you have never used conda before, please [read this guide first](https://biapol.github.io/blog/mara_lampert/getting_started_with_mambaforge_and_python/readme.html).  
 
 It is recommended to install `bia-bob` in a conda-environment together with useful tools for bio-image analysis. 
 
@@ -148,6 +148,12 @@ You can then activate this environment...
 
 ```
 conda activate bob_env
+```
+
+OR install bob into an existing environment:
+
+```
+pip install bia-bob
 ```
 
 ## Setting API keys
