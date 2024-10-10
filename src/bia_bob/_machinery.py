@@ -184,7 +184,10 @@ def bob(line: str = None, cell: str = None):
         p = get_ipython()
 
         # put a new cell below the current cell
-        p.set_next_input(code, replace=False)
+        if p is not None:
+            p.set_next_input(code, replace=False)
+        else:
+            print(code)
 
 
 try:
