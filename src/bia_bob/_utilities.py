@@ -234,6 +234,7 @@ def generate_code_samples():
         # Iterate over discovered entry points and load them
         for ep in bia_bob_plugins:
             instructions = ""
+            
             try:
                 func = ep.load()
 
@@ -241,6 +242,7 @@ def generate_code_samples():
                 instructions = func()
             except:
                 # do not crash if plugins are crashing
+                print("error")
                 pass
 
             # special treatment for code snippets from stackview, as it won't work with the custom kernel
@@ -251,8 +253,19 @@ def generate_code_samples():
     else:
         additional_snippets = ""
 
-    return snippets, additional_snippets
+    additional_snippets = shorten_text(additional_snippets)
 
+    return shorten_text(snippets), shorten_text(additional_snippets)
+
+
+def shorten_text(text):
+    while (" \n" in text):
+        text = text.replace(" \n", "\n")
+
+    while ("\n\n\n" in text):
+        text = text.replace("\n\n\n", "\n\n")
+
+    return text
 
 def create_system_prompt(reusable_variables_block=None):
     """Creates a system prompt that contains instructions of general interest, available functions and variables."""
