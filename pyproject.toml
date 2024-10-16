@@ -1,12 +1,16 @@
+toml
 [build-system]
 requires = ["setuptools>=42.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 
+[project]
+python_requires = ">=3.8"
+
 
 [tool.black]
 line-length = 79
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py39', 'py310', 'py311', 'py38']
 
 
 [tool.ruff]
