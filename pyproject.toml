@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 79
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py38', 'py39', 'py310', 'py311']
 
 
 [tool.ruff]
@@ -54,3 +54,6 @@ exclude = [
 
 target-version = "py39"
 fix = true
+
+[project]
+requires-python = ">=3.8"
