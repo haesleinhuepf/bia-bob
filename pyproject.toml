@@ -54,6 +54,3 @@ exclude = [
 
 target-version = "py39"
 fix = true
-
-[project]
-requires-python = ">=3.8"
