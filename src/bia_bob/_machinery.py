@@ -95,16 +95,19 @@ def bob(line: str = None, cell: str = None):
 
     TASK_TYPE_OTHER = 1
     TASK_TYPE_CODE_GENERATION = 1
-    TASK_TYPE_TEXT_RESPONSE = 2
-    TASK_TYPE_NOTEBOOK_GENERATION = 3
-    TASK_TYPE_NOTEBOOK_MODIFICATION = 4
-    TASK_TYPE_FILE_GENERATION = 5
+    TASK_TYPE_CODE_MODIFICATION = 2
+    TASK_TYPE_TEXT_RESPONSE = 3
+    TASK_TYPE_NOTEBOOK_GENERATION = 4
+    TASK_TYPE_NOTEBOOK_MODIFICATION = 5
+    TASK_TYPE_FILE_GENERATION = 6
+
 
     supported_file_types_for_generation = [".md", ".txt", ".csv", ".yml", ".yaml", ".json", ".py"]
 
     task_selection_prompt = f"""
     Given the following prompt, decide which of the following types of tasks we need to perform:
     {TASK_TYPE_CODE_GENERATION}. Code generation: The prompt asks for code to be generated.
+    {TASK_TYPE_CODE_MODIFICATION}. Code modification: The prompt asks for given code to be modified.
     {TASK_TYPE_TEXT_RESPONSE}. Text response: The prompt asks for a text response.    
     {TASK_TYPE_NOTEBOOK_GENERATION}. Notebook generation: The prompt asks explicitly for a notebook to be generated. Only choose this if the prompt explicitly asks for creating a new notebook.
     {TASK_TYPE_NOTEBOOK_MODIFICATION}. Notebook modification: The prompt asks for a modification of an existing notebook. Only choose this if the prompt explicitly asks for modifying an existing notebook and a) a notebook filename is given or b) the current notebook is mentioned.
@@ -160,7 +163,9 @@ def bob(line: str = None, cell: str = None):
             text = f"The file has been saved as [{filename}]({filename})."
         else:
             text = f"The file has been saved as {filename}. You can open it using:\n\n    jupyter lab {filename}\n\n"
-    else:
+    else: # TASK_TYPE_CODE_MODIFICATION or TASK_TYPE_CODE_GENERATION
+        if task_type == TASK_TYPE_CODE_MODIFICATION:
+            user_input = user_input + "\n\nKeep the code modifications minimal. Do not drop imports or functions which are still needed."
         code, text = generate_response_to_user(Context.model, user_input, image)
 
         if image is not None:
@@ -177,7 +182,7 @@ def bob(line: str = None, cell: str = None):
     # print out explanation
     if code is None:
         output_text(text)
-    else:
+    elif task_type != TASK_TYPE_CODE_MODIFICATION:
         code = refine_code(code)
 
     if code is not None:
@@ -185,7 +190,7 @@ def bob(line: str = None, cell: str = None):
 
         # put a new cell below the current cell
         if p is not None:
-            p.set_next_input(code, replace=False)
+            p.set_next_input(code, replace=task_type == TASK_TYPE_CODE_MODIFICATION)
         else:
             print(code)
 

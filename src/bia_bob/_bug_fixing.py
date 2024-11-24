@@ -31,7 +31,7 @@ And this error occurred:
 {error}
 ```
 
-Please correct the code.
+Please correct the code. Return the entire code block, not just the correction.
 """
 
     if Context.model is None:
