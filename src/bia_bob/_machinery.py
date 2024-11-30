@@ -165,7 +165,7 @@ def bob(line: str = None, cell: str = None):
             text = f"The file has been saved as {filename}. You can open it using:\n\n    jupyter lab {filename}\n\n"
     else: # TASK_TYPE_CODE_MODIFICATION or TASK_TYPE_CODE_GENERATION
         if task_type == TASK_TYPE_CODE_MODIFICATION:
-            user_input = user_input + "\n\nKeep the code modifications minimal. Do not drop imports or functions which are still needed."
+            user_input = user_input + "\n\nReturn the complete code. Keep the code modifications minimal. Do not drop imports or functions which are still needed."
         code, text = generate_response_to_user(Context.model, user_input, image)
 
         if image is not None:
