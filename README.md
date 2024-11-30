@@ -15,15 +15,6 @@ Using it with Ollama is free but requires running an Ollama server locally.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/banner.png)
 
-## Disclaimer
-
-`bia-bob` is a research project aiming at streamlining the design of image analysis workflows. Under the hood it uses
-artificial intelligence / large language models to generate text and code fulfilling the user's requests. 
-Users are responsible to verify the generated code according to good scientific practice. Some general advice:
-* If you do not understand what a generated code snippet does, ask `%%bob explain this code in detail to a Python beginner:` before executing the code.
-* After Bob generated a data analysis workflow for you, ask `%%bob How could I verify this analysis workflow ?`. It is good scientific practice to measure the quality of segmentation results for example, or to measure the difference of automated quantitative measurements, in comparison to manual analysis.
-* If you are not sure if an image analysis workflow is valid, consider asking human experts. E.g. reach out via https://image.sc .
-
 > [!CAUTION]
 > When using the OpenAI, Google Gemini, Anthropic, Github Models or any other endpoint via BiA-Bob, you are bound to the terms of service 
 > of the respective companies or organizations.
@@ -125,6 +116,33 @@ This can also be used to create other files, e.g. CSV files.
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/cli_csv_files.png)
 
+
+## Disclaimer
+
+`bia-bob` is a research project aiming at streamlining the design of image analysis workflows. Under the hood it uses
+artificial intelligence / large language models to generate text and code fulfilling the user's requests. 
+Users are responsible to verify the generated code according to good scientific practice. Some general advice:
+* If you do not understand what a generated code snippet does, ask `%%bob explain this code in detail to a Python beginner:` before executing the code.
+* After Bob generated a data analysis workflow for you, ask `%%bob How could I verify this analysis workflow ?`. It is good scientific practice to measure the quality of segmentation results for example, or to measure the difference of automated quantitative measurements, in comparison to manual analysis.
+* If you are not sure if an image analysis workflow is valid, consider asking human experts. E.g. reach out via https://image.sc .
+
+
+### What bia-bob submits to the LLM service providers
+
+When sending a request to the LLM service providers, `bia-bob` sends the following information:
+* The content of the cell you were typing
+* If you entered variables using the `{variable}` syntax, the content of these variables
+* All available variable, function and module names in the current Python environment (not variable values)
+* A selected list of Python libraries that are installed
+* The conversation history of the current session
+* Optional: The image mentioned in the first line of the cell
+
+This information is necessary to enable bia-bob to generate code that runs in your environment. 
+If you want to know exactly what is sent to the server, you can activate verbose mode like this:
+```
+from bia_bob._machinery import Context
+Context.verbose = True
+```
 
 ## Known issues
 
