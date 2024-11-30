@@ -50,6 +50,7 @@ jobs:
         GOOGLE_API_KEY: "${{ secrets.GOOGLE_API_KEY }}"
         GIT_BOB_LLM_NAME: "${{ secrets.GIT_BOB_LLM_NAME }}"
         OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"
+        MISTRAL_API_KEY: "${{ secrets.MISTRAL_API_KEY }}"
         GH_MODELS_API_KEY: "${{ secrets.GH_MODELS_API_KEY }}"
         GITHUB_API_KEY: "${{ secrets.GITHUB_TOKEN }}"
         GITHUB_RUN_ID: "${{ github.run_id }}"
