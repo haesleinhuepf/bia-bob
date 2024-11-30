@@ -556,20 +556,20 @@ def refine_code(code):
     {code}
     ```
     
-    Make sure the following conditions are met:
-    * The code imports all functions and modules, that are not mentioned above.
-    * Modules which are available already, are not imported.
+    Update the code and make sure the following conditions are met:
+    * The code imports all necessary functions and modules, except available functions and modules.
     * Do not overwrite variables, if the arey in the list of defined variables.
-    * Take care that only common python libraries are imported. Do not make up modules.
-    * Avoid `import cle`. If you see something like this, `import pyclesperanto{prototype} as cle` instead.
-    * Avoid `from stackview import stackview`. If you see something like this, `import stackview` instead.
-    * Do not import modules or aliases which were already imported before.
+    * Do not make up modules when importing them.
     * Do NOT replace values such as filenames with variables.
     
     Return the code only.
     """)
 
     result = remove_outer_markdown_annotation(refined_code)
+
+    result = result.replace("import cle", f"import pyclesperanto{prototype} as cle")
+    result = result.replace("from stackview import stackview", "import stackview")
+
     if result is None:
         return original_code
     return result
