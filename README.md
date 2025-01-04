@@ -366,6 +366,7 @@ List of known Python libraries that provide extensions to Bob:
 
 There are similar projects:
 * [jupyter-ai](https://github.com/jupyterlab/jupyter-ai)
+* [JupyterLab Magic Wand](https://github.com/Zsailer/jupyterlab-magic-wand)
 * [chatGPT-jupyter-extension](https://github.com/jflam/chat-gpt-jupyter-extension)
 * [chapyter](https://github.com/chapyter/chapyter/)
 * [napari-chatGPT](https://github.com/royerlab/napari-chatgpt)
