@@ -444,11 +444,15 @@ def is_image(potential_image):
 
 def correct_endpoint(endpoint, api_key):
     import os
-    from ._machinery import BLABLADOR_BASE_URL, OLLAMA_BASE_URL, AZURE_BASE_URL
+    from ._machinery import BLABLADOR_BASE_URL, OLLAMA_BASE_URL, AZURE_BASE_URL, DEEPSEEK_BASE_URL
     if endpoint == 'blablador':
         endpoint = BLABLADOR_BASE_URL
         if api_key is None:
             api_key = os.environ.get('BLABLADOR_API_KEY')
+    elif endpoint == 'deepseek':
+        endpoint = DEEPSEEK_BASE_URL
+        if api_key is None:
+            api_key = os.environ.get('DEEPSEEK_API_KEY')
     elif endpoint == 'ollama':
         endpoint = OLLAMA_BASE_URL
     elif endpoint == "azure":

@@ -259,7 +259,7 @@ bob.initialize(
 
 ### Using custom endpoints
 
-Custom endpoints can be used as well if they support the OpenAI API. Examples are [blablador](https://login.helmholtz.de/oauth2-as/oauth2-authz-web-entry) and [ollama](https://ollama.com/).
+Custom endpoints can be used as well if they support the OpenAI API. Examples are [DeepSeek](https://www.deepseek.com/), [KISSKI](https://kisski.gwdg.de/leistungen/2-02-llm-service/), [blablador](https://login.helmholtz.de/oauth2-as/oauth2-authz-web-entry) and [ollama](https://ollama.com/).
 An example is shown in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/custom_endpoints.ipynb):
 
 For this, just install the openai backend as explained above (tested version: 1.5.0).
@@ -267,6 +267,11 @@ For this, just install the openai backend as explained above (tested version: 1.
 ```
 bob.initialize(endpoint='ollama', model='codellama')
 ```
+* For using DeepSeek, you need to get an [API key](https://platform.deepseek.com/api_keys). Store it in your environment as `DEEPSEEK_API_KEY` variable.
+```
+bob.initialize(endpoint='deepseek', model='deepseek-chat')
+```
+
 * If you want to use blablador, which is free for German academics, just get an API key as explained on
 [this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/) and store it in your environment as `BLABLADOR_API_KEY` variable.
 ```
