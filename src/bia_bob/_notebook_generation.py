@@ -48,8 +48,11 @@ def generate_notebook(prompt, filename=None, image=None, modify_existing_noteboo
     
     for attempt in range(1, max_number_attempts + 1):
         if modify_existing_notebook:
-            import ipynbname
-            current_notebook_filename = ipynbname.name()
+            try:
+                import ipynbname
+                current_notebook_filename = ipynbname.name()
+            except:
+                current_notebook_filename = "Untitled"
 
             filename_extraction_prompt = f"""
             Extract the filename of the notebook that should be modified from the following prompt:
