@@ -21,6 +21,7 @@ dependencies:
   - pillow
   - anthropic
   - openai
+  - pip
   - pip:
     - bia-bob
     - pooch
