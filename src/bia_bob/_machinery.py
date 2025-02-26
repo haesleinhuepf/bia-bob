@@ -229,9 +229,9 @@ def bob(line: str = None, cell: str = None):
             })
 
     # print out explanation
-    if code is None:
-        output_text(text)
-    elif task_type != TASK_TYPE_CODE_MODIFICATION:
+    output_text(text)
+
+    if code is not None and task_type != TASK_TYPE_CODE_MODIFICATION:
         code = refine_code(code)
 
     if code is not None:
