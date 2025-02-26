@@ -30,7 +30,7 @@ def generate_response_from_vertex_ai(model: str, system_prompt: str, user_prompt
                 system_prompt + "\n\nConfirm these general instructions by answering 'yes'.").text
 
         if len(system_prompt) > 0:
-            system_prompt = create_system_prompt(reusable_variables_block="")
+            system_prompt = create_system_prompt(reusable_variables="")
 
         prompt = f"""
                    {system_prompt}
