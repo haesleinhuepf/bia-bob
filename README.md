@@ -330,10 +330,8 @@ analysis related.
 ```
 from bia_bob import bob
 bob.initialize(system_prompt="""
-    You are a fantastic Python programmer.
-    Write Python code for the following task and 
-    ensure that the functionality is embedded in a function. 
-    Also give an example how to call the function.
+    You are an excellent astronomer and Python programmer.
+    You typically use Python libraris from this domain.
 """)
 ```
 
