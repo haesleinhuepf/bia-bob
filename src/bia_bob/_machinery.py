@@ -8,6 +8,53 @@ OLLAMA_BASE_URL = 'http://localhost:11434/v1'
 AZURE_BASE_URL = "https://models.inference.ai.azure.com"
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 
+DEFAULT_SYSTEM_PROMPT = """
+You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
+If there are several ways to solve the task, chose the option with the least amount of code.    
+
+## Python specific instructions
+
+When writing python code, you can only use those libraries: {libraries}.
+If you create images, show the results and save them in variables for later reuse.
+{reusable_variables}
+NEVER overwrite the values of the variables and functions that are available.
+
+## Python specific code snippets
+
+If the user asks for those simple tasks, use these code snippets.
+
+{additional_snippets}
+{builtin_snippets}
+
+## Todos
+
+Answer your response in three sections:
+1. Summary: First provide a short summary of the task.
+2. Plan: Provide a concise step-by-step plan without any code.
+3. Code: Provide the code.
+
+Structure it with markdown headings like this:
+
+### Summary
+I will do this and that.
+
+### Plan
+1. Do this.
+2. Do that.
+
+### Code
+```
+this()
+that()
+```
+
+## Final remarks
+
+The following points have highest importance and may overwrite the instructions above.
+Make sure to provide 1) summary, 2) plan and 3) code.
+Make sure to keep your answer concise and to the point. Make sure the code you write is correct and can be executed.
+"""
+
 
 class Context:
     variables = None
@@ -22,6 +69,7 @@ class Context:
     temperature = None # openai only
     endpoint = None
     api_key = None
+    system_prompt_template = DEFAULT_SYSTEM_PROMPT
 
     libraries = keep_available_packages([
         "scikit-image",
@@ -215,7 +263,7 @@ def combine_user_input(line, cell):
 
 
 def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, endpoint=None, api_key=None,
-                   vision_model=None, keep_history:bool=False, silent:bool=False):
+                   vision_model=None, keep_history:bool=False, silent:bool=False, system_prompt=None):
     """Initialises the assistant.
 
     Parameters
@@ -241,6 +289,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
         "model": DEFAULT_MODEL,
         "vision_model": DEFAULT_VISION_MODEL,
         "endpoint": None,
+        "system_prompt": DEFAULT_SYSTEM_PROMPT
     }
 
     # load config from disk
@@ -256,11 +305,17 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
         model = config["model"]
         vision_model = config["vision_model"]
         endpoint = config["endpoint"]
+    if system_prompt is None:
+        if "system_prompt" in config.keys():
+            system_prompt = config["system_prompt"]
+        else:
+            system_prompt = DEFAULT_SYSTEM_PROMPT
 
     # store config to disk
     config["model"] = model
     config["vision_model"] = vision_model
     config["endpoint"] = endpoint
+    config["system_prompt"] = system_prompt
     with open(config_filename, 'w') as file:
         yaml.dump(config, file, default_flow_style=False)
 
@@ -285,6 +340,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
 
     Context.endpoint = endpoint
     Context.api_key = api_key
+    Context.system_prompt_template = system_prompt
 
     if Context.verbose:
         print("Assistant initialised. You can now use it, e.g., copy and paste the"

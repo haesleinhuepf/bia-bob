@@ -267,65 +267,30 @@ def shorten_text(text):
 
     return text
 
-def create_system_prompt(reusable_variables_block=None):
+def create_system_prompt(reusable_variables=None):
     """Creates a system prompt that contains instructions of general interest, available functions and variables."""
     from ._machinery import Context
 
     # determine useful variables and functions in context
-    if reusable_variables_block is None:
-        reusable_variables_block = create_reusable_variables_block()
+    if reusable_variables is None:
+        reusable_variables = create_reusable_variables_block()
     else:
         warnings.warn("Deprecated use of create_system_prompt with reusable_variables_block. Do not pass this parameter to make your code work mid/long-term.")
 
-    snippets, additional_snippets = generate_code_samples()
-    libraries = Context.libraries
+    builtin_snippets, additional_snippets = generate_code_samples()
+    libraries = ",".join([str(v) for v in Context.libraries])
 
-    system_prompt = f"""
-    You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
-    If there are several ways to solve the task, chose the option with the least amount of code.    
-    
-    ## Python specific instructions
-    
-    When writing python code, you can only use those libraries: {",".join([str(v) for v in libraries])}.
-    If you create images, show the results and save them in variables for later reuse.
-    {reusable_variables_block}
-    NEVER overwrite the values of the variables and functions that are available.
-    
-    ## Python specific code snippets
-    
-    If the user asks for those simple tasks, use these code snippets.
-    
-    {additional_snippets}
-    {snippets}
-    
-    ## Todos
-    
-    Answer your response in three sections:
-    1. Summary: First provide a short summary of the task.
-    2. Plan: Provide a concise step-by-step plan without any code.
-    3. Code: Provide the code.
-    
-    Structure it with markdown headings like this:
-    
-    ### Summary
-    I will do this and that.
-    
-    ### Plan
-    1. Do this.
-    2. Do that.
-    
-    ### Code
-    ```
-    this()
-    that()
-    ```
-    
-    ## Final remarks
-    
-    The following points have highest importance and may overwrite the instructions above.
-    Make sure to provide 1) summary, 2) plan and 3) code.
-    Make sure to keep your answer concise and to the point. Make sure the code you write is correct and can be executed.
-    """
+    template = Context.system_prompt_template
+
+    values = {"libraries": libraries,
+              "reusable_variables": reusable_variables,
+              "additional_snippets": additional_snippets,
+              "builtin_snippets": builtin_snippets,
+              }
+    system_prompt = template.format(**values)
+
+    if Context.verbose:
+        print("System prompt length:", len(system_prompt))
 
     return system_prompt
 

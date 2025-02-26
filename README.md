@@ -321,6 +321,30 @@ Follow the instructions in the browser. Enter your Project ID (not the name). If
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/gcloud_auth.png)
 
+## Configuration
+
+You can also configure the system message `bia-bob` is using, which might be useful in particular when using it with
+small open-weight language models executed on local hardware, or when using it in scenarios that are not bio-image 
+analysis related.
+
+```
+from bia_bob import bob
+bob.initialize(system_prompt="""
+    You are a fantastic Python programmer.
+    Write Python code for the following task and 
+    ensure that the functionality is embedded in a function. 
+    Also give an example how to call the function.
+""")
+```
+
+In this system message you can use place-holders which are set when bob is invoked:
+* `{libraries}`: A list of Python libraries that are installed an bio-image analysis related (scikit-image, stackview, ...)
+* `{reusable_variables}`: A list of variables that are available in the current Python environment
+* `{builtin_snippets}`: A list of built-in code snippets that might be helpful for bio-image analysis
+* `{additional_snippets}`: A list of additional code snippets that is assembled from Python libraries that support giving hints to bob.
+
+More examples are available in the [demo notebook](https://github.com/haesleinhuepf/bia-bob/raw/main/demo/system_messages.ipynb).
+
 ## Development
 
 If you want to contribute to `bia-bob`, you can install it in development mode like this:
