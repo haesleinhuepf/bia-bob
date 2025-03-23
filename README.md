@@ -174,6 +174,19 @@ OR install bob into an existing environment:
 pip install bia-bob
 ```
 
+## Add to startup code (optional)
+
+If you would like to use the `%bob` magic in notebooks without need for importing `bia_bob` first, 
+you can add a `bia_bob.ipy` file to your Jupyter startup directory `~/.ipython/profile_default/startup/` with this content:
+
+```
+from bia_bob import bob
+``` 
+
+![img.png](docs/images/startup_bob.png)
+
+Note: This might require to install bia_bob in the base environment.
+
 ## Setting API keys
 
 For using LLMs from remote service providers, you need to set an [API key](https://en.wikipedia.org/wiki/API_key). 
