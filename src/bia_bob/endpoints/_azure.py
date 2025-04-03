@@ -1,18 +1,30 @@
 import os
-from openai import AzureOpenAI
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.inference import ChatCompletionsClient
 
-def prompt_azure():
-    """Initialize Azure OpenAI client and return it.
+def prompt_azure(base_url: str = None, api_key: str = None) -> ChatCompletionsClient:
+    """Initialize Azure ChatCompletionsClient with environment variables or provided parameters.
+
+    Parameters
+    ----------
+    base_url : str, optional
+        The endpoint URL for Azure, by default retrieved from environment variables.
+    api_key : str, optional
+        The API key for Azure, by default retrieved from environment variables.
 
     Returns
     -------
-    AzureOpenAI
-        An Azure OpenAI client instance configured with the API key,
-        version, and endpoint from environment variables.
+    ChatCompletionsClient
+        Configured Azure ChatCompletionsClient instance.
     """
-    client = AzureOpenAI(
-        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-        api_version=os.environ["AZURE_OPENAI_API_VERSION"],
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+    if base_url is None:
+        base_url = os.getenv("AZURE_OPENAI_ENDPOINT")
+
+    if api_key is None:
+        api_key = os.getenv("AZURE_OPENAI_API_KEY")
+
+    client = ChatCompletionsClient(
+        endpoint=base_url,
+        credential=AzureKeyCredential(api_key)
     )
     return client
