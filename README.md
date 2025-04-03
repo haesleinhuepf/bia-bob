@@ -253,7 +253,7 @@ bob.initialize(
 
 ### Using Azure
 
-If you are using the models hosted on [Microsoft Azure](https://azure.microsoft.com/), please store your API key for accessing the models in an environment variable named `AZURE_API_KEY`.
+If you are using the models hosted on [Microsoft Azure](https://azure.microsoft.com/), please store your API key for accessing the models in an environment variable named `AZURE_OPENAI_API_KEY`, the base url in an environment variable named `AZURE_OPENAI_ENDPOINT` and the version of the backend in a environment variable named `AZURE_OPENAI_API_VERSION`.
 
 You can then access the models like this:
 ```
@@ -261,14 +261,6 @@ bob.initialize(
     endpoint='azure', 
     model='Phi-3.5-mini-instruct')
 ```
-
-Alternatively, you can specify the endpoint directly, too:
-```
-bob.initialize(
-    endpoint='https://models.inference.ai.azure.com', 
-    model='Phi-3.5-mini-instruct')
-```
-
 
 ### Using custom endpoints
 

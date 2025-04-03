@@ -83,12 +83,18 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
     from .endpoints._anthropic import generate_response_from_anthropic
     from .endpoints._azure import generate_response_from_azure
     from .endpoints._mistral import generate_response_from_mistral
+    from .endpoints._github_models import generate_response_from_github_models
 
-    if (Context.endpoint == "github_models" or Context.endpoint == "azure") and "gpt-" not in model and "o1-" not in model and "mistral" not in model:
+    if Context.endpoint == "azure" and "gpt-" not in model and "o1-" not in model and "mistral" not in model:
         full_response = generate_response_from_azure(model, system_prompt, user_prompt, chat_history, image,
                                                       base_url=Context.endpoint, api_key=Context.api_key,
                                                       vision_model=Context.vision_model,
                                                       vision_system_prompt=vision_system_prompt)
+    elif Context.endpoint == "github_models":
+        full_response = generate_response_from_github_models(model, system_prompt, user_prompt, chat_history, image,
+                                                             base_url=Context.endpoint, api_key=Context.api_key,
+                                                             vision_model=Context.vision_model,
+                                                             vision_system_prompt=vision_system_prompt)
     elif "mistral" in model or (Context.vision_model is not None and "pixtral" in Context.vision_model and image is not None):
         full_response = generate_response_from_mistral(model, system_prompt, user_prompt, chat_history, image,
                                                       base_url=Context.endpoint, api_key=Context.api_key,
