@@ -251,6 +251,14 @@ bob.initialize(
     model='Phi-3.5-mini-instruct')
 ```
 
+### Using OpenRouter
+
+If you are using models via [OpenRouter](https://openrouter.ai/), store your API key for accessing the models in an environment variable named `OPENROUTER_API_KEY`. You can then access the models like this:
+
+```
+bob.initialize(model="anthropic/claude-3.7-sonnet", endpoint="openrouter")
+```
+
 ### Using Azure
 
 If you are using the models hosted on [Microsoft Azure](https://azure.microsoft.com/), please store your API key for accessing the models in an environment variable named `AZURE_API_KEY`.
