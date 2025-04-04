@@ -83,8 +83,14 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
     from .endpoints._anthropic import generate_response_from_anthropic
     from .endpoints._azure import generate_response_from_azure
     from .endpoints._mistral import generate_response_from_mistral
+    from ._machinery import OPENROUTER_BASE_URL
 
-    if (Context.endpoint == "github_models" or Context.endpoint == "azure") and "gpt-" not in model and "o1-" not in model and "mistral" not in model:
+    if Context.endpoint == "openrouter" or Context.endpoint == OPENROUTER_BASE_URL:
+        full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
+                                                     base_url=Context.endpoint, api_key=Context.api_key,
+                                                     vision_model=Context.vision_model,
+                                                     vision_system_prompt=vision_system_prompt)
+    elif (Context.endpoint == "github_models" or Context.endpoint == "azure") and "gpt-" not in model and "o1-" not in model and "mistral" not in model:
         full_response = generate_response_from_azure(model, system_prompt, user_prompt, chat_history, image,
                                                       base_url=Context.endpoint, api_key=Context.api_key,
                                                       vision_model=Context.vision_model,
@@ -409,8 +415,12 @@ def is_image(potential_image):
 
 def correct_endpoint(endpoint, api_key):
     import os
-    from ._machinery import BLABLADOR_BASE_URL, OLLAMA_BASE_URL, AZURE_BASE_URL, DEEPSEEK_BASE_URL
-    if endpoint == 'blablador':
+    from ._machinery import BLABLADOR_BASE_URL, OLLAMA_BASE_URL, AZURE_BASE_URL, DEEPSEEK_BASE_URL, OPENROUTER_BASE_URL
+    if endpoint == "openrouter":
+        endpoint = OPENROUTER_BASE_URL
+        if api_key is None:
+            api_key = os.environ.get('OPENROUTER_API_KEY')
+    elif endpoint == 'blablador':
         endpoint = BLABLADOR_BASE_URL
         if api_key is None:
             api_key = os.environ.get('BLABLADOR_API_KEY')

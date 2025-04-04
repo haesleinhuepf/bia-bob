@@ -7,6 +7,7 @@ BLABLADOR_BASE_URL = 'https://helmholtz-blablador.fz-juelich.de:8000/v1'
 OLLAMA_BASE_URL = 'http://localhost:11434/v1'
 AZURE_BASE_URL = "https://models.inference.ai.azure.com"
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 DEFAULT_SYSTEM_PROMPT = """
 You are a extremely talented bioimage analyst and you use Python to solve your tasks unless stated otherwise.
