@@ -17,14 +17,11 @@ Refer to:
 https://github.com/haesleinhuepf/BioImageAnalysisNotebooks/blob/main/docs/20b_deep_learning/cellpose-sam.ipynb
 """
 
-def suggest_cellpose_usage(version):
-    """
-    Provides suggestions based on the Cellpose version.
+import importlib
 
-    Parameters
-    ----------
-    version : float
-        The version of Cellpose in use.
+def suggest_cellpose_usage():
+    """
+    Provides suggestions based on the installed Cellpose version.
 
     Returns
     -------
@@ -33,15 +30,17 @@ def suggest_cellpose_usage(version):
     
     Examples
     --------
-    >>> suggest_cellpose_usage(3.0)
+    >>> suggest_cellpose_usage()
     'Refer to older Cellpose examples...'
-
-    >>> suggest_cellpose_usage(4.1)
-    'Refer to Cellpose-SAM examples...'
     """
-    if version < 4.0:
-        return ("For Cellpose version < 4.0.0, please refer to the following examples: "
-                "https://github.com/haesleinhuepf/BioImageAnalysisNotebooks/blob/main/docs/20b_deep_learning/cellpose.ipynb")
-    else:
-        return ("For Cellpose version >= 4.0.0, please check: "
-                "https://github.com/haesleinhuepf/BioImageAnalysisNotebooks/blob/main/docs/20b_deep_learning/cellpose-sam.ipynb")
+    try:
+        cellpose = importlib.import_module('cellpose')
+        version = tuple(map(int, cellpose.__version__.split('.')))
+        if version < (4, 0, 0):
+            return ("For Cellpose version < 4.0.0, please refer to the following examples: "
+                    "https://github.com/haesleinhuepf/BioImageAnalysisNotebooks/blob/main/docs/20b_deep_learning/cellpose.ipynb")
+        else:
+            return ("For Cellpose version >= 4.0.0, please check: "
+                    "https://github.com/haesleinhuepf/BioImageAnalysisNotebooks/blob/main/docs/20b_deep_learning/cellpose-sam.ipynb")
+    except ModuleNotFoundError:
+        return ""
