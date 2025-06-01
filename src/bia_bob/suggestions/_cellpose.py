@@ -17,9 +17,8 @@ Refer to:
 https://github.com/haesleinhuepf/BioImageAnalysisNotebooks/blob/main/docs/20b_deep_learning/cellpose-sam.ipynb
 """
 
-import importlib
 
-def suggest_cellpose_usage():
+def suggestions():
     """
     Provides suggestions based on the installed Cellpose version.
 
@@ -33,14 +32,42 @@ def suggest_cellpose_usage():
     >>> suggest_cellpose_usage()
     'Refer to older Cellpose examples...'
     """
+    import importlib.metadata
+
     try:
-        cellpose = importlib.import_module('cellpose')
-        version = tuple(map(int, cellpose.__version__.split('.')))
-        if version < (4, 0, 0):
-            return ("For Cellpose version < 4.0.0, please refer to the following examples: "
-                    "https://github.com/haesleinhuepf/BioImageAnalysisNotebooks/blob/main/docs/20b_deep_learning/cellpose.ipynb")
+        version = int(importlib.metadata.version("cellpose")[0])
+        if version < 4:
+            return """
+### Segmentation with Cellpose
+
+```python
+from cellpose import models
+
+model = models.Cellpose(gpu=False, model_type='nuclei')
+channels = [0,0] # This means we are processing single-channel greyscale images.
+masks, flows, styles, diams = model.eval(image, diameter=None, channels=channels)
+label_image = masks.astype(np.uint32)
+```
+
+Set the model_type above to the appropriate model for your task, e.g. `nuclei` for nuclei segmentation and `cyto2` for cytoplasm/cell segmentation.
+
+"""
         else:
-            return ("For Cellpose version >= 4.0.0, please check: "
-                    "https://github.com/haesleinhuepf/BioImageAnalysisNotebooks/blob/main/docs/20b_deep_learning/cellpose-sam.ipynb")
+            return """
+### Segmentation with Cellpose
+
+```python            
+from cellpose import models
+
+model = models.CellposeModel(gpu=False)
+masks, flows, styles = model.eval(image, 
+                                  batch_size=32, 
+                                  flow_threshold=0.4, 
+                                  cellprob_threshold=0.0,
+                                  normalize={"tile_norm_blocksize": 0})
+label_image = masks.astype(np.uint32)
+```
+
+"""
     except ModuleNotFoundError:
         return ""
