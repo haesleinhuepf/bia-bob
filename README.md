@@ -219,6 +219,13 @@ from bia_bob import bob
 bob.initialize("gpt-4o-2024-08-06", vision_model="gpt-4o-2024-08-06")
 ```
 
+You can also use the [codex-model]() which was specifically trained for coding tasks:
+
+```
+from bia_bob import bob
+bob.initialize(model="codex-mini-latest", vision_model="codex-mini-latest")
+```
+
 ### Using Anthropic / Claude
 
 Create an [Anthropic API Key](https://www.anthropic.com/api) and add it to your environment variables named `ANTHROPIC_API_KEY`. 

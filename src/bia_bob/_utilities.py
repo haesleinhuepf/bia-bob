@@ -78,7 +78,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
 
 def generate_response(chat_history, image, model, system_prompt, user_prompt, vision_system_prompt):
     from ._machinery import Context
-    from .endpoints._openai import generate_response_from_openai
+    from .endpoints._openai import generate_response_from_openai, generate_response_from_openai_responses
     from .endpoints._googlevertex import generate_response_from_vertex_ai, generate_response_from_google_ai
     from .endpoints._anthropic import generate_response_from_anthropic
     from .endpoints._azure import generate_response_from_azure
@@ -106,6 +106,11 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
                                                       base_url=Context.endpoint, api_key=Context.api_key,
                                                       vision_model=Context.vision_model,
                                                       vision_system_prompt=vision_system_prompt)
+    elif "codex" in model:
+        full_response = generate_response_from_openai_responses(model, system_prompt, user_prompt, chat_history, image,
+                                                      vision_model=Context.vision_model,
+                                                      vision_system_prompt=vision_system_prompt)
+
     elif "gpt-" in model:
         full_response = generate_response_from_openai(model, system_prompt, user_prompt, chat_history, image,
                                                       vision_model=Context.vision_model,

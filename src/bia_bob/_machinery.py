@@ -103,6 +103,7 @@ class Context:
         "pyclesperanto",
         "pathlib",
         "bia-bob",
+        "ipywidgets"
         # to add libraries here, add their pypi package names (not their import names)
     ])
 

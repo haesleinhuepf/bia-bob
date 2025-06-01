@@ -74,6 +74,84 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
     return reply
 
 
+def generate_response_from_openai_responses(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
+                                  base_url:str=None, api_key:str=None, vision_model:str = None, vision_system_prompt:str = None):
+    """A prompt helper function that sends a message to openAI / responses API
+    and returns only the text response.
+    """
+    from openai import OpenAI
+    from .._machinery import Context
+    from .._utilities import image_to_url
+
+    # assemble prompt
+    user_message = [{"role": "user", "content": user_prompt}]
+    image_message = []
+    kwargs = {}
+    model_init_kwargs = {}
+
+    if api_key is not None:
+        model_init_kwargs['api_key'] = api_key
+    if base_url is not None:
+        model_init_kwargs['base_url'] = base_url
+
+    if image is None: # normal text-based prompt
+        system_message = [{"role": "system", "content": system_prompt}]
+
+        # init client
+        if Context.client is None or not isinstance(Context.client, OpenAI):
+            Context.client = OpenAI(**model_init_kwargs)
+        client = Context.client
+    else:
+        system_message = [{"role": "system", "content": system_prompt}]
+
+        # https://platform.openai.com/docs/quickstart?api-mode=responses&lang=python
+        image_message = [{"role": "user", "content": [{
+        "type": "input_image",
+        "image_url": image_to_url(image),
+    }]}]
+
+
+
+
+        if Context.vision_client is None or not isinstance(Context.vision_client, OpenAI):
+            Context.vision_client = OpenAI(**model_init_kwargs)
+        client = Context.vision_client
+        model = vision_model
+
+    if Context.seed is not None:
+        kwargs['seed'] = Context.seed
+    if Context.temperature is not None:
+        kwargs['temperature'] = Context.temperature
+
+    # retrieve answer
+    messages = system_message
+    for m in chat_history:
+        messages.append(m)
+    for m in image_message:
+        messages.append(m)
+    messages.append(user_message[0])
+
+    if Context.verbose:
+        for i, m in enumerate(messages):
+            print(f"\n\nMESSAGE {i}: {m}")
+
+    response = client.responses.create(
+        input=messages,
+        model=model,
+        **kwargs
+    )  # stream=True would be nice
+    reply = response.output_text
+
+    # store question and answer in chat history
+    assistant_message = [{"role": "assistant", "content": reply}]
+
+    #Context.chat += user_message + assistant_message
+    chat_history.append(user_message[0])
+    chat_history.append(assistant_message[0])
+
+    return reply
+
+
 def image_to_message(image):
     from .._utilities import image_to_url
 
