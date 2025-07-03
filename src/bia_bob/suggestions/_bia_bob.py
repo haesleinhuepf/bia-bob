@@ -1,14 +1,6 @@
 def suggestions():
     return """
-    ### Prompt-engineering for scientific image/data analysis using bia-bob
-    
-    When writing prompts, instead of Python code, you can use the following syntax:
-    ```python
-    %%bob
-    * Do this, 
-    * that and 
-    * by the end, show the result.
-    ```
+    ### Prompting LLMs using bia-bob
     
     You can also submit a prompt without system prompts to the LLM and retrieve the response as string like this:
     (Note that the image parameter is optional)
