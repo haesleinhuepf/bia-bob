@@ -265,6 +265,8 @@ class MyTextTransformer(InputTransformer):
 
         mode = "none"
         if any(["%bob" in line for line in lines]):
+            if lines[0].startswith("%%bob") or lines[0].startswith("%bob"):
+                return lines
             mode = "complete"
         elif lines[-1].strip().endswith("%fix"):
             mode = "fix"
