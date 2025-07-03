@@ -39,9 +39,14 @@ It will then respond with a Python code snippet that you can execute ([see full 
 
 ![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/load_and_show_blobs.png)
 
-Use `%bob` if you want to write in the same line and `%%bob` if you want to write below.
+Use `%bob` if you want to write in the same line and `%%bob` if you want to write multiple lines of prompt.
 
-If you want to continue using a variable in the next code cell, you need to specify the name of the variable in the following prompt.
+### Code insertion
+
+You can also place `%bob` in the middle of the code if you want to insert code at a specific place. 
+Just make sure there is enough context above and below so that the LLM can guess which code to insert there.
+
+![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/insertions.gif)
 
 ### Notebook generation
 
