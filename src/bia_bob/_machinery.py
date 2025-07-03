@@ -252,6 +252,73 @@ except NameError:
     pass
 
 
+from IPython.core.inputtransformer import InputTransformer
+
+class MyTextTransformer(InputTransformer):
+    
+    def __call__(self, line):
+        return self.push(line)
+    
+    def push(self, lines):
+        from IPython.core.getipython import get_ipython
+        from ._utilities import generate_response_to_user
+
+        mode = "none"
+        if any(["%bob" in line for line in lines]):
+            mode = "complete"
+        elif lines[-1].strip().endswith("%fix"):
+            mode = "fix"
+        elif lines[-1].strip().endswith("%doc"):
+            mode = "doc"
+        else:
+            return lines
+        
+        lines[-1] = lines[-1].replace("%%fix", "").replace("%fix", "").replace("%%doc", "").replace("%doc", "")
+
+        from bia_bob import ask_llm
+        text = "\n".join(lines)
+
+        if mode == "complete":
+            prompt = f"""Please complete the following code by replacing "%bob" with the respective code.
+
+    ```python
+    {text}
+    ```
+    Provide the completed code.
+    """
+            if Context.model is None:
+                init_assistant()
+
+            p = get_ipython()
+            
+            code, text = generate_response_to_user(Context.model, prompt)
+
+            # replace the code in the current cell
+            if p is not None:
+                p.set_next_input(code, replace=True)
+        elif mode == "fix":
+            from ._bug_fixing import fix
+            fix(code)
+        elif mode == "doc":
+            from ._document import doc
+            doc(code)
+        # execute no code
+        return [] 
+
+    def reset(self):
+        pass
+
+def register_input_transformer():
+    from IPython.core.getipython import get_ipython
+
+    ip = get_ipython()
+    ip.input_transformers_cleanup.append(MyTextTransformer())
+
+try:
+    register_input_transformer()
+except:
+    pass
+
 def combine_user_input(line, cell):
     if line and cell:
         user_input = line + "\n" + cell
