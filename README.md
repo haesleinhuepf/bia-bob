@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/haesleinhuepf/bia-bob?style=social)](https://github.com/haesleinhuepf/bia-bob/)
 [![GitHub forks](https://img.shields.io/github/forks/haesleinhuepf/bia-bob?style=social)](https://github.com/haesleinhuepf/bia-bob/)
 [![License](https://img.shields.io/pypi/l/bia-bob.svg?color=green)](https://github.com/haesleinhuepf/bia-bob/raw/main/LICENSE)
-[![Binder Badge](https://static.mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/fbnrst/bia-bob/main?urlpath=lab/tree/README.ipynb "Launch a quay.io/jupyter/base-notebook container on mybinder.org")
+[![Try In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fbnrst/bia-bob/blob/main/demo/google_collab.ipynb)
 
 BIA `bob` is a Jupyter-based assistant for interacting with data using large language models which generate Python code for Bio-Image Analysis (BIA). 
 It can make use of [OpenAI's chatGPT](https://openai.com/blog/openai-api), [Google's Gemini](https://blog.google/technology/ai/google-gemini-ai/), [Anthropic's Claude](https://www.anthropic.com/api), [Github Models Marketplace](https://github.com/marketplace/models), [Helmholtz' blablador](https://helmholtz-blablador.fz-juelich.de/) and [Ollama](https://ollama.com). 
