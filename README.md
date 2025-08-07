@@ -319,7 +319,7 @@ bob.initialize(
     model='codellama')
 ```
 
-### Using Google gemini 1.5 flash / pro
+### Using Google gemini 2.5 flash / pro
 
 Create a [Google API key](https://ai.google.dev/gemini-api/docs/api-key) and store it in the environment variable `GOOGLE_API_KEY`.
 
@@ -330,29 +330,8 @@ pip install google-generativeai>=0.7.2
 You can then initialize Bob like this:
 ```
 from bia_bob import bob
-bob.initialize("gemini-1.5-pro-002")
+bob.initialize("gemini-2.5-flash")
 ```
-
-### Using Google's Cloud AI API as backend
-
-Note: This method is deprecated. Use gemini 1.5 as shown above. 
-
-```
-pip install google-cloud-aiplatform
-```
-(Recommended google-cloud-aiplatform version >= 1.38.1)
-
-To make use of the Google Cloud API, you need to create a Google Cloud account [here](https://console.cloud.google.com/welcome/) and
-a project within the Google cloud (for billing) [here](https://console.cloud.google.com/projectcreate). 
-You need to store authentication details locally as explained [here](https://cloud.google.com/docs/authentication/provide-credentials-adc#local-dev). 
-This requires installing [Google Cloud CLI](https://cloud.google.com/sdk/docs/install). In very short: run the installer and when asked, activate the "Run gcloud init" checkbox. Or run 'gcloud init' from the terminal yourself. Restart the terminal window.
-After installing Google Cloud CLI, start a terminal and authenticate using: 
-```
-gcloud auth application-default login
-```
-Follow the instructions in the browser. Enter your Project ID (not the name). If it worked the terminal should approximately look like this:
-
-![img.png](https://github.com/haesleinhuepf/bia-bob/raw/main/docs/images/gcloud_auth.png)
 
 ## Configuration
 

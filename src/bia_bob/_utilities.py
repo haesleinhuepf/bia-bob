@@ -478,9 +478,9 @@ def ollama_download_model(model):
     from ._machinery import OLLAMA_BASE_URL
     if is_notebook():
         from IPython.display import display, HTML   
-        display(HTML(f"Downloading Ollama model <a href='{OLLAMA_BASE_URL}/models/{model}'>{model}</a>..."))
+        display(HTML(f"Downloading Ollama model <a href='https://ollama.com/library/{model}'>{model}</a>..."))
     else:
-        print(f"Downloading Ollama model {model} from {OLLAMA_BASE_URL}/models/{model}...")
+        print(f"Downloading Ollama model {model} from https://ollama.com/library/{model}...")
         
     from ._machinery import OLLAMA_BASE_URL
     # run ollama pull model
