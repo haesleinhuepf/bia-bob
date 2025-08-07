@@ -436,6 +436,8 @@ def correct_endpoint(endpoint, api_key):
     elif endpoint == 'ollama':
         test_if_ollama_is_running()
         endpoint = OLLAMA_BASE_URL
+        if api_key is None:
+            api_key = "not-needed"
     elif endpoint == "azure":
         endpoint = AZURE_BASE_URL
         if api_key is None:
