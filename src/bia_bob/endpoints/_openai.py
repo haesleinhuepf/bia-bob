@@ -57,6 +57,14 @@ def generate_response_from_openai(model: str, system_prompt: str, user_prompt: s
         for i, m in enumerate(messages):
             print(f"\n\nMESSAGE {i}: {m}")
 
+    from .._machinery import OLLAMA_BASE_URL
+    from .._utilities import check_if_model_is_available, ollama_download_model
+    if Context.endpoint == OLLAMA_BASE_URL:
+        # check if the model is available
+        if not check_if_model_is_available(model, endpoint=Context.endpoint, api_key=api_key):
+            ollama_download_model(model)
+
+    
     response = client.chat.completions.create(
         messages=messages,
         model=model,

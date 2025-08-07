@@ -434,6 +434,7 @@ def correct_endpoint(endpoint, api_key):
         if api_key is None:
             api_key = os.environ.get('DEEPSEEK_API_KEY')
     elif endpoint == 'ollama':
+        test_if_ollama_is_running()
         endpoint = OLLAMA_BASE_URL
     elif endpoint == "azure":
         endpoint = AZURE_BASE_URL
@@ -446,6 +447,51 @@ def correct_endpoint(endpoint, api_key):
             api_key = os.environ.get('GH_MODELS_API_KEY')
 
     return endpoint, api_key
+
+
+@lru_cache(maxsize=1)
+def test_if_ollama_is_running(retry=True):
+    import requests
+    try:
+        requests.get(OLLAMA_BASE_URL)
+        running = True
+    except:
+        running = False
+    
+    if not running and retry:
+        print("Ollama is not running. Starting it...")
+        import threading
+        import subprocess
+        import time
+
+        def run_ollama_serve():
+            subprocess.Popen(["ollama", "serve"])
+
+        thread = threading.Thread(target=run_ollama_serve)
+        thread.start()
+        time.sleep(5)
+
+        return test_if_ollama_is_running(retry=False)
+
+@lru_cache(maxsize=1)
+def ollama_download_model(model):
+    from ._machinery import OLLAMA_BASE_URL
+    if is_notebook():
+        from IPython.display import display, HTML   
+        display(HTML(f"Downloading Ollama model <a href='{OLLAMA_BASE_URL}/models/{model}'>{model}</a>..."))
+    else:
+        print(f"Downloading Ollama model {model} from {OLLAMA_BASE_URL}/models/{model}...")
+        
+    from ._machinery import OLLAMA_BASE_URL
+    # run ollama pull model
+    import subprocess
+    subprocess.run(["ollama", "pull", model], check=True)
+
+@lru_cache(maxsize=1)
+def check_if_model_is_available(model, endpoint=None, api_key=None):
+    endpoint, api_key = correct_endpoint(endpoint, api_key)
+    models = available_models(endpoint, api_key)
+    return model in models
 
 
 def available_models(endpoint=None, api_key=None):
