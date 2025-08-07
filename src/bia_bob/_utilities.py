@@ -519,9 +519,7 @@ def available_models(endpoint=None, api_key=None):
 
     if endpoint is not None:
         from openai import OpenAI
-        client = OpenAI()
-        client.base_url = endpoint
-        client.api_key = api_key
+        client = OpenAI(base_url = endpoint, api_key = api_key)
         models = models + [model.id for model in client.models.list().data]
 
     return sorted(models)
