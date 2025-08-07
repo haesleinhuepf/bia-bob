@@ -122,6 +122,7 @@ def bob(line: str = None, cell: str = None):
     from IPython.display import display
     from ._utilities import generate_response_to_user, output_text, is_image, ask_llm, refine_code
     from ._notebook_generation import generate_notebook, generate_file
+    from ._utilities import is_running_in_colab
 
     if Context.model is None:
         init_assistant()
@@ -241,7 +242,7 @@ def bob(line: str = None, cell: str = None):
 
         # put a new cell below the current cell
         if p is not None:
-            p.set_next_input(code, replace=task_type == TASK_TYPE_CODE_MODIFICATION)
+            p.set_next_input(code, replace=task_type == TASK_TYPE_CODE_MODIFICATION or is_running_in_colab())
         else:
             print(code)
 
@@ -427,7 +428,7 @@ def init_assistant(model=None, auto_execute:bool = False, variables:dict=None, e
             """))
         else:
 
-            remark = version_string(model, vision_model, endpoint, version) + ". " + disclaimer()
+            remark = version_string(model, vision_model, endpoint, version) + ". " + disclaimer() + colab_disclaimer()
             print("bia-bob is using artificial intelligence to generate text, code and images.")
             print(remark)
 
@@ -438,6 +439,13 @@ def disclaimer(html=False):
     else:
         return "Do not enter sensitive or private information and verify generated contents according to good scientific practice. Read more: https://github.com/haesleinhuepf/bia-bob#disclaimer"
 
+
+def colab_disclaimer():
+    from ._utilities import is_running_in_colab
+    if is_running_in_colab():
+        return "This notebook is running in Google Colab. Unfortunately, Google Colab has disabled adding new code-cells. Bia-bob will replace the current cell instead. To get back to your prompt, just hit CTRL+Z after code has been generated."
+    else:
+        return ""
 
 def enable_plugins(enabled: bool = True):
     Context.plugins_enabled = enabled
