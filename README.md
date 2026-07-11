@@ -222,7 +222,7 @@ Create an [OpenAI API Key](https://openai.com/blog/openai-api) and add it to you
 You can then initialize Bob like this (optional, as that's default):
 ```
 from bia_bob import bob
-bob.initialize("gpt-4o-2024-08-06", vision_model="gpt-4o-2024-08-06")
+bob.initialize(model="gpt-5.6-terra", vision_model="gpt-5.6-terra", fast_model="gpt-5.6-luna")
 ```
 
 You can also use the [codex-model]() which was specifically trained for coding tasks:
@@ -239,29 +239,24 @@ Create an [Anthropic API Key](https://www.anthropic.com/api) and add it to your 
 You can then initialize Bob like this:
 ```
 from bia_bob import bob
-bob.initialize(model="claude-3-5-sonnet-20240620", vision_model="claude-3-5-sonnet-20240620")
+bob.initialize(model="claude-sonnet-5", 
+               vision_model="claude-sonnet-5", 
+               fast_model="claude-haiku-4-5")
 ```
 
 ### Using KISSKI / Academic Cloud
 
 You can also [apply for an API Key](https://services.kisski.de/services/en/service/?service=2-02-llm-service.json) from the German Artificial Intelligence Service Center for Sensible and Critical Infrastructures who operates the [ChatAI](https://kisski.gwdg.de/leistungen/2-02-llm-service/) service.
 
-You can store it in an environment variable named `OPENAI_API_KEY` and use initialize bob like this:
+You can store it in an environment variable named `KISSKI_API_KEY` and use initialize bob like this:
 ```
+import os
 from bia_bob import bob
 bob.initialize(endpoint="https://chat-ai.academiccloud.de/v1", 
-               model="meta-llama-3.1-70b-instruct")
-```
-
-### Using Github Models Marketplace
-
-If you are using the models from [Github Models Marketplace](https://github.com/marketplace/models), please [create an GITHUB API key (with default settings)](https://github.com/settings/personal-access-tokens/new) and store it for accessing the models in an environment variable named `GH_MODELS_API_KEY`.
-
-You can then access the models like this:
-```
-bob.initialize(
-    endpoint='github_models', 
-    model='Phi-3.5-mini-instruct')
+               api_key=os.environ.get('KISSKI_API_KEY'),
+               model="openai-gpt-oss-120b",
+               vision_modle="openai-gpt-oss-120b",
+               fast_model="gemma-4-31b-it")
 ```
 
 ### Using OpenRouter
@@ -269,58 +264,40 @@ bob.initialize(
 If you are using models via [OpenRouter](https://openrouter.ai/), store your API key for accessing the models in an environment variable named `OPENROUTER_API_KEY`. You can then access the models like this:
 
 ```
-bob.initialize(model="anthropic/claude-3.7-sonnet", endpoint="openrouter")
+bob.initialize(model="anthropic/claude-sonnet-4.6", 
+               vision_model="anthropic/claude-sonnet-4.6",
+               fast_moel="anthropic/claude-haiku-4.5",
+               endpoint="openrouter")
 ```
-
-### Using Azure
-
-If you are using the models hosted on [Microsoft Azure](https://azure.microsoft.com/), please store your API key for accessing the models in an environment variable named `AZURE_API_KEY`.
-
-You can then access the models like this:
-```
-bob.initialize(
-    endpoint='azure', 
-    model='Phi-3.5-mini-instruct')
-```
-
-Alternatively, you can specify the endpoint directly, too:
-```
-bob.initialize(
-    endpoint='https://models.inference.ai.azure.com', 
-    model='Phi-3.5-mini-instruct')
-```
-
 
 ### Using custom endpoints
 
-Custom endpoints can be used as well if they support the OpenAI API. Examples are [DeepSeek](https://www.deepseek.com/), [KISSKI](https://kisski.gwdg.de/leistungen/2-02-llm-service/), [blablador](https://login.helmholtz.de/oauth2-as/oauth2-authz-web-entry) and [ollama](https://ollama.com/).
+Custom endpoints can be used as well if they support the OpenAI API. Examples are [DeepSeek](https://www.deepseek.com/), [KISSKI](https://kisski.gwdg.de/leistungen/2-02-llm-service/), [blablador](https://login.helmholtz.de/oauth2-as/oauth2-authz-web-entry) and [ollama](https://ollama.com/), which  runs locally on your computer (gaming GPU recommended).
 An example is shown in [this notebook](https://github.com/haesleinhuepf/bia-bob/blob/main/demo/custom_endpoints.ipynb):
 
-For this, just install the openai backend as explained above (tested version: 1.5.0).
-* If you want to use ollama and e.g. the `codellama` model, you must run `ollama serve` from a separate terminal and then initialize bob like this:
+* If you want to use ollama and e.g. the `gpt-oss:20b` model initialize bob like this:
 ```
-bob.initialize(endpoint='ollama', model='codellama')
-```
-* For using DeepSeek, you need to get an [API key](https://platform.deepseek.com/api_keys). Store it in your environment as `DEEPSEEK_API_KEY` variable.
-```
-bob.initialize(endpoint='deepseek', model='deepseek-chat')
+bob.initialize(endpoint='ollama', model='gpt-oss:20b')
 ```
 
-* If you want to use blablador, which is free for German academics, just get an API key as explained on
-[this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/) and store it in your environment as `BLABLADOR_API_KEY` variable.
+* If you want to use blablador, which is free for German academics, just get an API key as explained on  [this page](https://sdlaml.pages.jsc.fz-juelich.de/ai/guides/blablador_api_access/) and store it in your environment as `BLABLADOR_API_KEY` variable.
 ```
 bob.initialize(
     endpoint='blablador', 
-    model='Mistral-7B-Instruct-v0.2')
+    model='alias-code',
+    vision_model='alias-qwen36-35b',
+    fast_model='alias-fast')
 ```
 * Custom end points can be used as well, for example like this:
 ```
 bob.initialize(
     endpoint='http://localhost:11434/v1', 
-    model='codellama')
+    model='gpt-oss:20b',
+    vision_model='gemma3:12b',
+    fast_model='gemma3:12b')
 ```
 
-### Using Google gemini 2.5 flash / pro
+### Using Google gemini
 
 Create a [Google API key](https://ai.google.dev/gemini-api/docs/api-key) and store it in the environment variable `GOOGLE_API_KEY`.
 
@@ -331,7 +308,9 @@ pip install google-generativeai>=0.7.2
 You can then initialize Bob like this:
 ```
 from bia_bob import bob
-bob.initialize("gemini-2.5-flash")
+bob.initialize(model="gemini-3.5-flash",
+               vision_model="gemini-3.5-flash",
+               fast_model="gemini-3.5-flash")
 ```
 
 ## Configuration

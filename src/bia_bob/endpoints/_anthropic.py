@@ -1,6 +1,6 @@
 def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt: str, chat_history, image=None,
                                   base_url:str=None, api_key:str=None, vision_model:str = None, vision_system_prompt:str = None):
-    # e.g. claude-3-5-sonnet-20240620 or claude-3-opus-20240229
+    # e.g. claude-sonnet-5
     from anthropic import Anthropic
     from .._machinery import Context
 
@@ -35,7 +35,10 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
         model=model,
         max_tokens=4096,
     )
-    reply = response.content[0].text
+    for c in response.content:
+        if hasattr(c,  "text"):
+            reply = c.text
+            break
 
     assistant_message = [{"role": "assistant", "content": reply}]
 

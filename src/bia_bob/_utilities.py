@@ -1,7 +1,7 @@
 import warnings
 from functools import lru_cache
 
-def ask_llm(prompt, image=None, chat_history=None):
+def ask_llm(prompt, image=None, chat_history=None, model=None):
     """Ask the language model a simple question and return the response."""
     from ._machinery import Context, init_assistant
     if Context.model is None:
@@ -10,9 +10,12 @@ def ask_llm(prompt, image=None, chat_history=None):
     if chat_history is None:
         chat_history = []
 
+    if model  is None:
+        model = Context.model
+
     return generate_response(chat_history=chat_history,
                       image=image,
-                      model=Context.model,
+                      model=model,
                       system_prompt="",
                       user_prompt=prompt,
                       vision_system_prompt="")
@@ -547,8 +550,8 @@ def keep_available_packages(libraries):
     return result
 
 
-def version_string(model, vision_model, endpoint, version):
-    return f"""Used model: {model}, vision model: {vision_model}, endpoint: {endpoint}, bia-bob version: {version}."""
+def version_string(model, vision_model, endpoint, version, fast_model=None):
+    return f"""Used model: {model}, vision model: {vision_model}, fast_model: {fast_model}, endpoint: {endpoint}, bia-bob version: {version}."""
 
 
 def remove_outer_markdown_annotation(code):
