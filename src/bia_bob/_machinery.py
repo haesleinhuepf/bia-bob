@@ -281,6 +281,8 @@ def add_cell(code: str, replace: bool):
             code = code.replace("\n\n ", NEWLINE_SPACE_PLACEHOLDER)
             for c in code.split("\n\n"):
                 c = c.replace(NEWLINE_SPACE_PLACEHOLDER, "\n\n ")
+                if c.strip() == "":
+                    continue
                 app.commands.execute('notebook:insert-cell-below')
                 app.commands.execute('notebook:replace-selection', {'text': c})
         else:
