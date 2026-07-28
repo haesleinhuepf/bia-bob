@@ -33,7 +33,8 @@ def generate_response_from_anthropic(model: str, system_prompt: str, user_prompt
         messages=messages,
         system=system_message,
         model=model,
-        max_tokens=4096,
+        max_tokens=8192,
+        output_config={"effort": "low"},
     )
     for c in response.content:
         if hasattr(c,  "text"):

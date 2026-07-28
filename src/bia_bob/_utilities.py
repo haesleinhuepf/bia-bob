@@ -21,7 +21,7 @@ def ask_llm(prompt, image=None, chat_history=None, model=None):
                       vision_system_prompt="")
 
 
-def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3, system_prompt:str=None):
+def generate_response_to_user(model, user_prompt: str, image=None, additional_system_prompt: str = None, max_number_attempts:int = 3, system_prompt:str=None, multiple_cells:bool=False):
     """Generates code and text respond for a specific user input.
     To do so, it combines the user input with additional context such as
     current variables and a prompt template."""
@@ -33,7 +33,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
 
     for attempt in range(1, max_number_attempts + 1):
         if system_prompt is None:
-            system_prompt = create_system_prompt()
+            system_prompt = create_system_prompt(multiple_cells=multiple_cells)
         if additional_system_prompt is not None:
             system_prompt += "\n" + additional_system_prompt
 
@@ -55,7 +55,7 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
             print("\n\nFull response:\n", full_response)
 
         # split response in text and code
-        text, plan, code = split_response(full_response)
+        text, plan, code = split_response(full_response, multiple_cells=multiple_cells)
 
         if text is not None and plan is not None and code is None:
             text = text + "\n\n" + plan
@@ -71,7 +71,10 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         if image is not None:
             break
 
-        print(f"There was an issue. Retrying ({attempt}/{max_number_attempts})...")
+        plan = plan if plan is not None else ""
+        code = code if code is not None else ""
+
+        print(f"There was an issue ({len(text), len(plan), len(code)}). Retrying ({attempt}/{max_number_attempts})...")
         Context.chat = chat_backup
 
     return code, text
@@ -135,7 +138,7 @@ def generate_response(chat_history, image, model, system_prompt, user_prompt, vi
     return full_response
 
 
-def split_response(text):
+def split_response(text, multiple_cells=False):
     backup_text = text
     text = text \
         .replace("```python", "```") \
@@ -186,8 +189,8 @@ def split_response(text):
         plan = ""
         return summary, plan, code
 
-    if code is not None:
-        original_code = code
+    if multiple_cells:
+        final_code = []
         parts = code.split("```")
         if len(parts) == 1:
             code = None
@@ -195,11 +198,23 @@ def split_response(text):
             text = ""
             code = ""
             for t, c in zip(parts[::2], parts[1::2]):
-                code = code + c
-            code = code.strip("\n")
+                final_code.append(c)
+            code = "\n\n".join(final_code)
+    else:
+        if code is not None:
+            original_code = code
+            parts = code.split("```")
+            if len(parts) == 1:
+                code = None
+            else:
+                text = ""
+                code = ""
+                for t, c in zip(parts[::2], parts[1::2]):
+                    code = code + c
+                code = code.strip("\n")
 
-        if code is None or len(code) == 0:
-            code = original_code
+            if code is None or len(code) == 0:
+                code = original_code
 
     return summary, plan, code
 
@@ -279,7 +294,7 @@ def shorten_text(text):
 
     return text
 
-def create_system_prompt(reusable_variables=None):
+def create_system_prompt(reusable_variables=None, multiple_cells=False):
     """Creates a system prompt that contains instructions of general interest, available functions and variables."""
     from ._machinery import Context
 
@@ -298,6 +313,7 @@ def create_system_prompt(reusable_variables=None):
               "reusable_variables": reusable_variables,
               "additional_snippets": additional_snippets,
               "builtin_snippets": builtin_snippets,
+              "multiple_cells_instructions": "Generate code in multiple blocks and encapsulate them with markdown fences individually." if multiple_cells else ""
               }
     system_prompt = template.format(**values)
 

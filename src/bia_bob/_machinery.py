@@ -49,6 +49,7 @@ I will do this and that.
 this()
 that()
 ```
+{multiple_cells_instructions}
 
 ## Final remarks
 
@@ -154,11 +155,12 @@ def bob(line: str = None, cell: str = None):
 
     TASK_TYPE_OTHER = 1
     TASK_TYPE_CODE_GENERATION = 1
-    TASK_TYPE_CODE_MODIFICATION = 2
-    TASK_TYPE_TEXT_RESPONSE = 3
-    TASK_TYPE_NOTEBOOK_GENERATION = 4
-    TASK_TYPE_NOTEBOOK_MODIFICATION = 5
-    TASK_TYPE_FILE_GENERATION = 6
+    TASK_TYPE_MULTIPLE_CELL_CODE_GENERATION = 2
+    TASK_TYPE_CODE_MODIFICATION = 3
+    TASK_TYPE_TEXT_RESPONSE = 4
+    TASK_TYPE_NOTEBOOK_GENERATION = 5
+    TASK_TYPE_NOTEBOOK_MODIFICATION = 6
+    TASK_TYPE_FILE_GENERATION = 7
 
 
     supported_file_types_for_generation = [".md", ".txt", ".csv", ".yml", ".yaml", ".json", ".py"]
@@ -166,6 +168,7 @@ def bob(line: str = None, cell: str = None):
     task_selection_prompt = f"""
     Given the following prompt, decide which of the following types of tasks we need to perform:
     {TASK_TYPE_CODE_GENERATION}. Code generation: The prompt asks for code to be generated.
+    {TASK_TYPE_MULTIPLE_CELL_CODE_GENERATION}. Multiple cell code generation: The prompt asks for code to be generated in multiple cells.
     {TASK_TYPE_CODE_MODIFICATION}. Code modification: The prompt asks for given code to be modified.
     {TASK_TYPE_TEXT_RESPONSE}. Text response: The prompt asks for a text response.    
     {TASK_TYPE_NOTEBOOK_GENERATION}. Notebook generation: The prompt asks explicitly for a notebook to be generated. Only choose this if the prompt explicitly asks for creating a new notebook.
@@ -228,7 +231,7 @@ def bob(line: str = None, cell: str = None):
     else: # TASK_TYPE_CODE_MODIFICATION or TASK_TYPE_CODE_GENERATION
         if task_type == TASK_TYPE_CODE_MODIFICATION:
             user_input = user_input + "\n\nReturn the complete code. Keep the code modifications minimal. Do not drop imports or functions which are still needed."
-        code, text = generate_response_to_user(Context.model, user_input, image)
+        code, text = generate_response_to_user(Context.model, user_input, image, multiple_cells=task_type == TASK_TYPE_MULTIPLE_CELL_CODE_GENERATION)
 
         if image is not None:
             # we need to add this information to the history.
@@ -273,8 +276,12 @@ def add_cell(code: str, replace: bool):
     try:
         import ipylab
         app = ipylab.JupyterFrontEnd()
-        if isinstance(code, list):
-            for c in code:
+        if "\n\n" in code and not replace:
+            NEWLINE_SPACE_PLACEHOLDER = "$NEWLINE_SPACE_PLACEHOLDER$"
+            code = code.replace("\n\n ", NEWLINE_SPACE_PLACEHOLDER)
+            for c in code.split("\n\n"):
+                c = c.replace(NEWLINE_SPACE_PLACEHOLDER, "\n\n ")
+                app.commands.execute('notebook:insert-cell-below')
                 app.commands.execute('notebook:replace-selection', {'text': c})
         else:
             if not replace:
