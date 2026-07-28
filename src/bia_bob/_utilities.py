@@ -54,8 +54,6 @@ def generate_response_to_user(model, user_prompt: str, image=None, additional_sy
         if Context.verbose:
             print("\n\nFull response:\n", full_response)
 
-
-
         # split response in text and code
         text, plan, code = split_response(full_response)
 
