@@ -123,11 +123,9 @@ def bob(line: str = None, cell: str = None):
     and shows the text and code response
     and pastes the code into the next cell.
     """
-    from IPython.core.getipython import get_ipython
     from IPython.display import display
     from ._utilities import generate_response_to_user, output_text, is_image, ask_llm, refine_code
     from ._notebook_generation import generate_notebook, generate_file
-    from ._utilities import is_running_in_colab
 
     if Context.model is None:
         init_assistant()
@@ -252,12 +250,8 @@ def bob(line: str = None, cell: str = None):
         code = refine_code(code)
 
     if code is not None:
-        p = get_ipython()
-
         # put a new cell below the current cell
-        if p is not None:
-            p.set_next_input(code, replace=task_type == TASK_TYPE_CODE_MODIFICATION or is_running_in_colab())
-        else:
+        if not add_cell(code, task_type == TASK_TYPE_CODE_MODIFICATION):
             print(code)
 
 
@@ -265,6 +259,40 @@ try:
     register_line_cell_magic(bob)
 except NameError:
     pass
+
+
+def add_cell(code: str, replace: bool):
+    from IPython.core.getipython import get_ipython
+    from ._utilities import is_running_in_colab
+    if is_running_in_colab():
+        p = get_ipython()
+        if p is not None:
+            p.set_next_input(code, replace=replace)
+            return True
+
+    try:
+        import ipylab
+        app = ipylab.JupyterFrontEnd()
+        if isinstance(code, list):
+            for c in code:
+                app.commands.execute('notebook:replace-selection', {'text': c})
+        else:
+            if not replace:
+                app.commands.execute('notebook:insert-cell-below')
+            app.commands.execute('notebook:replace-selection', {'text': code})
+        return True
+    except Exception:
+        if isinstance(code, list):
+            code = "\n".join(code)
+            
+        # fall back for classic Notebook / environments without ipylab
+        p = get_ipython()
+        if p is not None:
+            p.set_next_input(code, replace=replace)
+            return True
+    return False
+
+
 
 
     
