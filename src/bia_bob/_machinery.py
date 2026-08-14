@@ -279,6 +279,7 @@ def add_cell(code: str, replace: bool):
         if "\n\n" in code and not replace:
             NEWLINE_SPACE_PLACEHOLDER = "$NEWLINE_SPACE_PLACEHOLDER$"
             code = code.replace("\n\n ", NEWLINE_SPACE_PLACEHOLDER)
+            app.commands.execute('notebook:select-last-modified-cell')
             for c in code.split("\n\n"):
                 c = c.replace(NEWLINE_SPACE_PLACEHOLDER, "\n\n ")
                 if c.strip() == "":
@@ -286,6 +287,7 @@ def add_cell(code: str, replace: bool):
                 app.commands.execute('notebook:insert-cell-below')
                 app.commands.execute('notebook:replace-selection', {'text': c})
         else:
+            app.commands.execute('notebook:select-last-modified-cell')
             if not replace:
                 app.commands.execute('notebook:insert-cell-below')
             app.commands.execute('notebook:replace-selection', {'text': code})
@@ -300,10 +302,6 @@ def add_cell(code: str, replace: bool):
             p.set_next_input(code, replace=replace)
             return True
     return False
-
-
-
-
     
 def bia_bob_input_transformer(lines):
     from IPython import get_ipython
