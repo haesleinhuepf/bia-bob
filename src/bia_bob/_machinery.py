@@ -280,7 +280,9 @@ def add_cell(code: str, replace: bool):
             NEWLINE_SPACE_PLACEHOLDER = "$NEWLINE_SPACE_PLACEHOLDER$"
             code = code.replace("\n\n ", NEWLINE_SPACE_PLACEHOLDER)
             app.commands.execute('notebook:select-last-modified-cell')
-            for c in code.split("\n\n"):
+            for i, c in enumerate(code.split("\n\n#")):
+                if i > 0:
+                    c = "#"+c
                 c = c.replace(NEWLINE_SPACE_PLACEHOLDER, "\n\n ")
                 if c.strip() == "":
                     continue
