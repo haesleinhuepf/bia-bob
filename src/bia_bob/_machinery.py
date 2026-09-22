@@ -290,9 +290,11 @@ def add_cell(code: str, replace: bool):
                 app.commands.execute('notebook:replace-selection', {'text': c})
         else:
             app.commands.execute('notebook:select-last-modified-cell')
-            if not replace:
+            if replace:
+                app.shell.currentWidget.content.activeCell.model.sharedModel.setSource(code)
+            else:
                 app.commands.execute('notebook:insert-cell-below')
-            app.commands.execute('notebook:replace-selection', {'text': code})
+                app.commands.execute('notebook:replace-selection', {'text': code})
         return True
     except Exception:
         if isinstance(code, list):
