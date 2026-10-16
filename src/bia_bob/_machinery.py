@@ -110,6 +110,10 @@ class Context:
         "ipywidgets",
         "openai",
         "anthropic",
+        "wordcloud",
+        "pillow",
+        "opencv-python",
+        
         # to add libraries here, add their pypi package names (not their import names)
     ])
 
