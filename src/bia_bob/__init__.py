@@ -1,4 +1,4 @@
-__version__ = "0.36.4"
+__version__ = "0.37.0"
 
 __all__ = (
 )
@@ -10,6 +10,7 @@ from ._document import doc
 from ._utilities import available_models
 from ._notebook_generation import generate_notebook
 from ._utilities import ask_llm
+from ._config import config_ollama, config_blablador, config_scadsai
 
 
 bob.initialize = init_assistant
