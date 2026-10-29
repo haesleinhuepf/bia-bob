@@ -51,7 +51,7 @@ def config_scadsai(model="alias-code", vision_model="alias-vision", fast_model="
     Context.fast_model = fast_model
     Context.endpoint = "https://llm.scads.ai/v1"
 
-    api_key = os.getenv("SCADSAI_API_KEY3")
+    api_key = os.getenv("SCADSAI_API_KEY")
     if api_key is None:
         print("SCADSAI_API_KEY environment variable not found. If you don't have it yet, get one as explained on this page: https://llm.scads.ai/docs/usage/api/")
         api_key = getpass("Please enter your SCADSAI_API_KEY:")
