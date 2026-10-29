@@ -74,6 +74,7 @@ class Context:
     temperature = None # openai only
     endpoint = None
     api_key = None
+    refine_code = True
     system_prompt_template = DEFAULT_SYSTEM_PROMPT
 
     libraries = keep_available_packages([
@@ -253,7 +254,7 @@ def bob(line: str = None, cell: str = None):
     # print out explanation
     output_text(text)
 
-    if code is not None and task_type != TASK_TYPE_CODE_MODIFICATION:
+    if code is not None and task_type != TASK_TYPE_CODE_MODIFICATION and Context.refine_code:
         code = refine_code(code)
 
     if code is not None:
