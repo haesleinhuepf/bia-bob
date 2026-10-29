@@ -10,7 +10,7 @@ from ._document import doc
 from ._utilities import available_models
 from ._notebook_generation import generate_notebook
 from ._utilities import ask_llm
-from ._config import config_ollama
+from ._config import config_ollama, config_blablador
 
 
 bob.initialize = init_assistant
