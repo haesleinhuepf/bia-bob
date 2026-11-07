@@ -1,5 +1,6 @@
 def config_ollama(model="flint:latest", vision_model="flint:latest", fast_model="flint:latest"):
-    from bia_bob._machinery import Context
+    from bia_bob._machinery import Context, init_assistant
+    init_assistant()
     Context.model = model
     Context.vision_model = vision_model
     Context.fast_model = fast_model
@@ -18,12 +19,13 @@ def config_blablador(model="alias-code", vision_model="alias-code", fast_model="
     """
     import os
     from getpass import getpass
-
-    from bia_bob._machinery import Context
+    from bia_bob._machinery import Context, init_assistant
+    init_assistant()
     Context.model = model
     Context.vision_model = vision_model
     Context.fast_model = fast_model
     Context.endpoint = "https://api.blablador.fz-juelich.de/v1/"
+
 
     api_key = os.getenv("BLABLADOR_API_KEY")
     if api_key is None:
@@ -44,8 +46,8 @@ def config_scadsai(model="alias-code", vision_model="alias-vision", fast_model="
     """
     import os
     from getpass import getpass
-
-    from bia_bob._machinery import Context
+    from bia_bob._machinery import Context, init_assistant
+    init_assistant()
     Context.model = model
     Context.vision_model = vision_model
     Context.fast_model = fast_model
