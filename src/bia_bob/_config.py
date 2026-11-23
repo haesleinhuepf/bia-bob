@@ -9,7 +9,7 @@ def config_ollama(model="flint:latest", vision_model="flint:latest", fast_model=
     Context.refine_code = False
     Context.disclaimer_shown = False
 
-def config_blablador(model="alias-code", vision_model="alias-code", fast_model="alias-fast"):
+def config_blablador(model="deepseek-v4.1-flash-at-hzdr", vision_model="deepseek-v4.1-flash-at-hzdr", fast_model="deepseek-v4.1-flash-at-hzdr"):
     """
     To use the LLM-infrastructure provided by FZ Jülich via this configuration, 
     you need to acquire an API KEY as explained here: 
